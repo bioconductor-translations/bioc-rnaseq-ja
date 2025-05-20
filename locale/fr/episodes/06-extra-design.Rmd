@@ -402,3 +402,5 @@ abline(0, 1)
 - Comparisons of interest can be defined using contrasts, which are linear combinations of the model coefficients.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
