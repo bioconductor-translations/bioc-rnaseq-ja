@@ -24,3 +24,10 @@ BiocManager::install(c("tidyverse", "SummarizedExperiment",
 ```
 
 _If you are attending a workshop, please complete all of the above before the workshop. Should you need help, an instructor will be available 30 minutes before the workshop commences to assist._
+
+
+
+
+
+
+
