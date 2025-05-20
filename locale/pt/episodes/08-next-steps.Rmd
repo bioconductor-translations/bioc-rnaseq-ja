@@ -49,3 +49,4 @@ Recent review are provided e.g. by @Raghavan2022-denovo and @Amarasinghe2020-lon
 - RNA-seq data is very versatile and can be used for a number of different purposes. It is important, however, to carefully plan one's analyses, to make sure that enough data is available and that abundances for appropriate features (e.g., genes, transcripts, or exons) are quantified.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
+
