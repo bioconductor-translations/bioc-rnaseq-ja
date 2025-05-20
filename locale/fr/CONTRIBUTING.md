@@ -27,42 +27,42 @@ This is a good way to introduce yourself
 and to meet some of our community members.
 
 1. If you do not have a [GitHub][github] account,
-   you can [send us comments by email][contact].
-   However,
-   we will be able to respond more quickly if you use one of the other methods described below.
+    you can [send us comments by email][contact].
+    However,
+    we will be able to respond more quickly if you use one of the other methods described below.
 
 2. If you have a [GitHub][github] account,
-   or are willing to [create one][github-join],
-   but do not know how to use Git,
-   you can report problems or suggest improvements by [creating an issue][issues].
-   This allows us to assign the item to someone
-   and to respond to it in a threaded discussion.
+    or are willing to [create one][github-join],
+    but do not know how to use Git,
+    you can report problems or suggest improvements by [creating an issue][issues].
+    This allows us to assign the item to someone
+    and to respond to it in a threaded discussion.
 
 3. If you are comfortable with Git,
-   and would like to add or change material,
-   you can submit a pull request (PR).
-   Instructions for doing this are [included below](#using-github).
+    and would like to add or change material,
+    you can submit a pull request (PR).
+    Instructions for doing this are [included below](#using-github).
 
 ## Where to Contribute
 
 1. If you wish to change this lesson,
-   please work in <https://github.com/carpentries-incubator/bioc-rnaseq>,
-   which can be viewed at <https://carpentries-incubator.github.io/bioc-rnaseq/>.
+    please work in <https://github.com/carpentries-incubator/bioc-rnaseq>,
+    which can be viewed at <https://carpentries-incubator.github.io/bioc-rnaseq/>.
 
 2. If you wish to change the example lesson,
-   please work in <https://github.com/carpentries/lesson-example>,
-   which documents the format of our lessons
-   and can be viewed at <https://carpentries.github.io/lesson-example>.
+    please work in <https://github.com/carpentries/lesson-example>,
+    which documents the format of our lessons
+    and can be viewed at <https://carpentries.github.io/lesson-example>.
 
 3. If you wish to change the template used for workshop websites,
-   please work in <https://github.com/carpentries/workshop-template>.
-   The home page of that repository explains how to set up workshop websites,
-   while the extra pages in <https://carpentries.github.io/workshop-template>
-   provide more background on our design choices.
+    please work in <https://github.com/carpentries/workshop-template>.
+    The home page of that repository explains how to set up workshop websites,
+    while the extra pages in <https://carpentries.github.io/workshop-template>
+    provide more background on our design choices.
 
 4. If you wish to change CSS style files, tools,
-   or HTML boilerplate for lessons or workshops stored in `_includes` or `_layouts`,
-   please work in <https://github.com/carpentries/styles>.
+    or HTML boilerplate for lessons or workshops stored in `_includes` or `_layouts`,
+    please work in <https://github.com/carpentries/styles>.
 
 ## What to Contribute
 
@@ -107,21 +107,21 @@ you may want to look at
 In brief:
 
 1. The published copy of the lesson is in the `gh-pages` branch of the repository
-   (so that GitHub will regenerate it automatically).
-   Please create all branches from that,
-   and merge the [master repository][repo]'s `gh-pages` branch into your `gh-pages` branch
-   before starting work.
-   Please do _not_ work directly in your `gh-pages` branch,
-   since that will make it difficult for you to work on other contributions.
+    (so that GitHub will regenerate it automatically).
+    Please create all branches from that,
+    and merge the [master repository][repo]'s `gh-pages` branch into your `gh-pages` branch
+    before starting work.
+    Please do _not_ work directly in your `gh-pages` branch,
+    since that will make it difficult for you to work on other contributions.
 
 2. We use [GitHub flow][github-flow] to manage changes:
-   1. Create a new branch in your desktop copy of this repository for each significant change.
-   2. Commit the change in that branch.
-   3. Push that branch to your fork of this repository on GitHub.
-   4. Submit a pull request from that branch to the [master repository][repo].
-   5. If you receive feedback,
-      make changes on your desktop and push to your branch on GitHub:
-      the pull request will update automatically.
+    1. Create a new branch in your desktop copy of this repository for each significant change.
+    2. Commit the change in that branch.
+    3. Push that branch to your fork of this repository on GitHub.
+    4. Submit a pull request from that branch to the [master repository][repo].
+    5. If you receive feedback,
+        make changes on your desktop and push to your branch on GitHub:
+        the pull request will update automatically.
 
 Each lesson has two maintainers who review issues and pull requests
 or encourage others to do so.
