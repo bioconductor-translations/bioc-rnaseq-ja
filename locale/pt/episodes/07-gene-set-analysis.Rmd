@@ -31,7 +31,7 @@ body h3 {
 - Learn the method of gene set enrichment analysis.
 - Learn how to obtain gene sets from various resources in R.
 - Learn how to perform gene set enrichment analysis and how to visualize
-  enrichment results.
+ enrichment results.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -498,11 +498,11 @@ definitions, to name a few:
 
 - Locations in the cell, e.g. cell membrane or cell nucleus.
 - Positions on chromosomes, e.g. sex chromosomes or the cytogenetic band p13
-  on chromome 10.
+ on chromome 10.
 - Target genes of a transcription factor or a microRNA, e.g. all genes that
-  are transcriptionally regulationed by NF-κB.
+ are transcriptionally regulationed by NF-κB.
 - Signature genes in a certain tumor type, i.e. genes that are uniquely highly
-  expressed in a tumor type.
+ expressed in a tumor type.
 
 The [MSigDB database](https://www.gsea-msigdb.org/gsea/msigdb) contains gene
 sets in many topics. We will introduce it later in this section.
@@ -963,17 +963,17 @@ of all genes in ORA, which we will touch in the end of this section.
 There are several additional arguments in `enrichGO()`:
 
 - `universe`: the universe set of genes, i.e. total genes to use. By default it
-  uses the union of the genes in all gene sets. If it is set, DE genes and all gene
-  sets will take intersections with it. We will discuss it in the end of this section.
+ uses the union of the genes in all gene sets. If it is set, DE genes and all gene
+ sets will take intersections with it. We will discuss it in the end of this section.
 - `minGSSize`: Minimal size of gene sets. Normally gene sets with very small
-  size have very specific biological meanings which are not helpful too much
-  for the interpretation. Gene sets with size smaller than it will be removed
-  from the analysis. By default it is 10.
+ size have very specific biological meanings which are not helpful too much
+ for the interpretation. Gene sets with size smaller than it will be removed
+ from the analysis. By default it is 10.
 - `maxGSSize`: Maximal size of gene sets. Normally gene sets with huge size
-  provide too general biological meanings and are not helpful either. By
-  default is 500.
+ provide too general biological meanings and are not helpful either. By
+ default is 500.
 - `pvalueCutoff`: Cutoff for both _p_-values and adjusted _p_-values. By default is
-  0.05.
+ 0.05.
 - `qvalueCutoff`: Cutoff for _q_-values. by default is 0.2.
 
 Note, `enrichGO()` only returns significant gene sets that pass the
@@ -1145,14 +1145,14 @@ normally ignored in many analyses. In current tools, there are mainly
 following different universe settings:
 
 1. Using all genes in the genome, this also includes non-protein coding genes.
-   For human, the size of universe is 60k ~ 70k.
+ For human, the size of universe is 60k ~ 70k.
 2. Using all protein-coding genes. For human, the size of universe is ~ 20k.
 3. In the era of microarray, total genes that are measured on the chip is
-   taken as the universe. For RNASeq, since reads are aligned to all genes, we
-   can set a cutoff and only use those "expressed" genes as the universe.
+ taken as the universe. For RNASeq, since reads are aligned to all genes, we
+ can set a cutoff and only use those "expressed" genes as the universe.
 4. Using all genes in a gene sets collection. Then the size of the universe
-   depends on the size of the gene sets collection. For example GO gene sets
-   collection is much larger than the KEGG pathway gene sets collection.
+ depends on the size of the gene sets collection. For example GO gene sets
+ collection is much larger than the KEGG pathway gene sets collection.
 
 If the universe is set, DE genes as well as genes in the gene sets are first
 intersected to the universe. However, in general the universe affects three
@@ -1512,7 +1512,7 @@ more information.
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
 - ORA analysis is based on the gene counts and it is based on Fisher's exact
-  test or the hypergeometric distribution.
+ test or the hypergeometric distribution.
 - In R, it is easy to obtain gene sets from a large number of sources.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
