@@ -104,7 +104,7 @@ Potential considerations:
 
 - Is a gene expressed in both groups?
 - How many samples of each group express a gene?
-  :::::::::::::::::::::::::::::::::::
+ :::::::::::::::::::::::::::::::::::
 
 ## Library size differences
 
@@ -259,7 +259,7 @@ ggplot(pcaDataEx, aes(x = PC1, y = PC2)) +
 - A strong donor effect, that needs to be accounted for.
 - What does PC1 (37% variance) represent? Looks like 2 donor groups?
 - No association of PC1 and PC2 with time --> no or weak transcriptional effect of time
-  \--> Check association with higher PCs (e.g., PC3,PC4, ..)
+ \--> Check association with higher PCs (e.g., PC3,PC4, ..)
 
 :::::::::::::::::::::::::::::::::::
 
@@ -343,3 +343,5 @@ sessionInfo()
 - Different classes of exploratory analysis methods expect differently preprocessed data. The most commonly used methods expect counts to be normalized and log-transformed (or similar- more sensitive/sophisticated), to be closer to homoskedastic. Other methods work directly on the raw counts.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
