@@ -261,10 +261,10 @@ se$Label <- factor(se$Label, levels = se$Label)
 
 1. How many samples are there for each level of the `Infection` variable?
 2. Create 2 objects named `se_infected` and `se_noninfected` containing
-   a subset of `se` with only infected and non-infected samples, respectively.
-   Then, calculate the mean expression levels of the first 500 genes for each
-   object, and use the `summary()` function to explore the distribution
-   of expression levels for infected and non-infected samples based on these genes.
+  a subset of `se` with only infected and non-infected samples, respectively.
+  Then, calculate the mean expression levels of the first 500 genes for each
+  object, and use the `summary()` function to explore the distribution
+  of expression levels for infected and non-infected samples based on these genes.
 3. How many samples represent female mice infected with Influenza A on day 8?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
