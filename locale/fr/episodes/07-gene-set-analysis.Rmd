@@ -31,7 +31,7 @@ body h3 {
 - Learn the method of gene set enrichment analysis.
 - Learn how to obtain gene sets from various resources in R.
 - Learn how to perform gene set enrichment analysis and how to visualize
- enrichment results.
+  enrichment results.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -84,7 +84,7 @@ library(gplots)
 library(microbenchmark)
 library(org.Hs.eg.db)
 library(org.Mm.eg.db)
-library(msigdbr)
+library(msigdb)
 library(clusterProfiler)
 library(enrichplot)
 library(ggplot2)
@@ -98,7 +98,7 @@ library(gplots)
 library(microbenchmark)
 library(org.Hs.eg.db)
 library(org.Mm.eg.db)
-library(msigdbr)
+library(msigdb)
 library(clusterProfiler)
 library(enrichplot)
 library(ggplot2)
@@ -498,11 +498,11 @@ definitions, to name a few:
 
 - Locations in the cell, e.g. cell membrane or cell nucleus.
 - Positions on chromosomes, e.g. sex chromosomes or the cytogenetic band p13
- on chromome 10.
+  on chromome 10.
 - Target genes of a transcription factor or a microRNA, e.g. all genes that
- are transcriptionally regulationed by NF-κB.
+  are transcriptionally regulationed by NF-κB.
 - Signature genes in a certain tumor type, i.e. genes that are uniquely highly
- expressed in a tumor type.
+  expressed in a tumor type.
 
 The [MSigDB database](https://www.gsea-msigdb.org/gsea/msigdb) contains gene
 sets in many topics. We will introduce it later in this section.
@@ -605,7 +605,7 @@ contains three namespaces of biological process (BP), cellular components (CC)
 and molecular function (MF) which describe a biological entity from different
 aspect. The associations between GO terms and genes are integrated in the
 Bioconductor standard packages: _the organism annotation packages_. In the current
-Bioconductor release (3.17), there are the following organism packages:
+Bioconductor release, there are the following organism packages:
 
 <center>
 
@@ -802,60 +802,61 @@ of MSigDB (v2023.1.Hs), it has grown into nine gene sets collections, covering
 MSigDB categorizes gene sets into nine collections where each collection
 focuses on a specific topic. For some collections, they are additionally split
 into sub-collections. There are several ways to obtain gene sets from MSigDB.
-One convenient way is to use the **msigdbr** package. The advantages is
-**msigdbr** supports many other organisms by mapping to orthologs.
+One convenient way is to use the **msigdb** package. Another option is to use
+the **msigdbr** CRAN package, which supports organisms other than human and
+mouse by mapping to orthologs.
 
-Let's check which organisms are supported and which gene sets collections it provides.
+**msigdb** provides mouse and human gene sets, defined using either gene
+symbols or Entrez IDs. Let's get the mouse collection.
 
 ```{r pillar-options, echo = FALSE}
 options(pillar.print_max = 30)
 ```
 
 ```{r msigdbr}
-library(msigdbr)
-msigdbr_species()
-msigdbr_collections()
+library(msigdb)
+library(ExperimentHub)
+library(GSEABase)
+MSigDBGeneSets <- getMsigdb(org = "mm", id = "SYM", version = "7.4")
 ```
 
-The first column in the above output is the primary category of gene sets.
-Some gene sets collections may have sub-collections, and they are shown in the
-second column. The description of gene sets collections from MSigDB is in the
-following figure.
+The `msigdb` object above is a `GeneSetCollection`, storing all gene sets
+from MSigDB. The `GeneSetCollection` object class is defined in the `GSEABase`
+package, and it is a linear data structure similar to a base list object, but
+with additional metadata such as the type of gene identifier or provenance
+information about the gene sets.
 
-<img src="fig/msigdb.png" />
-
-The core function `msigdbr()` retrieves gene sets in a specific category (or a
-subcategory if it exists).
-
-```r
-msigdbr(species, category, subcategory)
+```{r msigdbr-view}
+MSigDBGeneSets
+length(MSigDBGeneSets)
 ```
 
-For example, we want to obtain the hallmark gene sets for mouse.
+Each signature is stored in a `GeneSet` object, also defined in the `GSEABase`
+package.
+
+```{r msigdbr-single}
+gs <- MSigDBGeneSets[[2000]]
+gs
+collectionType(gs)
+geneIds(gs)
+```
+
+We can also subset the collection. First, let's list the available collections
+and subcollections.
+
+```{r msigdbr-collections}
+listCollections(MSigDBGeneSets)
+listSubCollections(MSigDBGeneSets)
+```
+
+Then, we retrieve only the 'hallmarks' collection.
 
 ```{r msigdbr-h}
-MSigDBGeneSets = msigdbr(species = "mouse", category = "H")
-head(MSigDBGeneSets)
+(hm <- subsetCollection(MSigDBGeneSets, collection = "h"))
 ```
 
-The output is in the `tibble` class. If you have no experience with it, don't
-worry, just take it as a table. As you can see, the three major gene IDs type
-`"gene_symbol"`, `"entrez_gene"` and `"ensembl_gene"` are all included in the
-table. So users can easily pick one with the same gene ID type as in the DE gene
-list. For example:
-
-```{r msigdb-ids}
-MSigDBGeneSets[, c("gs_name", "ensembl_gene")]
-# or put genes in the first column
-MSigDBGeneSets[, c("ensembl_gene", "gs_name")]
-```
-
-If you only want to use a sub-category gene sets, e.g. `"CP:KEGG"` from `"C2"`,
-you can simply specify both `category` and `subcategory` arguments:
-
-```r
-msigdbr(species = "mouse", category = "C2", subcategory = "CP:KEGG")
-```
+If you only want to use a sub-category, specify both the `collection` and
+`subcollection` arguments to `subsetCollection`.
 
 ## ORA with clusterProfiler
 
@@ -963,17 +964,17 @@ of all genes in ORA, which we will touch in the end of this section.
 There are several additional arguments in `enrichGO()`:
 
 - `universe`: the universe set of genes, i.e. total genes to use. By default it
- uses the union of the genes in all gene sets. If it is set, DE genes and all gene
- sets will take intersections with it. We will discuss it in the end of this section.
+  uses the union of the genes in all gene sets. If it is set, DE genes and all gene
+  sets will take intersections with it. We will discuss it in the end of this section.
 - `minGSSize`: Minimal size of gene sets. Normally gene sets with very small
- size have very specific biological meanings which are not helpful too much
- for the interpretation. Gene sets with size smaller than it will be removed
- from the analysis. By default it is 10.
+  size have very specific biological meanings which are not helpful too much
+  for the interpretation. Gene sets with size smaller than it will be removed
+  from the analysis. By default it is 10.
 - `maxGSSize`: Maximal size of gene sets. Normally gene sets with huge size
- provide too general biological meanings and are not helpful either. By
- default is 500.
+  provide too general biological meanings and are not helpful either. By
+  default is 500.
 - `pvalueCutoff`: Cutoff for both _p_-values and adjusted _p_-values. By default is
- 0.05.
+  0.05.
 - `qvalueCutoff`: Cutoff for _q_-values. by default is 0.2.
 
 Note, `enrichGO()` only returns significant gene sets that pass the
@@ -1068,11 +1069,13 @@ For MSigDB gene sets, there is no pre-defined enrichment function. We need to
 directly use the low-level enrichment function `enricher()` which accepts
 self-defined gene sets. The gene sets should be in a format of a two-column
 data frame of genes and gene sets (or a class that can be converted to a data
-frame).
+frame). Let's use the hallmark collection (`hm`) that we generated above.
 
 ```{r get-msigdb-gs, message = TRUE, warning = TRUE}
-library(msigdbr)
-gene_sets = msigdbr(category = "H", species = "mouse")
+gene_sets <- stack(geneIds(hm)) |>
+    as.data.frame() |>
+    dplyr::select(ind, values) |>
+    dplyr::rename(gs_name = ind, gene_symbol = values)
 head(gene_sets)
 ```
 
@@ -1081,7 +1084,7 @@ be the same as in the DE genes, so here we choose the `"gene_symbol"` column.
 
 ```{r enricher-time-h}
 resTimeHallmark = enricher(gene = timeDEgenes, 
-                           TERM2GENE = gene_sets[, c("gs_name", "gene_symbol")],
+                           TERM2GENE = gene_sets,
                            pvalueCutoff = 1,
                            qvalueCutoff = 1)
 resTimeHallmarkTable = as.data.frame(resTimeHallmark)
@@ -1145,14 +1148,14 @@ normally ignored in many analyses. In current tools, there are mainly
 following different universe settings:
 
 1. Using all genes in the genome, this also includes non-protein coding genes.
- For human, the size of universe is 60k ~ 70k.
+  For human, the size of universe is 60k ~ 70k.
 2. Using all protein-coding genes. For human, the size of universe is ~ 20k.
 3. In the era of microarray, total genes that are measured on the chip is
- taken as the universe. For RNASeq, since reads are aligned to all genes, we
- can set a cutoff and only use those "expressed" genes as the universe.
+  taken as the universe. For RNASeq, since reads are aligned to all genes, we
+  can set a cutoff and only use those "expressed" genes as the universe.
 4. Using all genes in a gene sets collection. Then the size of the universe
- depends on the size of the gene sets collection. For example GO gene sets
- collection is much larger than the KEGG pathway gene sets collection.
+  depends on the size of the gene sets collection. For example GO gene sets
+  collection is much larger than the KEGG pathway gene sets collection.
 
 If the universe is set, DE genes as well as genes in the gene sets are first
 intersected to the universe. However, in general the universe affects three
@@ -1512,7 +1515,7 @@ more information.
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
 - ORA analysis is based on the gene counts and it is based on Fisher's exact
- test or the hypergeometric distribution.
+  test or the hypergeometric distribution.
 - In R, it is easy to obtain gene sets from a large number of sources.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
