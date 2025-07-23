@@ -180,7 +180,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="01-intro-to-rnaseq.html">1. Introduction to RNA-seq</a>
+        <a href="01-intro-to-rnaseq.html">1. RNA-seq入門</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -327,7 +327,7 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         
         
-<section id="aio-01-intro-to-rnaseq"><p>Content from <a href="01-intro-to-rnaseq.html">Introduction to RNA-seq</a></p>
+<section id="aio-01-intro-to-rnaseq"><p>Content from <a href="01-intro-to-rnaseq.html">RNA-seq入門</a></p>
 <hr>
 <p> Last updated on 2025-07-23 |
 
@@ -343,13 +343,10 @@
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>What are the different choices to consider when planning an RNA-seq
-experiment?</li>
-<li>How does one process the raw fastq files to generate a table with
-read counts per gene and sample?</li>
-<li>Where does one find information about annotated genes for a given
-organism?</li>
-<li>What are the typical steps in an RNA-seq analysis?</li>
+<li>RNA-seq実験を計画する際に考慮すべきさまざまな選択とは？</li>
+<li>どのように生のfastqファイルを処理して、遺伝子ごと、サンプルごとのリードカウントの表を作成するのですか？</li>
+<li>ある生物についてアノテーションされた遺伝子の情報はどこで見つけることができますか？</li>
+<li>RNA-seq解析の典型的なステップとは？</li>
 </ul>
 </div>
 </div>
@@ -359,13 +356,10 @@ organism?</li>
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Explain what RNA-seq is.</li>
-<li>Describe some of the most common design choices that have to be made
-before running an RNA-seq experiment.</li>
-<li>Provide an overview of the procedure to go from the raw data to the
-read count matrix that will be used for downstream analysis.</li>
-<li>Show some common types of results and visualizations generated in
-RNA-seq analyses.</li>
+<li>RNA-seqとは何か？</li>
+<li>RNA-seq実験を実施する前に行わなければならない最も一般的なデザイン選択のいくつかを説明する。</li>
+<li>生データから下流の解析に使用されるリードカウントマトリックスまでの手順の概要を説明する。</li>
+<li>RNA-seq解析で生成されるいくつかの一般的なタイプの結果と可視化を示す。</li>
 </ul>
 </div>
 </div>
@@ -373,271 +367,188 @@ RNA-seq analyses.</li>
 </div>
 </div>
 <div class="section level1">
-<h1 id="what-are-we-measuring-in-an-rna-seq-experiment">What are we measuring in an RNA-seq experiment?<a class="anchor" aria-label="anchor" href="#what-are-we-measuring-in-an-rna-seq-experiment"></a>
+<h1 id="rna-seq実験では何を測定するのか">RNA-seq実験では何を測定するのか？<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9F%E9%A8%93%E3%81%A7%E3%81%AF%E4%BD%95%E3%82%92%E6%B8%AC%E5%AE%9A%E3%81%99%E3%82%8B%E3%81%AE%E3%81%8B"></a>
 </h1>
-<figure><img src="fig/alternative_splicing_sub.png" alt="Illustration of part of the central dogma of molecular biology, where DNA is transcribed to RNA, and intronic sequences are spliced out" class="figure mx-auto d-block"></figure><p>In order to produce an RNA molecule, a stretch of DNA is first
-transcribed into mRNA. Subsequently, intronic regions are spliced out,
-and exonic regions are combined into different <em>isoforms</em> of a
-gene.</p>
-<figure><img src="fig/rnaseq_martin_wang.png" alt="Illustration of the major experimental steps of an RNA-seq experiment" class="figure mx-auto d-block"></figure><p>(figure adapted from <a href="https://www.nature.com/articles/nrg3068" class="external-link">Martin &amp; Wang
-(2011)</a>).</p>
-<p>In a typical RNA-seq experiment, RNA molecules are first collected
-from a sample of interest. After a potential enrichment for molecules
-with polyA tails (predominantly mRNA), or depletion of otherwise highly
-abundant ribosomal RNA, the remaining molecules are fragmented into
-smaller pieces (there are also long-read protocols where entire
-molecules are considered, but those are not the focus of this lesson).
-It is important to keep in mind that because of the splicing excluding
-intronic sequences, an RNA molecule (and hence a generated fragment) may
-not correspond to an uninterrupted region of the genome. The RNA
-fragments are then reverse transcribed into cDNA, whereafter sequencing
-adapters are added to each end. These adapters allow the fragments to
-attach to the flow cell. Once attached, each fragment will be heavily
-amplified to generate a cluster of identical sequences on the flow cell.
-The sequencer then determines the sequence of the first 50-200
-nucleotides of the cDNA fragments in each such cluster, starting from
-one end, which corresponds to a <em>read</em>. Many data sets are
-generated with so called paired-end protocols, in which the fragments
-are read from both ends. Millions of such reads (or pairs of reads) will
-be generated in an experiment, and these will be represented in a (pair
-of) FASTQ files. Each read is represented by four consecutive lines in
-such a file: first a line with a unique read identifier, next the
-inferred sequence of the read, then another identifier line, and finally
-a line containing the base quality for each inferred nucleotide,
-representing the probability that the nucleotide in the corresponding
-position has been correctly identified.</p>
-<div id="challenge-discuss-the-following-points-with-your-neighbor" class="callout discussion">
+<figure><img src="fig/alternative_splicing_sub.png" alt="Illustration of part of the central dogma of molecular biology, where DNA is transcribed to RNA, and intronic sequences are spliced out" class="figure mx-auto d-block"></figure><p>RNA分子を作るには、まずDNAがmRNAに転写される。
+その後、イントロン領域がスプライシングされ、エキソン領域が組み合わされて遺伝子の異なる_isoforms_となる。</p>
+<figure><img src="fig/rnaseq_martin_wang.png" alt="Illustration of the major experimental steps of an RNA-seq experiment" class="figure mx-auto d-block"></figure><p>(図は<a href="https://www.nature.com/articles/nrg3068" class="external-link">Martin &amp;
+Wang (2011)</a>より引用）。</p>
+<p>典型的なRNA-seq実験では、まず目的のサンプルからRNA分子を収集する。
+ポリA末端を持つ分子（主にmRNA）を濃縮する、あるいは、そうでなければ非常に豊富なリボソームRNAを除去した後、残りの分子を細かく断片化する（分子全体を考慮するロングリード・プロトコルもあるが、このレッスンの焦点ではない）。
+イントロン配列を除いたスプライシングのために、RNA分子（したがって生成された断片）はゲノムの途切れることのない領域に対応しない可能性があることを心に留めておくことが重要である。
+その後、RNA断片はcDNAに逆転写され、両端に配列決定用アダプターが付加される。
+これらのアダプターにより、フラグメントをフローセルに取り付けることができる。
+一旦くっつくと、各フラグメントは大きく増幅され、フローセル上に同一配列のクラスターを生成する。
+次にシークエンサーは、このようなクラスターに含まれるcDNA断片の最初の50-200塩基の塩基配列を、一端から順に決定する。
+多くのデータセットは、両端から断片を読み取る、いわゆるペアエンドプロトコルで作成される。
+このようなリード（またはリードのペア）は1回の実験で数百万本生成され、これらは（ペアの）FASTQファイルに表現される。
+それぞれのリードは、このようなファイルでは4つの連続した行で表現される。最初に一意のリード識別子の行、次にリードの推定配列、次に別の識別子の行、最後に各推定ヌクレオチドの塩基品質を含む行で、対応する位置のヌクレオチドが正しく同定された確率を表す。</p>
+<div id="チャレンジ隣人と以下の点について話し合ってください" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<div id="challenge-discuss-the-following-points-with-your-neighbor" class="callout-inner">
-<h3 class="callout-title">Challenge: Discuss the following points with your neighbor</h3>
+<div id="チャレンジ隣人と以下の点について話し合ってください" class="callout-inner">
+<h3 class="callout-title">チャレンジ隣人と以下の点について話し合ってください。</h3>
 <div class="callout-content">
 <ol style="list-style-type: decimal">
-<li>What are potential advantages and disadvantages of paired-end
-protocols compared to only sequencing one end of a fragment?</li>
-<li>What quality assessment can you think of that would be useful to
-perform on the FASTQ files with read sequences?</li>
+<li>ペアエンドプロトコルの利点と欠点を教えてください。</li>
+<li>リード配列を含むFASTQファイルに対して実行するのに有用な品質評価として、どのようなものが考えられますか？</li>
 </ol>
 </div>
 </div>
 </div>
 </div>
 <div class="section level1">
-<h1 id="experimental-design-considerations">Experimental design considerations<a class="anchor" aria-label="anchor" href="#experimental-design-considerations"></a>
+<h1 id="実験デザインの考察">実験デザインの考察<a class="anchor" aria-label="anchor" href="#%E5%AE%9F%E9%A8%93%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%81%AE%E8%80%83%E5%AF%9F"></a>
 </h1>
-<p>Before starting to collect data, it is essential to take some time to
-think about the design of the experiment. Experimental design concerns
-the organization of experiments with the purpose of making sure that the
-right type of data, and enough of it, is available to answer the
-questions of interest as efficiently as possible. Aspects such as which
-conditions or sample groups to consider, how many replicates to collect,
-and how to plan the data collection in practice are important questions
-to consider. Many high-throughput biological experiments (including
-RNA-seq) are sensitive to ambient conditions, and it is often difficult
-to directly compare measurements that have been done on different days,
-by different analysts, in different centers, or using different batches
-of reagents. For this reason, it is very important to design experiments
-properly, to make it possible to disentangle different types of (primary
-and secondary) effects.</p>
-<figure><img src="fig/factors-affecting-measurements.png" alt="A classification of many different factors affecting measurements obtained from an experiment into treatment, biological, technical and error effects" class="figure mx-auto d-block"></figure><p>(figure from <a href="https://www.amazon.com/Experimental-Design-Laboratory-Biologists-Reproducibility/dp/1107424887" class="external-link">Lazic
-(2017)</a>).</p>
-<div id="challenge-discuss-with-your-neighbor" class="callout discussion">
+<p>データ収集を始める前に、実験計画について考える時間を取ることが不可欠である。
+実験計画とは、関心のある問題にできるだけ効率的に答えるために、適切な種類のデータと十分な量のデータを確実に入手できるようにすることを目的とした実験の組織に関するものである。
+どのような条件や標本群を考慮するか、どれだけの複製を収集するか、実際のデータ収集をどのように計画するかといった側面は、考慮すべき重要な問題である。
+多くのハイスループット生物学的実験（RNA-seqを含む）は環境条件に敏感であり、異なる日に、異なる分析者によって、異なるセンターで、異なるバッチの試薬を用いて行われた測定を直接比較することはしばしば困難である。
+このため、実験を適切にデザインし、異なるタイプの（一次的効果と二次的効果を）区別できるようにすることが非常に重要である。</p>
+<figure><img src="fig/factors-affecting-measurements.png" alt="A classification of many different factors affecting measurements obtained from an experiment into treatment, biological, technical and error effects" class="figure mx-auto d-block"></figure><p>(図は<a href="https://www.amazon.com/Experimental-Design-Laboratory-Biologists-Reproducibility/dp/1107424887" class="external-link">Lazic
+(2017)</a>より）。</p>
+<div id="チャレンジ隣人と話し合う" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<div id="challenge-discuss-with-your-neighbor" class="callout-inner">
-<h3 class="callout-title">Challenge: Discuss with your neighbor</h3>
+<div id="チャレンジ隣人と話し合う" class="callout-inner">
+<h3 class="callout-title">チャレンジ隣人と話し合う</h3>
 <div class="callout-content">
 <ol style="list-style-type: decimal">
-<li>Why is it essential to have replicates?</li>
+<li>なぜ複製が必要なのですか？</li>
 </ol>
 </div>
 </div>
 </div>
-<p>Importantly, not all replicates are equally useful, from a
-statistical point of view. One common way to classify the different
-types of replicates is as ‘biological’ and ‘technical’, where the latter
-are typically used to test the reproducibility of the measurement
-device, while biological replicates inform about the variability between
-different samples from a population of interest. Another scheme
-classifies replicates (or units) into ‘biological’, ‘experimental’ and
-‘observational’. Here, biological units are entities we want to make
-inferences about (e.g., animals, persons). Replication of biological
-units is required to make a general statement of the effect of a
-treatment - we can not draw a conclusion about the effect of drug on a
-population of mice by studying a single mouse only. Experimental units
-are the smallest entities that can be <em>independently assigned to a
-treatment</em> (e.g., animal, litter, cage, well). Only replication of
-experimental units constitute true replication. Observational units,
-finally, are entities at which measurements are made.</p>
-<p>To explore the impact of experimental design on the ability to answer
-questions of interest, we are going to use an interactive application,
-provided in the <a href="https://csoneson.github.io/ConfoundingExplorer/" class="external-link">ConfoundingExplorer</a>
-package.</p>
-<div id="challenge" class="callout discussion">
+<p>重要なのは、統計学的な観点から見ると、すべての反復が同じように有用というわけではないということである。
+後者は通常、測定装置の再現性をテストするために使用され、一方、生物学的な複製は、対象集団からの異なるサンプル間のばらつきについて情報を提供する。
+別の方式では、複製（または単位）を「生物学的」、「実験的」、「観察的」に分類する。
+ここでいう生物学的単位とは、推論を行いたい実体のことである（動物や人など）。
+ある治療法の効果について一般的な見解を述べるには、生物学的単位の再現が必要である。1匹のマウスだけを研究して、マウスの集団に対する薬物の効果について結論を出すことはできない。
+実験単位とは、ある処置に独立に割り当てることができる最小の実体である（動物、子、ケージ、井戸など）。
+実験単位の再現のみが真の再現となる。
+最後に、観測単位とは、測定が行われる実体のことである。</p>
+<p>興味のある質問に答える能力に対する実験デザインの影響を調べるために、<a href="https://csoneson.github.io/ConfoundingExplorer/" class="external-link">ConfoundingExplorer</a>パッケージで提供されている対話型アプリケーションを使用する。</p>
+<div id="チャレンジ" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<div id="challenge" class="callout-inner">
-<h3 class="callout-title">Challenge</h3>
+<div id="チャレンジ" class="callout-inner">
+<h3 class="callout-title">チャレンジ</h3>
 <div class="callout-content">
-<p>Launch the ConfoundingExplorer application and familiarize yourself
-with the interface.</p>
+<p>ConfoundingExplorerアプリケーションを起動し、インターフェイスに慣れる。</p>
 </div>
 </div>
 </div>
-<div id="challenge-1" class="callout discussion">
+<div id="チャレンジ-1" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<div id="challenge-1" class="callout-inner">
-<h3 class="callout-title">Challenge</h3>
+<div id="チャレンジ-1" class="callout-inner">
+<h3 class="callout-title">チャレンジ</h3>
 <div class="callout-content">
 <ol style="list-style-type: decimal">
-<li>For a balanced design (equal distribution of replicates between the
-two groups in each batch), what is the effect of increasing the strength
-of the batch effect? Does it matter whether one adjusts for the batch
-effect or not?</li>
-<li>For an increasingly unbalanced design (most or all replicates of one
-group coming from one batch), what is the effect of increasing the
-strength of the batch effect? Does it matter whether one adjusts for the
-batch effect or not?</li>
+<li>平衡計画（各バッチの2群間の反復分布が等しい）の場合、バッチ効果の強さを増すとどのような効果がありますか？
+バッチ効果を調整するかどうかは重要か？</li>
+<li>アンバランスなデザイン（1つのグループのほとんど、またはすべての複製が1つのバッチから得られている）が増えている場合、バッチ効果の強さを増すとどのような影響がありますか？
+バッチ効果を調整するかどうかは重要か？</li>
 </ol>
 </div>
 </div>
 </div>
 </div>
 <div class="section level1">
-<h1 id="rna-seq-quantification-from-reads-to-count-matrix">RNA-seq quantification: from reads to count matrix<a class="anchor" aria-label="anchor" href="#rna-seq-quantification-from-reads-to-count-matrix"></a>
+<h1 id="rna-seq定量化リードからカウントマトリックスまで">RNA-seq定量化：リードからカウントマトリックスまで<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9A%E9%87%8F%E5%8C%96%E3%83%AA%E3%83%BC%E3%83%89%E3%81%8B%E3%82%89%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88%E3%83%9E%E3%83%88%E3%83%AA%E3%83%83%E3%82%AF%E3%82%B9%E3%81%BE%E3%81%A7"></a>
 </h1>
-<figure><img src="fig/rna-quant.jpeg" alt="Illustration of a set of reads generated by a sequencer, and genomic and transcriptomic reference sequences" class="figure mx-auto d-block"></figure><p>The read sequences contained in the FASTQ files from the sequencer
-are typically not directly useful as they are, since we do not have the
-information about which gene or transcript they originate from. Thus,
-the first processing step is to attempt to identify the location of
-origin for each read, and use this to obtain an estimate of the number
-of reads originating from a gene (or another features, such as an
-individual transcript). This can then be used as a proxy for the
-abundance, or expression level, of the gene. There is a plethora of RNA
-quantification pipelines, and the most common approaches can be
-categorized into three main types:</p>
+<figure><img src="fig/rna-quant.jpeg" alt="Illustration of a set of reads generated by a sequencer, and genomic and transcriptomic reference sequences" class="figure mx-auto d-block"></figure><p>シーケンサーからのFASTQファイルに含まれるリード配列は、どの遺伝子や転写産物に由来するかという情報を持っていないため、そのままでは一般的に直接役に立たない。
+したがって、最初の処理ステップは、各リードの起源の位置を特定し、これを使用して遺伝子（または個々の転写産物などの別の特徴）に由来するリードの数の推定値を取得しようとするものである。
+そして、これを遺伝子の存在量、すなわち発現レベルの代用として用いることができる。
+RNA定量パイプラインは数多く存在し、最も一般的なアプローチは主に3つのタイプに分類できる：</p>
 <ol style="list-style-type: decimal">
-<li><p>Align reads to the genome, and count the number of reads that map
-within the exons of each gene. This is the one of simplest methods. For
-species for which the transcriptome is poorly annotated, this would be
-the preferred approach. Example: <code>STAR</code> alignment to GRCm39 +
-<code>Rsubread</code> <a href="https://doi.org/10.1093%2Fnar%2Fgkz114" class="external-link">featureCounts</a></p></li>
-<li><p>Align reads to the transcriptome, quantify transcript expression,
-and summarize transcript expression into gene expression. This approach
-can produce accurate quantification results (<a href="https://doi.org/10.1186/s13059-016-0940-1" class="external-link">independent
-benchmarking</a>), particularly for high-quality samples without DNA
-contamination. Example: RSEM quantification using
-<code>rsem-calculate-expression --star</code> on the GENCODE GRCh38
-transcriptome + <code>tximport</code></p></li>
-<li><p>Pseudoalign reads against the transcriptome, using the
-corresponding genome as a decoy, quantifying transcript expression in
-the process, and summarize the transcript-level expression into
-gene-level expression. The advantages of this approach include:
-computational efficiency, mitigation of the effect of DNA contamination,
-and GC bias correction. Example: <code>salmon quant --gcBias</code> +
-<code>tximport</code></p></li>
+<li><p>リードをゲノムにアライメントし、各遺伝子のエクソン内にマップされたリードの数をカウントする。
+これは最もシンプルな方法のひとつだ。
+トランスクリプトームのアノテーションが不十分な種については、この方法が望ましい。
+例：GRCm39 への <code>STAR</code> アライメント + <code>Rsubread</code>
+<a href="https://doi.org/10.1093%2Fnar%2Fgkz114" class="external-link">featureCounts</a></p></li>
+<li><p>トランスクリプトームへのリードのアラインメント、トランスクリプトーム発現の定量化、トランスクリプトーム発現を遺伝子発現に要約する。
+このアプローチは、正確な定量結果（<a href="https://doi.org/10.1186/s13059-016-0940-1" class="external-link">independent
+benchmarking</a>）を得ることができる。
+、特にDNA汚染のない高品質のサンプルについて。 例GENCODE GRCh38
+のトランスクリプトームに対する
+<code>rsem-calculate-expression --star</code> と <code>tximport</code>
+を用いた RSEM 定量化。</p></li>
+<li><p>対応するゲノムをおとりとして、トランスクリプトームに対してリードを疑似整列させ、その過程で転写産物の発現を定量化し、
+、転写産物レベルの発現を遺伝子レベルの発現に要約する。
+この方法の利点は、計算の効率化、DNA汚染の影響の緩和、GCバイアスの補正などである。
+例：<code>salmon quant --gcBias</code> + <code>tximport</code></p></li>
 </ol>
-<p>At typical sequencing read depth, gene expression quantification is
-often more accurate than transcript expression quantification. However,
-differential gene expression analyses can be <a href="https://doi.org/10.12688/f1000research.7563.1" class="external-link">improved</a> by
-having access also to transcript-level quantifications.</p>
-<p>Other tools used in RNA-seq quantification include: TopHat2, bowtie2,
-kallisto, HTseq, among many others.</p>
-<p>The choice of an appropriate RNA-seq quantification depends on the
-quality of the transcriptome annotation, the quality of the RNA-seq
-library preparation, the presence of contaminating sequences, among many
-factors. Often, it can be informative to compare the quantification
-results of multiple approaches.</p>
-<p>Because the best quantification method is species- and
-experiment-dependent, and often requires large amounts of computing
-resources, this workshop will not cover any specifics of how to generate
-the counts. Instead, we recommend checking out the references above and
-consulting with a local bioinformatics expert if you need help.</p>
-<div id="challenge-discuss-the-following-points-with-your-neighbor-1" class="callout discussion">
+<p>一般的なシーケンスリード深度では、遺伝子発現定量は転写産物発現定量よりも正確であることが多い。
+しかし、遺伝子発現の差分解析は、転写産物レベルの定量化にもアクセスすることで、<a href="https://doi.org/10.12688/f1000research.7563.1" class="external-link">改善</a> 。</p>
+<p>RNA-seqの定量に使われる他のツールには以下のようなものがある：TopHat2、bowtie2、kallisto、HTseqなどである。</p>
+<p>適切なRNA-seq定量化の選択は、多くの要因の中でも、トランスクリプトームアノテーションの質、
+、RNA-seqライブラリー調製の質、コンタミネーション配列の有無に依存する。
+多くの場合、複数のアプローチによる定量結果を比較することは有益である。</p>
+<p>最適な定量化方法は生物種や実験に依存し、しばしば大量の計算資源を必要とするため、このワークショップではカウントの生成方法に関する具体的な説明は行わない。
+その代わりに、上記の参考文献をチェックし、助けが必要であれば地元のバイオインフォマティクスの専門家に相談することをお勧めする。</p>
+<div id="チャレンジ隣人と以下の点について話し合ってください-1" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<div id="challenge-discuss-the-following-points-with-your-neighbor-1" class="callout-inner">
-<h3 class="callout-title">Challenge: Discuss the following points with your neighbor</h3>
+<div id="チャレンジ隣人と以下の点について話し合ってください-1" class="callout-inner">
+<h3 class="callout-title">チャレンジ隣人と以下の点について話し合ってください。</h3>
 <div class="callout-content">
 <ol style="list-style-type: decimal">
-<li>Which of the mentioned RNA-Seq quantification tools have you heard
-about? Do you know other pros and cons of the methods?</li>
-<li>Have you done your own RNA-Seq experiment? If so, what
-quantification tool did you use and why did you choose it?</li>
-<li>Do you have access to specific tools / local bioinformatics expert /
-computational resources for quantification? If you don’t, how might you
-gain access?</li>
+<li>RNA-Seq定量化ツールについて聞いたことがあるものはどれですか？
+その他の方法の長所と短所をご存知ですか？</li>
+<li>独自のRNA-Seq実験を行ったことがありますか？
+もしそうなら、どのような定量化ツールを使い、なぜそれを選んだのか？</li>
+<li>定量化のための特定のツール／地元のバイオインフォマティクスの専門家／計算リソースにアクセスできるか？
+そうでなければ、どうやってアクセスするのか？</li>
 </ol>
 </div>
 </div>
 </div>
 </div>
 <div class="section level1">
-<h1 id="finding-the-reference-sequences">Finding the reference sequences<a class="anchor" aria-label="anchor" href="#finding-the-reference-sequences"></a>
+<h1 id="参照配列の検索">参照配列の検索<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E7%85%A7%E9%85%8D%E5%88%97%E3%81%AE%E6%A4%9C%E7%B4%A2"></a>
 </h1>
-<p>In order to quantify abundances of known genes or transcripts from
-RNA-seq data, we need a reference database informing us of the sequence
-of these features, to which we can then compare our reads. This
-information can be obtained from different online repositories. It is
-highly recommended to choose one of these for a particular project, and
-not mix information from different sources. Depending on the
-quantification tool you have chosen, you will need different types of
-reference information. If you are aligning your reads to the genome and
-investigating the overlap with known annotated features, you will need
-the full genome sequence (provided in a fasta file) and a file that
-tells you the genomic location of each annotated feature (typically
-provided in a gtf file). If you are mapping your reads to the
-transcriptome, you will instead need a file with the sequence of each
-transcript (again, a fasta file).</p>
+<p>RNA-seqデータから既知の遺伝子や転写産物の量を定量するためには、これらの特徴の配列を知らせてくれる参照データベースが必要であり、これと我々のリードを比較することができる。
+この情報は、さまざまなオンラインレポジトリから得ることができる。
+特定のプロジェクトには、異なるソースからの情報を混在させず、これらのうちの1つを選択することを強く推奨する。
+選択した定量化ツールによって、必要な参照情報の種類は異なる。
+リードをゲノムにアライメントし、既知の注釈付きフィーチャーとのオーバーラップを調べる場合、全ゲノム配列（fastaファイルで提供）と、各注釈付きフィーチャーのゲノム上の位置を示すファイル（通常gtfファイルで提供）が必要です。
+リードをトランスクリプトームにマッピングする場合は、代わりに各トランスクリプトの配列を含むファイル（これもfastaファイル）が必要になります。</p>
 <ul>
-<li>If you are working with mouse or human samples, the <a href="https://www.gencodegenes.org/" class="external-link">GENCODE project</a> provides
-well-curated reference files.</li>
+<li>マウスやヒトのサンプルを扱う場合、<a href="https://www.gencodegenes.org/" class="external-link">GENCODEプロジェクト</a>は、十分にキュレートされた参照ファイルを提供している。</li>
 <li>
-<a href="https://www.ensembl.org/info/data/ftp/index.html" class="external-link">Ensembl</a>
-provides reference files for a large set of organisms, including <a href="https://plants.ensembl.org/info/data/ftp/index.html" class="external-link">plants</a>
-and <a href="https://fungi.ensembl.org/info/data/ftp/index.html" class="external-link">fungi</a>.</li>
-<li>
-<a href="https://hgdownload.soe.ucsc.edu/downloads.html" class="external-link">UCSC</a>
-also provides reference files for many organisms.</li>
+<a href="https://www.ensembl.org/info/data/ftp/index.html" class="external-link">Ensembl</a>は、<a href="https://plants.ensembl.org/info/data/ftp/index.html" class="external-link">植物</a>や<a href="https://fungi.ensembl.org/info/data/ftp/index.html" class="external-link">菌類</a>を含む、多数の生物の参照ファイルを提供している。</li>
+<li>また、<a href="https://hgdownload.soe.ucsc.edu/downloads.html" class="external-link">UCSC</a>は、多くの生物の参照ファイルを提供している。</li>
 </ul>
-<div id="challenge-2" class="callout discussion">
+<div id="チャレンジ-2" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
-<div id="challenge-2" class="callout-inner">
-<h3 class="callout-title">Challenge</h3>
+<div id="チャレンジ-2" class="callout-inner">
+<h3 class="callout-title">チャレンジ</h3>
 <div class="callout-content">
-<p>Download the latest mouse transcriptome fasta file from GENCODE. What
-do the entries look like? Tip: to read the file into R, consider the
-<code>readDNAStringSet()</code> function from the
-<code>Biostrings</code> package.</p>
+<p>GENCODEから最新のマウストランスクリプトームファスタファイルをダウンロードする。
+エントリーはどのようなものですか？
+ヒント：ファイルをRに読み込むには、<code>Biostrings</code> パッケージの
+<code>readDNAStringSet()</code> 関数を使う。</p>
 </div>
 </div>
 </div>
 </div>
 <div class="section level1">
-<h1 id="where-are-we-heading-towards-in-this-workshop">Where are we heading towards in this workshop?<a class="anchor" aria-label="anchor" href="#where-are-we-heading-towards-in-this-workshop"></a>
+<h1 id="このワークショップで我々はどこに向かっているのか">このワークショップで我々はどこに向かっているのか？<a class="anchor" aria-label="anchor" href="#%E3%81%93%E3%81%AE%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97%E3%81%A7%E6%88%91%E3%80%85%E3%81%AF%E3%81%A9%E3%81%93%E3%81%AB%E5%90%91%E3%81%8B%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E3%81%AE%E3%81%8B"></a>
 </h1>
-<p>During the coming two days, we will discuss and practice how to
-perform differential expression analysis with Bioconductor, and how to
-interpret the results. We will start from a count matrix, and thus
-assume that the initial quality assessment and quantification of gene
-expression have already been done. The outcome of a differential
-expression analysis is often represented using graphical
-representations, such as MA plots and heatmaps (see below for
-examples).</p>
+<p>この2日間で、Bioconductorを使ってどのように微分発現解析を行うか、そして結果をどのように解釈するかについて議論し、実践する。
+カウントマトリックスから始めるので、最初の品質評価と遺伝子発現の定量はすでに行われていると仮定する。
+差次的発現解析の結果は、MAプロットやヒートマップなどのグラフを用いて表現されることが多い（例は下記参照）。</p>
 <p><img src="fig/maPlot-example.png" alt="An example MA plot" class="figure"><img src="fig/heatmap-example.png" alt="An example heatmap" class="figure"></p>
-<p>In the following episodes we will learn, among other things, how to
-generate and interpret these plots. It is also common to perform
-follow-up analyses to investigate whether there is a functional
-relationship among the top-ranked genes, so called gene set (enrichment)
-analysis, which will also be covered in a later episode.</p>
+<p>以下のエピソードでは、特にこれらのプロットの作成と解釈の仕方を学ぶ。
+また、上位にランクされた遺伝子間に機能的関係があるかどうかを調べるために、遺伝子セット（濃縮）解析と呼ばれるフォローアップ解析を行うことも一般的であるが、これについても後のエピソードで取り上げる。</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -646,21 +557,13 @@ analysis, which will also be covered in a later episode.</p>
 <h3 class="callout-title">Key Points</h3>
 <div class="callout-content">
 <ul>
-<li>RNA-seq is a technique of measuring the amount of RNA expressed
-within a cell/tissue and state at a given time.</li>
-<li>Many choices have to be made when planning an RNA-seq experiment,
-such as whether to perform poly-A selection or ribosomal depletion,
-whether to apply a stranded or an unstranded protocol, and whether to
-sequence the reads in a single-end or paired-end fashion. Each of the
-choices have consequences for the processing and interpretation of the
-data.</li>
-<li>Many approaches exist for quantification of RNA-seq data. Some
-methods align reads to the genome and count the number of reads
-overlapping gene loci. Other methods map reads to the transcriptome and
-use a probabilistic approach to estimate the abundance of each gene or
-transcript.</li>
-<li>Information about annotated genes can be accessed via several
-sources, including Ensembl, UCSC and GENCODE.</li>
+<li>RNA-seqは、ある細胞／組織内で発現しているRNAの量と、ある時点での状態を測定する技術である。</li>
+<li>RNA-seq実験を計画する際には、ポリA選択とリボソーム除去のどちらを行うか、ストランドプロトコルとアンストランドプロトコルのどちらを適用するか、シングルエンドとペアエンドのどちらでリードをシーケンスするかなど、多くの選択をしなければならない。
+それぞれの選択は、データの処理と解釈に結果をもたらす。</li>
+<li>RNA-seqデータの定量化には多くのアプローチが存在する。
+リードをゲノムにアライメントし、遺伝子座にオーバーラップするリードの数をカウントする方法もある。
+他の方法は、リードをトランスクリプトームにマッピングし、確率的アプローチを使って各遺伝子や転写産物の存在量を推定する。</li>
+<li>注釈付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
 </ul>
 </div>
 </div>
@@ -924,8 +827,8 @@ data folder.
 remainder of this lesson.</p>
 <table class="table">
 <colgroup>
-<col width="77%">
-<col width="22%">
+<col width="68%">
+<col width="31%">
 </colgroup>
 <thead><tr class="header">
 <th>URL</th>
@@ -1008,36 +911,21 @@ downloading datasets from the internet.</li>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
-<div class="overview card">
-<h2 class="card-header">Overview</h2>
-<div class="row g-0">
-<div class="col-md-4">
-<div class="card-body">
-<div class="inner">
-<h3 class="card-title">Questions</h3>
+<p>::::::::::::::::::::::::::::::::::::::: objectives</p>
+<ul>
+<li>Learn how to import the quantifications into a SummarizedExperiment
+object.</li>
+<li>Learn how to add additional gene annotations to the object.
+::::::::::::::::::::::::::::::::::::::::::::::::::</li>
+</ul>
+<p>:::::::::::::::::::::::::::::::::::::::: questions</p>
 <ul>
 <li>How can one import quantified gene expression data into an object
 suitable for downstream statistical analysis in R?</li>
 <li>What types of gene identifiers are typically used, and how are
-mappings between them done?</li>
+mappings between them done?
+::::::::::::::::::::::::::::::::::::::::::::::::::</li>
 </ul>
-</div>
-</div>
-</div>
-<div class="col-md-8">
-<div class="card-body">
-<div class="inner bordered">
-<h3 class="card-title">Objectives</h3>
-<ul>
-<li>Learn how to import the quantifications into a SummarizedExperiment
-object.</li>
-<li>Learn how to add additional gene annotations to the object.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
 <section><h2 class="section-heading" id="load-packages">Load packages<a class="anchor" aria-label="anchor" href="#load-packages"></a>
 </h2>
 <hr class="half-width">
@@ -1266,7 +1154,7 @@ the <a href="https://carpentries-incubator.github.io/bioc-intro/60-next-steps.ht
 to data analysis with R and Bioconductor</a> workshop. As a reminder,
 let’s take a look at the figure below representing the anatomy of the
 <code>SummarizedExperiment</code> class:</p>
-<figure><img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list." width="80%" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>It is designed to hold any type of quantitative ’omics data
+<figure><img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" width="80%" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>It is designed to hold any type of quantitative ’omics data
 (<code>assays</code>) along with linked sample annotations
 (<code>colData</code>) and feature annotations with
 (<code>rowRanges</code>) or without (<code>rowData</code>) chromosome,
@@ -1291,12 +1179,10 @@ statistical analysis, you can start by putting your data in a
 objects:</p>
 <ul>
 <li>The <code>count</code> object will be saved in <code>assays</code>
-slot<br>
-</li>
+slot</li>
 <li>The <code>coldata</code> object with sample information will be
 stored in <code>colData</code> slot (<em><strong>sample
-metadata</strong></em>)<br>
-</li>
+metadata</strong></em>)</li>
 <li>The <code>rowranges</code> object describing the genes will be
 stored in <code>rowRanges</code> slot (<em><strong>features
 metadata</strong></em>)</li>
@@ -1916,13 +1802,12 @@ resources are covered in more detail in <a href="https://carpentries-incubator.g
 <p>Where</p>
 <ul>
 <li>
-<em>annopkg</em> is the annotation package<br>
+<em>annopkg</em> is the annotation package</li>
+<li>
+<em>keys</em> are the IDs that we <strong>know</strong>
 </li>
 <li>
-<em>keys</em> are the IDs that we <strong>know</strong><br>
-</li>
-<li>
-<em>column</em> is the value we <strong>want</strong><br>
+<em>column</em> is the value we <strong>want</strong>
 </li>
 <li>
 <em>keytype</em> is the type of key used</li>
@@ -2071,31 +1956,20 @@ other attached packages:
 [15] knitr_1.50
 
 loaded via a namespace (and not attached):
- [1] renv_1.1.4              SparseArray_1.8.0       xml2_1.3.8
- [4] RSQLite_2.4.1           lattice_0.22-7          tinkr_0.3.0
- [7] magrittr_2.0.3          evaluate_1.0.4          grid_4.5.1
-[10] fastmap_1.2.0           blob_1.2.4              jsonlite_2.0.0
-[13] Matrix_1.7-3            processx_3.8.6          DBI_1.2.3
-[16] ps_1.9.1                BiocManager_1.30.26     httr_1.4.7
-[19] purrr_1.1.0             UCSC.utils_1.4.0        Biostrings_2.76.0
-[22] abind_1.4-8             cli_3.6.5               rlang_1.1.6
-[25] crayon_1.5.3            XVector_0.48.0          bit64_4.6.0-1
-[28] cachem_1.1.0            withr_3.0.2             DelayedArray_0.34.1
-[31] yaml_2.3.10             S4Arrays_1.8.1          tools_4.5.1
-[34] sandpaper_0.16.13.9000  memoise_2.0.1           GenomeInfoDbData_1.2.14
-[37] assertthat_0.2.1        png_0.1-8               vctrs_0.6.5
-[40] R6_2.6.1                lifecycle_1.0.4         KEGGREST_1.48.1
-[43] bit_4.6.0               pkgconfig_2.0.3         callr_3.7.6
-[46] glue_1.8.0              xfun_0.52               pegboard_0.7.9
-[49] compiler_4.5.1         </code></pre>
+ [1] Matrix_1.7-3            bit_4.6.0               jsonlite_2.0.0
+ [4] compiler_4.5.1          BiocManager_1.30.26     renv_1.1.4
+ [7] crayon_1.5.3            blob_1.2.4              Biostrings_2.76.0
+[10] png_0.1-8               fastmap_1.2.0           yaml_2.3.10
+[13] lattice_0.22-7          R6_2.6.1                XVector_0.48.0
+[16] S4Arrays_1.8.1          DelayedArray_0.34.1     GenomeInfoDbData_1.2.14
+[19] DBI_1.2.3               rlang_1.1.6             KEGGREST_1.48.1
+[22] cachem_1.1.0            xfun_0.52               bit64_4.6.0-1
+[25] memoise_2.0.1           SparseArray_1.8.0       RSQLite_2.4.1
+[28] cli_3.6.5               grid_4.5.1              vctrs_0.6.5
+[31] evaluate_1.0.4          abind_1.4-8             httr_1.4.7
+[34] pkgconfig_2.0.3         tools_4.5.1             UCSC.utils_1.4.0       </code></pre>
 </div>
-<div id="keypoints1" class="callout keypoints">
-<div class="callout-square">
-<i class="callout-icon" data-feather="key"></i>
-</div>
-<div class="callout-inner">
-<h3 class="callout-title">Key Points</h3>
-<div class="callout-content">
+<p>::: keypoints</p>
 <ul>
 <li>Depending on the gene expression quantification tool used, there are
 different ways (often distributed in Bioconductor packages) to read the
@@ -2103,12 +1977,8 @@ output into a <code>SummarizedExperiment</code> or <code>DGEList</code>
 object for further processing in R.</li>
 <li>Stable gene identifiers such as Ensembl or Entrez IDs should
 preferably be used as the main identifiers throughout an RNA-seq
-analysis, with gene symbols added for easier interpretation.</li>
-</ul>
-</div>
-</div>
-</div>
-</section></section><section id="aio-04-exploratory-qc"><p>Content from <a href="04-exploratory-qc.html">Exploratory analysis and quality control</a></p>
+analysis, with gene symbols added for easier interpretation. :::</li>
+</ul></section></section><section id="aio-04-exploratory-qc"><p>Content from <a href="04-exploratory-qc.html">Exploratory analysis and quality control</a></p>
 <hr>
 <p> Last updated on 2025-07-23 |
 
@@ -2127,8 +1997,7 @@ analysis, with gene symbols added for easier interpretation.</li>
 <li>Why is exploratory analysis an essential part of an RNA-seq
 analysis?</li>
 <li>How should one preprocess the raw count matrix for exploratory
-analysis?<br>
-</li>
+analysis?</li>
 <li>Are two dimensions sufficient to represent your data?</li>
 </ul>
 </div>
@@ -2237,13 +2106,7 @@ important considerations?</li>
 </div>
 </div>
 </div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
-<div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
-</button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
-<div class="accordion-body">
+<p>::::::::::::::::::::::::::::::::::: solution</p>
 <ol style="list-style-type: decimal"><li>
 </li></ol>
 <div class="codewrapper sourceCode" id="cb7">
@@ -2296,22 +2159,21 @@ important considerations?</li>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 23860</code></pre>
 </div>
-<ol start="3" style="list-style-type: decimal">
-<li>Cons: Risk of removing interesting information Pros:</li>
-</ol>
+<ol start="3" style="list-style-type: decimal"><li>
+</li></ol>
+<p>Cons: Risk of removing interesting information Pros:</p>
 <ul>
 <li>Not or lowly expressed genes are unlikely to be biological
 meaningful.</li>
 <li>Reduces number of statistical tests (multiple testing).</li>
 <li>More reliable estimation of mean-variance relationship</li>
 </ul>
-<p>Potential considerations: - Is a gene expressed in both groups? - How
-many samples of each group express a gene?</p>
-</div>
-</div>
-</div>
-</div>
-</section><section><h2 class="section-heading" id="library-size-differences">Library size differences<a class="anchor" aria-label="anchor" href="#library-size-differences"></a>
+<p>Potential considerations:</p>
+<ul>
+<li>Is a gene expressed in both groups?</li>
+<li>How many samples of each group express a gene?
+:::::::::::::::::::::::::::::::::::</li>
+</ul></section><section><h2 class="section-heading" id="library-size-differences">Library size differences<a class="anchor" aria-label="anchor" href="#library-size-differences"></a>
 </h2>
 <hr class="half-width">
 <p>Differences in the total number of reads assigned to genes between
@@ -2342,7 +2204,7 @@ compare the library sizes of all samples.</p>
 <span>         <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Sample"</span>, y <span class="op">=</span> <span class="st">"Total count in millions"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>         <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-lib-size-1.png" alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We need to adjust for the differences in library size between
+<figure><img src="fig/04-exploratory-qc-rendered-lib-size-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We need to adjust for the differences in library size between
 samples, to avoid drawing incorrect conclusions. The way this is
 typically done for RNA-seq data can be described as a two-step
 procedure. First, we estimate <em>size factors</em> - sample-specific
@@ -2396,7 +2258,7 @@ design formula are characters, converting to factors</code></pre>
 <span>    <span class="fu">geom_point</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Library size"</span>, y <span class="op">=</span> <span class="st">"Size factor"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="transform-data">Transform data<a class="anchor" aria-label="anchor" href="#transform-data"></a>
+<figure><img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="transform-data">Transform data<a class="anchor" aria-label="anchor" href="#transform-data"></a>
 </h2>
 <hr class="half-width">
 <p>There is a rich literature on methods for exploratory analysis. Most
@@ -2410,7 +2272,7 @@ variance increases with the average read count.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>There are two ways around this: either we develop methods
+<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>There are two ways around this: either we develop methods
 specifically adapted to count data, or we adapt (transform) the count
 data so that the existing methods are applicable. Both ways have been
 explored; however, at the moment the second approach is arguably more
@@ -2424,7 +2286,7 @@ the correlation between average read count and variance.</p>
 <code class="sourceCode R"><span><span class="va">vsd</span> <span class="op">&lt;-</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu">vst</span><span class="op">(</span><span class="va">dds</span>, blind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">vsd</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a>
+<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a>
 </h2>
 <hr class="half-width">
 <p>There are many ways to cluster samples based on their similarity of
@@ -2454,7 +2316,7 @@ females reliably separate.</p>
 <span>                   time <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Day0 <span class="op">=</span> <span class="st">"yellow"</span>, Day4 <span class="op">=</span> <span class="st">"forestgreen"</span>, Day8 <span class="op">=</span> <span class="st">"purple"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="pca">PCA<a class="anchor" aria-label="anchor" href="#pca"></a>
+<figure><img src="fig/04-exploratory-qc-rendered-heatmap-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="pca">PCA<a class="anchor" aria-label="anchor" href="#pca"></a>
 </h2>
 <hr class="half-width">
 <p>Principal component analysis is a dimensionality reduction method,
@@ -2499,7 +2361,7 @@ visualization.</p>
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Male <span class="op">=</span> <span class="st">"blue"</span>, Female <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-pca-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by sex and shaped according to the experimental day. The main separation along PC1 is between male and female samples. The main separation along PC2 is between samples from day 8 and samples from days 0 and 4." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
+<figure><img src="fig/04-exploratory-qc-rendered-pca-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
@@ -2520,16 +2382,16 @@ suggest?</p></li>
 </h3>
 <pre class="output" tabindex="0"><code>using ntop=500 top features by variance</code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-pca-exercise-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by a hypothetical sample ID annotation and shaped according to a hypothetical experimental day annotation. In the plot, samples with the same sample ID tend to cluster together." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
+<figure><img src="fig/04-exploratory-qc-rendered-pca-exercise-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
 </div>
 </div>
 </div>
-<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
+<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
 <div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
-  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
+  <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li><p>The major signal in this data (37% variance) is associated with
@@ -2545,7 +2407,7 @@ so is to remove genes on sex chromosomes.</p></li>
 <li>What does PC1 (37% variance) represent? Looks like 2 donor
 groups?</li>
 <li>No association of PC1 and PC2 with time –&gt; no or weak
-transcriptional effect of time –&gt; Check association with higher PCs
+transcriptional effect of time --&gt; Check association with higher PCs
 (e.g., PC3,PC4, ..)</li>
 </ul>
 </div>
@@ -2567,12 +2429,12 @@ class <code>DESeqTransform</code> as input. You can transform a
 </div>
 </div>
 </div>
-<div id="accordionSolution3" class="accordion challenge-accordion accordion-flush">
+<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
 <div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
-  <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
+<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
+  <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb26">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2599,7 +2461,7 @@ class <code>DESeqTransform</code> as input. You can transform a
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_continuous</span><span class="op">(</span><span class="st">"Total count in millions"</span>, type <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-pca-lib-1.png" alt="Scatterplot of samples projected onto the first two principal components of the variance-stabilized data, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. There is no strong association between the library sizes and the principal components." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div class="codewrapper sourceCode" id="cb29">
+<figure><img src="fig/04-exploratory-qc-rendered-pca-lib-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div class="codewrapper sourceCode" id="cb29">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -2624,7 +2486,7 @@ class <code>DESeqTransform</code> as input. You can transform a
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_continuous</span><span class="op">(</span><span class="st">"Total count in millions"</span>, type <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" alt="Scatterplot of samples projected onto the first two principal components of the count matrix, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. The first principal component is strongly correlated with the library size." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
+<figure><img src="fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
 </div>
 </div>
 </div>
@@ -2712,38 +2574,35 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] rlang_1.1.6             magrittr_2.0.3          shinydashboard_0.7.3
- [4] clue_0.3-66             GetoptLong_1.0.5        pegboard_0.7.9
- [7] compiler_4.5.1          mgcv_1.9-3              png_0.1-8
-[10] callr_3.7.6             vctrs_0.6.5             pkgconfig_2.0.3
-[13] shape_1.4.6.1           crayon_1.5.3            fastmap_1.2.0
-[16] XVector_0.48.0          labeling_0.4.3          promises_1.3.3
-[19] shinyAce_0.4.4          UCSC.utils_1.4.0        ps_1.9.1
-[22] preprocessCore_1.70.0   purrr_1.1.0             xfun_0.52
-[25] cachem_1.1.0            jsonlite_2.0.0          listviewer_4.0.0
-[28] later_1.4.2             DelayedArray_0.34.1     BiocParallel_1.42.1
-[31] parallel_4.5.1          cluster_2.1.8.1         R6_2.6.1
-[34] bslib_0.9.0             limma_3.64.1            jquerylib_0.1.4
-[37] Rcpp_1.0.14             assertthat_0.2.1        iterators_1.0.14
-[40] knitr_1.50              splines_4.5.1           igraph_2.1.4
-[43] httpuv_1.6.16           Matrix_1.7-3            tidyselect_1.2.1
-[46] abind_1.4-8             yaml_2.3.10             doParallel_1.0.17
-[49] codetools_0.2-20        affy_1.86.0             miniUI_0.1.2
-[52] processx_3.8.6          lattice_0.22-7          tibble_3.3.0
-[55] shiny_1.11.0            withr_3.0.2             evaluate_1.0.4
-[58] sandpaper_0.16.13.9000  xml2_1.3.8              circlize_0.4.16
-[61] pillar_1.10.2           affyio_1.78.0           BiocManager_1.30.26
-[64] renv_1.1.4              DT_0.33                 foreach_1.5.2
-[67] shinyjs_2.1.0           scales_1.4.0            xtable_1.8-4
-[70] glue_1.8.0              tools_4.5.1             colourpicker_1.3.0
-[73] locfit_1.5-9.12         colorspace_2.1-1        nlme_3.1-168
-[76] GenomeInfoDbData_1.2.14 tinkr_0.3.0             vipor_0.4.7
-[79] cli_3.6.5               viridisLite_0.4.2       S4Arrays_1.8.1
-[82] dplyr_1.1.4             gtable_0.3.6            rintrojs_0.3.4
-[85] sass_0.4.10             digest_0.6.37           SparseArray_1.8.0
-[88] ggrepel_0.9.6           rjson_0.2.23            htmlwidgets_1.6.4
-[91] farver_2.1.2            htmltools_0.5.8.1       lifecycle_1.0.4
-[94] shinyWidgets_0.9.0      httr_1.4.7              GlobalOptions_0.1.2
-[97] statmod_1.5.0           mime_0.13              </code></pre>
+ [4] clue_0.3-66             GetoptLong_1.0.5        compiler_4.5.1
+ [7] mgcv_1.9-3              png_0.1-8               vctrs_0.6.5
+[10] pkgconfig_2.0.3         shape_1.4.6.1           crayon_1.5.3
+[13] fastmap_1.2.0           XVector_0.48.0          labeling_0.4.3
+[16] promises_1.3.3          shinyAce_0.4.4          UCSC.utils_1.4.0
+[19] preprocessCore_1.70.0   xfun_0.52               cachem_1.1.0
+[22] jsonlite_2.0.0          listviewer_4.0.0        later_1.4.2
+[25] DelayedArray_0.34.1     BiocParallel_1.42.1     parallel_4.5.1
+[28] cluster_2.1.8.1         R6_2.6.1                bslib_0.9.0
+[31] limma_3.64.1            jquerylib_0.1.4         Rcpp_1.0.14
+[34] iterators_1.0.14        knitr_1.50              httpuv_1.6.16
+[37] Matrix_1.7-3            splines_4.5.1           igraph_2.1.4
+[40] tidyselect_1.2.1        abind_1.4-8             yaml_2.3.10
+[43] doParallel_1.0.17       codetools_0.2-20        affy_1.86.0
+[46] miniUI_0.1.2            lattice_0.22-7          tibble_3.3.0
+[49] shiny_1.11.0            withr_3.0.2             evaluate_1.0.4
+[52] circlize_0.4.16         pillar_1.10.2           affyio_1.78.0
+[55] BiocManager_1.30.26     renv_1.1.4              DT_0.33
+[58] foreach_1.5.2           shinyjs_2.1.0           scales_1.4.0
+[61] xtable_1.8-4            glue_1.8.0              tools_4.5.1
+[64] colourpicker_1.3.0      locfit_1.5-9.12         colorspace_2.1-1
+[67] nlme_3.1-168            GenomeInfoDbData_1.2.14 vipor_0.4.7
+[70] cli_3.6.5               viridisLite_0.4.2       S4Arrays_1.8.1
+[73] dplyr_1.1.4             gtable_0.3.6            rintrojs_0.3.4
+[76] sass_0.4.10             digest_0.6.37           SparseArray_1.8.0
+[79] ggrepel_0.9.6           rjson_0.2.23            htmlwidgets_1.6.4
+[82] farver_2.1.2            htmltools_0.5.8.1       lifecycle_1.0.4
+[85] shinyWidgets_0.9.0      httr_1.4.7              GlobalOptions_0.1.2
+[88] statmod_1.5.0           mime_0.13              </code></pre>
 </div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
@@ -2976,7 +2835,7 @@ the effect of <em>shrinkage</em> using <code>plotDispEsts()</code>:</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plotDispEsts</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
+<figure><img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
 </div>
 <div class="section level3">
 <h3 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
@@ -3265,7 +3124,7 @@ provides a useful function to do so, <code>plotMA()</code>.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plotMA</span><span class="op">(</span><span class="va">resTime</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/05-differential-expression-rendered-plot-ma-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. The range of log fold changes is larger for low values of the mean normalized counts." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We can see that genes with a low mean count tend to have larger log
+<figure><img src="fig/05-differential-expression-rendered-plot-ma-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We can see that genes with a low mean count tend to have larger log
 fold changes. This is caused by counts from lowly expressed genes
 tending to be very noisy. We can <em>shrink</em> the log fold changes of
 these genes with low mean and high dispersion, as they contain little
@@ -3290,9 +3149,8 @@ information.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plotMA</span><span class="op">(</span><span class="va">resTimeLfc</span><span class="op">)</span></span></code></pre>
 </div>
-<p><img src="fig/05-differential-expression-rendered-res-time-lfc-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the shrunken log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. Most log fold changes for low mean normalized counts have been shrunken to be close to zero." style="display: block; margin: auto;" class="figure">
-Shrinkage of log fold changes is useful for visualization and ranking of
-genes, but for result exploration typically the
+<figure><img src="fig/05-differential-expression-rendered-res-time-lfc-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>Shrinkage of log fold changes is useful for visualization and ranking
+of genes, but for result exploration typically the
 <code>independentFiltering</code> argument is used to remove lowly
 expressed genes.</p>
 <div id="challenge3" class="callout challenge">
@@ -3403,12 +3261,13 @@ orders genes (rows) according to their similarity.</p>
 <span><span class="va">heatmapColAnnot</span> <span class="op">&lt;-</span> <span class="fu">data.frame</span><span class="op">(</span><span class="fu">colData</span><span class="op">(</span><span class="va">vsd</span><span class="op">)</span><span class="op">[</span>, <span class="fu">c</span><span class="op">(</span><span class="st">"time"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">heatmapColAnnot</span> <span class="op">&lt;-</span> <span class="fu">HeatmapAnnotation</span><span class="op">(</span>df <span class="op">=</span> <span class="va">heatmapColAnnot</span><span class="op">)</span></span>
 <span></span>
+<span></span>
 <span><span class="co"># Plot as heatmap</span></span>
 <span><span class="fu">ComplexHeatmap</span><span class="fu">::</span><span class="fu">Heatmap</span><span class="op">(</span><span class="va">heatmapData</span>,</span>
 <span>                        top_annotation <span class="op">=</span> <span class="va">heatmapColAnnot</span>,</span>
 <span>                        cluster_rows <span class="op">=</span> <span class="cn">TRUE</span>, cluster_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/05-differential-expression-rendered-heatmap-time-1.png" alt="Heatmap showing the vsd-transformed expression levels for the ten most significantly differentially expressed genes over time, in all the samples." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="discussion1" class="callout discussion">
+<figure><img src="fig/05-differential-expression-rendered-heatmap-time-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="discussion1" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
@@ -3525,8 +3384,7 @@ sex, tissue and time variables further.</p>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">read.csv</span><span class="op">(</span><span class="st">"data/GSE96870_coldata_all.csv"</span>, row.names <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co"># Here, for brevity we only print the first rows of the data.frame</span></span>
-<span><span class="fu">head</span><span class="op">(</span><span class="va">meta</span><span class="op">)</span></span></code></pre>
+<span><span class="va">meta</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3538,13 +3396,91 @@ GSM2545338 CNS_RNA-seq_12C    GSM2545338 Mus musculus 8 weeks Female
 GSM2545339 CNS_RNA-seq_13C    GSM2545339 Mus musculus 8 weeks Female
 GSM2545340 CNS_RNA-seq_14C    GSM2545340 Mus musculus 8 weeks   Male
 GSM2545341 CNS_RNA-seq_17C    GSM2545341 Mus musculus 8 weeks   Male
+GSM2545342  CNS_RNA-seq_1C    GSM2545342 Mus musculus 8 weeks Female
+GSM2545343 CNS_RNA-seq_20C    GSM2545343 Mus musculus 8 weeks   Male
+GSM2545344 CNS_RNA-seq_21C    GSM2545344 Mus musculus 8 weeks Female
+GSM2545345 CNS_RNA-seq_22C    GSM2545345 Mus musculus 8 weeks   Male
+GSM2545346 CNS_RNA-seq_25C    GSM2545346 Mus musculus 8 weeks   Male
+GSM2545347 CNS_RNA-seq_26C    GSM2545347 Mus musculus 8 weeks   Male
+GSM2545348 CNS_RNA-seq_27C    GSM2545348 Mus musculus 8 weeks Female
+GSM2545349 CNS_RNA-seq_28C    GSM2545349 Mus musculus 8 weeks   Male
+GSM2545350 CNS_RNA-seq_29C    GSM2545350 Mus musculus 8 weeks   Male
+GSM2545351  CNS_RNA-seq_2C    GSM2545351 Mus musculus 8 weeks Female
+GSM2545352 CNS_RNA-seq_30C    GSM2545352 Mus musculus 8 weeks Female
+GSM2545353  CNS_RNA-seq_3C    GSM2545353 Mus musculus 8 weeks Female
+GSM2545354  CNS_RNA-seq_4C    GSM2545354 Mus musculus 8 weeks   Male
+GSM2545355 CNS_RNA-seq_571    GSM2545355 Mus musculus 8 weeks   Male
+GSM2545356 CNS_RNA-seq_574    GSM2545356 Mus musculus 8 weeks   Male
+GSM2545357 CNS_RNA-seq_575    GSM2545357 Mus musculus 8 weeks   Male
+GSM2545358 CNS_RNA-seq_583    GSM2545358 Mus musculus 8 weeks Female
+GSM2545359 CNS_RNA-seq_585    GSM2545359 Mus musculus 8 weeks Female
+GSM2545360 CNS_RNA-seq_589    GSM2545360 Mus musculus 8 weeks   Male
+GSM2545361 CNS_RNA-seq_590    GSM2545361 Mus musculus 8 weeks   Male
+GSM2545362  CNS_RNA-seq_5C    GSM2545362 Mus musculus 8 weeks Female
+GSM2545363  CNS_RNA-seq_6C    GSM2545363 Mus musculus 8 weeks   Male
+GSM2545364 CNS_RNA-seq_709    GSM2545364 Mus musculus 8 weeks Female
+GSM2545365 CNS_RNA-seq_710    GSM2545365 Mus musculus 8 weeks Female
+GSM2545366 CNS_RNA-seq_711    GSM2545366 Mus musculus 8 weeks Female
+GSM2545367 CNS_RNA-seq_713    GSM2545367 Mus musculus 8 weeks   Male
+GSM2545368 CNS_RNA-seq_728    GSM2545368 Mus musculus 8 weeks   Male
+GSM2545369 CNS_RNA-seq_729    GSM2545369 Mus musculus 8 weeks   Male
+GSM2545370 CNS_RNA-seq_730    GSM2545370 Mus musculus 8 weeks Female
+GSM2545371 CNS_RNA-seq_731    GSM2545371 Mus musculus 8 weeks Female
+GSM2545372 CNS_RNA-seq_733    GSM2545372 Mus musculus 8 weeks   Male
+GSM2545373 CNS_RNA-seq_735    GSM2545373 Mus musculus 8 weeks   Male
+GSM2545374 CNS_RNA-seq_736    GSM2545374 Mus musculus 8 weeks Female
+GSM2545375 CNS_RNA-seq_738    GSM2545375 Mus musculus 8 weeks Female
+GSM2545376 CNS_RNA-seq_740    GSM2545376 Mus musculus 8 weeks Female
+GSM2545377 CNS_RNA-seq_741    GSM2545377 Mus musculus 8 weeks Female
+GSM2545378 CNS_RNA-seq_742    GSM2545378 Mus musculus 8 weeks   Male
+GSM2545379 CNS_RNA-seq_743    GSM2545379 Mus musculus 8 weeks   Male
+GSM2545380  CNS_RNA-seq_9C    GSM2545380 Mus musculus 8 weeks Female
              infection  strain time     tissue mouse
 GSM2545336  InfluenzaA C57BL/6 Day8 Cerebellum    14
 GSM2545337 NonInfected C57BL/6 Day0 Cerebellum     9
 GSM2545338 NonInfected C57BL/6 Day0 Cerebellum    10
 GSM2545339  InfluenzaA C57BL/6 Day4 Cerebellum    15
 GSM2545340  InfluenzaA C57BL/6 Day4 Cerebellum    18
-GSM2545341  InfluenzaA C57BL/6 Day8 Cerebellum     6</code></pre>
+GSM2545341  InfluenzaA C57BL/6 Day8 Cerebellum     6
+GSM2545342  InfluenzaA C57BL/6 Day8 Cerebellum     5
+GSM2545343 NonInfected C57BL/6 Day0 Cerebellum    11
+GSM2545344  InfluenzaA C57BL/6 Day4 Cerebellum    22
+GSM2545345  InfluenzaA C57BL/6 Day4 Cerebellum    13
+GSM2545346  InfluenzaA C57BL/6 Day8 Cerebellum    23
+GSM2545347  InfluenzaA C57BL/6 Day8 Cerebellum    24
+GSM2545348 NonInfected C57BL/6 Day0 Cerebellum     8
+GSM2545349 NonInfected C57BL/6 Day0 Cerebellum     7
+GSM2545350  InfluenzaA C57BL/6 Day4 Cerebellum     1
+GSM2545351  InfluenzaA C57BL/6 Day8 Cerebellum    16
+GSM2545352  InfluenzaA C57BL/6 Day4 Cerebellum    21
+GSM2545353 NonInfected C57BL/6 Day0 Cerebellum     4
+GSM2545354 NonInfected C57BL/6 Day0 Cerebellum     2
+GSM2545355  InfluenzaA C57BL/6 Day4 Spinalcord     1
+GSM2545356 NonInfected C57BL/6 Day0 Spinalcord     2
+GSM2545357 NonInfected C57BL/6 Day0 Spinalcord     3
+GSM2545358 NonInfected C57BL/6 Day0 Spinalcord     4
+GSM2545359  InfluenzaA C57BL/6 Day8 Spinalcord     5
+GSM2545360  InfluenzaA C57BL/6 Day8 Spinalcord     6
+GSM2545361 NonInfected C57BL/6 Day0 Spinalcord     7
+GSM2545362  InfluenzaA C57BL/6 Day4 Cerebellum    20
+GSM2545363  InfluenzaA C57BL/6 Day4 Cerebellum    12
+GSM2545364 NonInfected C57BL/6 Day0 Spinalcord     8
+GSM2545365 NonInfected C57BL/6 Day0 Spinalcord     9
+GSM2545366 NonInfected C57BL/6 Day0 Spinalcord    10
+GSM2545367 NonInfected C57BL/6 Day0 Spinalcord    11
+GSM2545368  InfluenzaA C57BL/6 Day4 Spinalcord    12
+GSM2545369  InfluenzaA C57BL/6 Day4 Spinalcord    13
+GSM2545370  InfluenzaA C57BL/6 Day8 Spinalcord    14
+GSM2545371  InfluenzaA C57BL/6 Day4 Spinalcord    15
+GSM2545372  InfluenzaA C57BL/6 Day8 Spinalcord    17
+GSM2545373  InfluenzaA C57BL/6 Day4 Spinalcord    18
+GSM2545374  InfluenzaA C57BL/6 Day8 Spinalcord    19
+GSM2545375  InfluenzaA C57BL/6 Day4 Spinalcord    20
+GSM2545376  InfluenzaA C57BL/6 Day4 Spinalcord    21
+GSM2545377  InfluenzaA C57BL/6 Day4 Spinalcord    22
+GSM2545378  InfluenzaA C57BL/6 Day8 Spinalcord    23
+GSM2545379  InfluenzaA C57BL/6 Day8 Spinalcord    24
+GSM2545380  InfluenzaA C57BL/6 Day8 Cerebellum    19</code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb4">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3744,7 +3680,7 @@ mean expression of a gene between male and female mice?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3831,7 +3767,7 @@ Day4, Day8) in the male spinal cord samples, and visualize it using
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5127,7 +5063,7 @@ episode:</p>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">microbenchmark</span><span class="op">)</span></span>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">org.Hs.eg.db</span><span class="op">)</span></span>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">org.Mm.eg.db</span><span class="op">)</span></span>
-<span><span class="kw">library</span><span class="op">(</span><span class="va">msigdb</span><span class="op">)</span></span>
+<span><span class="kw">library</span><span class="op">(</span><span class="va">msigdbr</span><span class="op">)</span></span>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">clusterProfiler</span><span class="op">)</span></span>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">enrichplot</span><span class="op">)</span></span>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">ggplot2</span><span class="op">)</span></span>
@@ -5639,9 +5575,9 @@ distribution of its statistic.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>Unit: microseconds
-   expr     min       lq      mean   median       uq      max neval
- fisher 245.528 251.1780 273.13470 254.2295 268.3155 1701.303   100
-  hyper   1.513   1.7285   2.58602   3.0855   3.2760    6.733   100</code></pre>
+   expr     min       lq      mean   median      uq     max neval
+ fisher 248.333 253.2025 262.59121 256.0980 268.220 461.841   100
+  hyper   1.533   1.7980   2.55009   2.8605   3.156   6.622   100</code></pre>
 </div>
 <p>It is very astonishing that <code>phyper()</code> is hundreds of
 times faster than <code>fisher.test()</code>. Main reason is in
@@ -5656,10 +5592,10 @@ ORA analysis by yourself, always consider to use <code>phyper()</code><a href="#
 <h3 class="callout-title">Further reading</h3>
 <div class="callout-content">
 <p>Current tools also use Binomial distribution or chi-square test for
-ORA analysis. These two are just approximations. Please refer to <a href="https://doi.org/10.1093/bioinformatics/btl633" class="external-link">Rivals et al.,
-Enrichment or depletion of a GO category within a class of genes: which
-test? Bioinformatics 2007</a> which gives an overview of statistical
-methods used in ORA analysis.</p>
+ORA analysis. These two are just approximations. Please refer to Rivals
+et al., Enrichment or depletion of a GO category within a class of
+genes: which test? Bioinformatics 2007 which gives an overview of
+statistical methods used in ORA analysis.</p>
 </div>
 </div>
 </div>
@@ -5799,7 +5735,7 @@ convert a list to a two-column data frame?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5869,14 +5805,14 @@ cellular components (CC) and molecular function (MF) which describe a
 biological entity from different aspect. The associations between GO
 terms and genes are integrated in the Bioconductor standard packages:
 <em>the organism annotation packages</em>. In the current Bioconductor
-release, there are the following organism packages:</p>
+release (3.17), there are the following organism packages:</p>
 <center>
 <table class="table">
 <colgroup>
-<col width="27%">
-<col width="25%">
-<col width="36%">
-<col width="10%">
+<col width="39%">
+<col width="7%">
+<col width="41%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
 <th>Package</th>
@@ -6159,11 +6095,11 @@ column.</p>
 </div>
 <p>In both commands, we obtained data for human where the corresponding
 KEGG code is <code>"hsa"</code>. The code for other organisms can be
-found from the <a href="https://www.genome.jp/kegg/" class="external-link">KEGG website</a>
-(e.g. <code>"mmu"</code> for mouse), or via <a href="https://rest.kegg.jp/list/organism" class="external-link uri">https://rest.kegg.jp/list/organism</a>.</p>
+found from the KEGG website (e.g. <code>"mmu"</code> for mouse), or via
+<a href="https://rest.kegg.jp/list/organism" class="external-link uri">https://rest.kegg.jp/list/organism</a>.</p>
 <p>Keep in mind, KEGG pathways are only free for academic users. If you
-use it for commercial purposes, <a href="https://www.kegg.jp/kegg/legal.html" class="external-link">please contact the KEGG team
-to get a licence</a>.</p>
+use it for commercial purposes, please contact the KEGG team to get a
+licence.</p>
 <div id="further-reading-3" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
@@ -6185,160 +6121,200 @@ essentially, they all obtain KEGG data with the REST API.</p>
 </h3>
 <p><a href="https://www.gsea-msigdb.org/gsea/msigdb/" class="external-link">Molecular
 signature database</a> (MSigDB) is a manually curated gene set database.
-Initially, it was proposed as a supplementary dataset for <a href="https://www.nature.com/articles/ng1180" class="external-link">the original GSEA
-paper</a>. Later it has been separated out and developed independently.
+Initially, it was proposed as a supplementary dataset for the original
+GSEA paper. Later it has been separated out and developed independently.
 In the first version in 2005, there were only two gene sets collections
 and in total 843 gene sets. Now in the newest version of MSigDB
-(v2023.1.Hs), it has grown into nine gene sets collections, covering
-&gt; 30K gene sets. It provides gene sets on a variety of topics.</p>
+(v2023.1.Hs), it has grown into nine gene sets collections, covering</p>
+<blockquote>
+<p>30K gene sets. It provides gene sets on a variety of topics.</p>
+</blockquote>
 <p>MSigDB categorizes gene sets into nine collections where each
 collection focuses on a specific topic. For some collections, they are
 additionally split into sub-collections. There are several ways to
 obtain gene sets from MSigDB. One convenient way is to use the
-<strong>msigdb</strong> package. Another option is to use the
-<strong>msigdbr</strong> CRAN package, which supports organisms other
-than human and mouse by mapping to orthologs.</p>
-<p><strong>msigdb</strong> provides mouse and human gene sets, defined
-using either gene symbols or Entrez IDs. Let’s get the mouse
-collection.</p>
+<strong>msigdbr</strong> package. The advantages is
+<strong>msigdbr</strong> supports many other organisms by mapping to
+orthologs.</p>
+<p>Let’s check which organisms are supported and which gene sets
+collections it provides.</p>
 <div class="codewrapper sourceCode" id="cb58">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">library</span><span class="op">(</span><span class="va">msigdb</span><span class="op">)</span></span>
-<span><span class="kw">library</span><span class="op">(</span><span class="va">ExperimentHub</span><span class="op">)</span></span>
-<span><span class="kw">library</span><span class="op">(</span><span class="va">GSEABase</span><span class="op">)</span></span>
-<span><span class="va">MSigDBGeneSets</span> <span class="op">&lt;-</span> <span class="fu">getMsigdb</span><span class="op">(</span>org <span class="op">=</span> <span class="st">"mm"</span>, id <span class="op">=</span> <span class="st">"SYM"</span>, version <span class="op">=</span> <span class="st">"7.4"</span><span class="op">)</span></span></code></pre>
-</div>
-<p>The <code>msigdb</code> object above is a
-<code>GeneSetCollection</code>, storing all gene sets from MSigDB. The
-<code>GeneSetCollection</code> object class is defined in the
-<code>GSEABase</code> package, and it is a linear data structure similar
-to a base list object, but with additional metadata such as the type of
-gene identifier or provenance information about the gene sets.</p>
-<div class="codewrapper sourceCode" id="cb59">
-<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">MSigDBGeneSets</span></span></code></pre>
+<code class="sourceCode R"><span><span class="kw">library</span><span class="op">(</span><span class="va">msigdbr</span><span class="op">)</span></span>
+<span><span class="fu">msigdbr_species</span><span class="op">(</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>GeneSetCollection
-  names: 10qA1, 10qA2, ..., ZZZ3_TARGET_GENES (44688 total)
-  unique identifiers: Epm2a, Esr1, ..., Gm52481 (53805 total)
-  types in collection:
-    geneIdType: SymbolIdentifier (1 total)
-    collectionType: BroadCollection (1 total)</code></pre>
+<pre class="output" tabindex="0"><code># A tibble: 20 × 2
+   species_name                    species_common_name
+   &lt;chr&gt;                           &lt;chr&gt;
+ 1 Anolis carolinensis             Carolina anole, green anole
+ 2 Bos taurus                      bovine, cattle, cow, dairy cow, domestic cat…
+ 3 Caenorhabditis elegans          &lt;NA&gt;
+ 4 Canis lupus familiaris          dog, dogs
+ 5 Danio rerio                     leopard danio, zebra danio, zebra fish, zebr…
+ 6 Drosophila melanogaster         fruit fly
+ 7 Equus caballus                  domestic horse, equine, horse
+ 8 Felis catus                     cat, cats, domestic cat
+ 9 Gallus gallus                   bantam, chicken, chickens, Gallus domesticus
+10 Homo sapiens                    human
+11 Macaca mulatta                  rhesus macaque, rhesus macaques, Rhesus monk…
+12 Monodelphis domestica           gray short-tailed opossum
+13 Mus musculus                    house mouse, mouse
+14 Ornithorhynchus anatinus        duck-billed platypus, duckbill platypus, pla…
+15 Pan troglodytes                 chimpanzee
+16 Rattus norvegicus               brown rat, Norway rat, rat, rats
+17 Saccharomyces cerevisiae        baker's yeast, brewer's yeast, S. cerevisiae
+18 Schizosaccharomyces pombe 972h- &lt;NA&gt;
+19 Sus scrofa                      pig, pigs, swine, wild boar
+20 Xenopus tropicalis              tropical clawed frog, western clawed frog    </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb61">
+<div class="codewrapper sourceCode" id="cb60">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">length</span><span class="op">(</span><span class="va">MSigDBGeneSets</span><span class="op">)</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu">msigdbr_collections</span><span class="op">(</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>[1] 44688</code></pre>
+<pre class="output" tabindex="0"><code># A tibble: 25 × 4
+   gs_collection gs_subcollection  gs_collection_name               num_genesets
+   &lt;chr&gt;         &lt;chr&gt;             &lt;chr&gt;                                   &lt;int&gt;
+ 1 C1            ""                "Positional"                              302
+ 2 C2            "CGP"             "Chemical and Genetic Perturbat…         3538
+ 3 C2            "CP"              "Canonical Pathways"                       19
+ 4 C2            "CP:BIOCARTA"     "BioCarta Pathways"                       292
+ 5 C2            "CP:KEGG_LEGACY"  "KEGG Legacy Pathways"                    186
+ 6 C2            "CP:KEGG_MEDICUS" "KEGG Medicus Pathways"                   658
+ 7 C2            "CP:PID"          "PID Pathways"                            196
+ 8 C2            "CP:REACTOME"     "Reactome Pathways"                      1787
+ 9 C2            "CP:WIKIPATHWAYS" "WikiPathways"                            885
+10 C3            "MIR:MIRDB"       "miRDB"                                  2377
+11 C3            "MIR:MIR_LEGACY"  "MIR_Legacy"                              221
+12 C3            "TFT:GTRD"        "GTRD"                                    505
+13 C3            "TFT:TFT_LEGACY"  "TFT_Legacy"                              610
+14 C4            "3CA"             "Curated Cancer Cell Atlas gene…          148
+15 C4            "CGN"             "Cancer Gene Neighborhoods"               427
+16 C4            "CM"              "Cancer Modules"                          431
+17 C5            "GO:BP"           "GO Biological Process"                  7583
+18 C5            "GO:CC"           "GO Cellular Component"                  1042
+19 C5            "GO:MF"           "GO Molecular Function"                  1855
+20 C5            "HPO"             "Human Phenotype Ontology"               5748
+21 C6            ""                "Oncogenic Signature"                     189
+22 C7            "IMMUNESIGDB"     "ImmuneSigDB"                            4872
+23 C7            "VAX"             "HIPC Vaccine Response"                   347
+24 C8            ""                "Cell Type Signature"                     866
+25 H             ""                "Hallmark"                                 50</code></pre>
 </div>
-<p>Each signature is stored in a <code>GeneSet</code> object, also
-defined in the <code>GSEABase</code> package.</p>
+<p>The first column in the above output is the primary category of gene
+sets. Some gene sets collections may have sub-collections, and they are
+shown in the second column. The description of gene sets collections
+from MSigDB is in the following figure.</p>
+<figure><img src="fig/msigdb.png" class="figure mx-auto d-block"></figure><p>The core function <code>msigdbr()</code> retrieves gene sets in a
+specific category (or a subcategory if it exists).</p>
+<div class="codewrapper sourceCode" id="cb62">
+<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">msigdbr</span><span class="op">(</span><span class="va">species</span>, <span class="va">category</span>, <span class="va">subcategory</span><span class="op">)</span></span></code></pre>
+</div>
+<p>For example, we want to obtain the hallmark gene sets for mouse.</p>
 <div class="codewrapper sourceCode" id="cb63">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gs</span> <span class="op">&lt;-</span> <span class="va">MSigDBGeneSets</span><span class="op">[[</span><span class="fl">2000</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">gs</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">MSigDBGeneSets</span> <span class="op">=</span> <span class="fu">msigdbr</span><span class="op">(</span>species <span class="op">=</span> <span class="st">"mouse"</span>, category <span class="op">=</span> <span class="st">"H"</span><span class="op">)</span></span>
+<span><span class="fu">head</span><span class="op">(</span><span class="va">MSigDBGeneSets</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>setName: DESCARTES_MAIN_FETAL_CHROMAFFIN_CELLS
-geneIds: Asic5, Cntfr, ..., Slc22a22 (total: 28)
-geneIdType: Symbol
-collectionType: Broad
-  bcCategory: c8 (Cell Type Signatures)
-  bcSubCategory: NA
-details: use 'details(object)'</code></pre>
+<pre class="output" tabindex="0"><code># A tibble: 6 × 26
+  gene_symbol ncbi_gene ensembl_gene db_gene_symbol db_ncbi_gene db_ensembl_gene
+  &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;
+1 Abca1       11303     ENSMUSG0000… ABCA1          19           ENSG00000165029
+2 Abcb8       74610     ENSMUSG0000… ABCB8          11194        ENSG00000197150
+3 Acaa2       52538     ENSMUSG0000… ACAA2          10449        ENSG00000167315
+4 Acadl       11363     ENSMUSG0000… ACADL          33           ENSG00000115361
+5 Acadm       11364     ENSMUSG0000… ACADM          34           ENSG00000117054
+6 Acads       11409     ENSMUSG0000… ACADS          35           ENSG00000122971
+# ℹ 20 more variables: source_gene &lt;chr&gt;, gs_id &lt;chr&gt;, gs_name &lt;chr&gt;,
+#   gs_collection &lt;chr&gt;, gs_subcollection &lt;chr&gt;, gs_collection_name &lt;chr&gt;,
+#   gs_description &lt;chr&gt;, gs_source_species &lt;chr&gt;, gs_pmid &lt;chr&gt;,
+#   gs_geoid &lt;chr&gt;, gs_exact_source &lt;chr&gt;, gs_url &lt;chr&gt;, db_version &lt;chr&gt;,
+#   db_target_species &lt;chr&gt;, ortholog_taxon_id &lt;int&gt;, ortholog_sources &lt;chr&gt;,
+#   num_ortholog_sources &lt;dbl&gt;, entrez_gene &lt;chr&gt;, gs_cat &lt;chr&gt;,
+#   gs_subcat &lt;chr&gt;</code></pre>
 </div>
+<p>The output is in the <code>tibble</code> class. If you have no
+experience with it, don’t worry, just take it as a table. As you can
+see, the three major gene IDs type <code>"gene_symbol"</code>,
+<code>"entrez_gene"</code> and <code>"ensembl_gene"</code> are all
+included in the table. So users can easily pick one with the same gene
+ID type as in the DE gene list. For example:</p>
 <div class="codewrapper sourceCode" id="cb65">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">collectionType</span><span class="op">(</span><span class="va">gs</span><span class="op">)</span></span></code></pre>
+<code class="sourceCode R"><span><span class="va">MSigDBGeneSets</span><span class="op">[</span>, <span class="fu">c</span><span class="op">(</span><span class="st">"gs_name"</span>, <span class="st">"ensembl_gene"</span><span class="op">)</span><span class="op">]</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>collectionType: Broad
-  bcCategory: c8 (Cell Type Signatures)
-  bcSubCategory: NA</code></pre>
+<pre class="output" tabindex="0"><code># A tibble: 7,379 × 2
+   gs_name               ensembl_gene
+   &lt;chr&gt;                 &lt;chr&gt;
+ 1 HALLMARK_ADIPOGENESIS ENSMUSG00000015243
+ 2 HALLMARK_ADIPOGENESIS ENSMUSG00000028973
+ 3 HALLMARK_ADIPOGENESIS ENSMUSG00000036880
+ 4 HALLMARK_ADIPOGENESIS ENSMUSG00000026003
+ 5 HALLMARK_ADIPOGENESIS ENSMUSG00000062908
+ 6 HALLMARK_ADIPOGENESIS ENSMUSG00000029545
+ 7 HALLMARK_ADIPOGENESIS ENSMUSG00000020917
+ 8 HALLMARK_ADIPOGENESIS ENSMUSG00000022477
+ 9 HALLMARK_ADIPOGENESIS ENSMUSG00000020777
+10 HALLMARK_ADIPOGENESIS ENSMUSG00000022994
+# ℹ 7,369 more rows</code></pre>
 </div>
 <div class="codewrapper sourceCode" id="cb67">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">geneIds</span><span class="op">(</span><span class="va">gs</span><span class="op">)</span></span></code></pre>
+<code class="sourceCode R"><span><span class="co"># or put genes in the first column</span></span>
+<span><span class="va">MSigDBGeneSets</span><span class="op">[</span>, <span class="fu">c</span><span class="op">(</span><span class="st">"ensembl_gene"</span>, <span class="st">"gs_name"</span><span class="op">)</span><span class="op">]</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code> [1] "Asic5"    "Cntfr"    "Galnt16"  "Galnt14"  "Gip"      "Hmx1"
- [7] "Il7"      "Insl5"    "Insm2"    "Insm1"    "Mab21l1"  "Mab21l2"
-[13] "Npy"      "Pyy"      "Ntrk1"    "Ntrk2"    "Ntrk3"    "Phox2a"
-[19] "Ptchd1"   "Ptchd4"   "Reg4"     "Slc22a26" "Slc22a30" "Slc22a19"
-[25] "Slc22a27" "Slc22a29" "Slc22a28" "Slc22a22"</code></pre>
+<pre class="output" tabindex="0"><code># A tibble: 7,379 × 2
+   ensembl_gene       gs_name
+   &lt;chr&gt;              &lt;chr&gt;
+ 1 ENSMUSG00000015243 HALLMARK_ADIPOGENESIS
+ 2 ENSMUSG00000028973 HALLMARK_ADIPOGENESIS
+ 3 ENSMUSG00000036880 HALLMARK_ADIPOGENESIS
+ 4 ENSMUSG00000026003 HALLMARK_ADIPOGENESIS
+ 5 ENSMUSG00000062908 HALLMARK_ADIPOGENESIS
+ 6 ENSMUSG00000029545 HALLMARK_ADIPOGENESIS
+ 7 ENSMUSG00000020917 HALLMARK_ADIPOGENESIS
+ 8 ENSMUSG00000022477 HALLMARK_ADIPOGENESIS
+ 9 ENSMUSG00000020777 HALLMARK_ADIPOGENESIS
+10 ENSMUSG00000022994 HALLMARK_ADIPOGENESIS
+# ℹ 7,369 more rows</code></pre>
 </div>
-<p>We can also subset the collection. First, let’s list the available
-collections and subcollections.</p>
+<p>If you only want to use a sub-category gene sets,
+e.g. <code>"CP:KEGG"</code> from <code>"C2"</code>, you can simply
+specify both <code>category</code> and <code>subcategory</code>
+arguments:</p>
 <div class="codewrapper sourceCode" id="cb69">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">listCollections</span><span class="op">(</span><span class="va">MSigDBGeneSets</span><span class="op">)</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu">msigdbr</span><span class="op">(</span>species <span class="op">=</span> <span class="st">"mouse"</span>, category <span class="op">=</span> <span class="st">"C2"</span>, subcategory <span class="op">=</span> <span class="st">"CP:KEGG"</span><span class="op">)</span></span></code></pre>
 </div>
-<div class="codewrapper">
-<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="output" tabindex="0"><code>[1] "c1" "c3" "c2" "c8" "c6" "c7" "c4" "c5" "h" </code></pre>
-</div>
-<div class="codewrapper sourceCode" id="cb71">
-<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">listSubCollections</span><span class="op">(</span><span class="va">MSigDBGeneSets</span><span class="op">)</span></span></code></pre>
-</div>
-<div class="codewrapper">
-<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="output" tabindex="0"><code> [1] "MIR:MIR_Legacy"  "TFT:TFT_Legacy"  "CGP"             "TFT:GTRD"
- [5] "VAX"             "CP:BIOCARTA"     "CGN"             "GO:BP"
- [9] "GO:CC"           "IMMUNESIGDB"     "GO:MF"           "HPO"
-[13] "MIR:MIRDB"       "CM"              "CP"              "CP:PID"
-[17] "CP:REACTOME"     "CP:WIKIPATHWAYS"</code></pre>
-</div>
-<p>Then, we retrieve only the ‘hallmarks’ collection.</p>
-<div class="codewrapper sourceCode" id="cb73">
-<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">hm</span> <span class="op">&lt;-</span> <span class="fu">subsetCollection</span><span class="op">(</span><span class="va">MSigDBGeneSets</span>, collection <span class="op">=</span> <span class="st">"h"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
-</div>
-<div class="codewrapper">
-<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="output" tabindex="0"><code>GeneSetCollection
-  names: HALLMARK_ADIPOGENESIS, HALLMARK_ALLOGRAFT_REJECTION, ..., HALLMARK_XENOBIOTIC_METABOLISM (50 total)
-  unique identifiers: Abca1, Abca4, ..., Upb1 (5435 total)
-  types in collection:
-    geneIdType: SymbolIdentifier (1 total)
-    collectionType: BroadCollection (1 total)</code></pre>
-</div>
-<p>If you only want to use a sub-category, specify both the
-<code>collection</code> and <code>subcollection</code> arguments to
-<code>subsetCollection</code>.</p>
 </div>
 </section><section><h2 class="section-heading" id="ora-with-clusterprofiler">ORA with clusterProfiler<a class="anchor" aria-label="anchor" href="#ora-with-clusterprofiler"></a>
 </h2>
@@ -6364,7 +6340,7 @@ filter DE genes, we additionally add a filtering on the log2 fold
 change. This is recommended when the number of DE genes is too large.
 The filtering on log2 fold change can be thought as a filtering from the
 biology aspect.</p>
-<div class="codewrapper sourceCode" id="cb75">
+<div class="codewrapper sourceCode" id="cb70">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6381,7 +6357,7 @@ biology aspect.</p>
 <pre class="output" tabindex="0"><code>[1] "3110035E14Rik" "Sgk3"          "Kcnb2"         "Sbspon"
 [5] "Gsta3"         "Lman2l"       </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb77">
+<div class="codewrapper sourceCode" id="cb72">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6405,7 +6381,7 @@ object which is from the organism package <strong>org.Mm.eg.db</strong>
 <code>"BP"</code>, <code>"CC"</code> and <code>"MF"</code>). The GO gene
 sets are automatically retrieved and processed from
 <code>org.Mm.eg.db</code> in <code>enrichGO()</code>.</p>
-<div class="codewrapper sourceCode" id="cb79">
+<div class="codewrapper sourceCode" id="cb74">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6423,7 +6399,7 @@ sets are automatically retrieved and processed from
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 11799,723903,20085,21853,21958,54388</code></pre>
+<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 235587,71986,102871,232314,117599,22596</code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -6443,7 +6419,7 @@ conversion job (recall various gene ID types are also stored in the
 <code>keyType = "SYMBOL"</code> to explicitly tell the function that DE
 genes are in gene symbols. Recall that all valid values for
 <code>keyType</code> are in <code>keytypes(org.Mm.eg.db)</code>.</p>
-<div class="codewrapper sourceCode" id="cb83">
+<div class="codewrapper sourceCode" id="cb78">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6560,7 +6536,7 @@ table for downstream anlaysis. Second, the meaning of
 <em>p</em>-values). Thus it is suggested to set both
 <code>pvalueCutoff</code> and <code>qvalueCutoff</code> to 1 in
 <code>enrichGO()</code>.</p>
-<div class="codewrapper sourceCode" id="cb85">
+<div class="codewrapper sourceCode" id="cb80">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6642,7 +6618,7 @@ only take the first one if there are multiple hits by setting
 options for <code>multiVals</code>, check the documentation). We also
 remove genes with no mapping available (with <code>NA</code> after the
 mapping)<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
-<div class="codewrapper sourceCode" id="cb87">
+<div class="codewrapper sourceCode" id="cb82">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6654,7 +6630,7 @@ mapping)<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
 </h3>
 <pre class="output" tabindex="0"><code>'select()' returned 1:1 mapping between keys and columns</code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb89">
+<div class="codewrapper sourceCode" id="cb84">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6671,7 +6647,7 @@ mapping)<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
 it is suggested to set <code>pvalueCutoff</code> and
 <code>qvalueCutoff</code> both to 1 and convert the result to a data
 frame.</p>
-<div class="codewrapper sourceCode" id="cb91">
+<div class="codewrapper sourceCode" id="cb86">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6758,38 +6734,44 @@ mmu04061    14</code></pre>
 need to directly use the low-level enrichment function
 <code>enricher()</code> which accepts self-defined gene sets. The gene
 sets should be in a format of a two-column data frame of genes and gene
-sets (or a class that can be converted to a data frame). Let’s use the
-hallmark collection (<code>hm</code>) that we generated above.</p>
-<div class="codewrapper sourceCode" id="cb93">
+sets (or a class that can be converted to a data frame).</p>
+<div class="codewrapper sourceCode" id="cb88">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gene_sets</span> <span class="op">&lt;-</span> <span class="fu">stack</span><span class="op">(</span><span class="fu">geneIds</span><span class="op">(</span><span class="va">hm</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">as.data.frame</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu">select</span><span class="op">(</span><span class="va">ind</span>, <span class="va">values</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu">rename</span><span class="op">(</span>gs_name <span class="op">=</span> <span class="va">ind</span>, gene_symbol <span class="op">=</span> <span class="va">values</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw">library</span><span class="op">(</span><span class="va">msigdbr</span><span class="op">)</span></span>
+<span><span class="va">gene_sets</span> <span class="op">=</span> <span class="fu">msigdbr</span><span class="op">(</span>category <span class="op">=</span> <span class="st">"H"</span>, species <span class="op">=</span> <span class="st">"mouse"</span><span class="op">)</span></span>
 <span><span class="fu">head</span><span class="op">(</span><span class="va">gene_sets</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>                gs_name gene_symbol
-1 HALLMARK_ADIPOGENESIS       Abca1
-2 HALLMARK_ADIPOGENESIS       Abca4
-3 HALLMARK_ADIPOGENESIS       Abca7
-4 HALLMARK_ADIPOGENESIS      Abca13
-5 HALLMARK_ADIPOGENESIS      Abca12
-6 HALLMARK_ADIPOGENESIS      Abca17</code></pre>
+<pre class="output" tabindex="0"><code># A tibble: 6 × 26
+  gene_symbol ncbi_gene ensembl_gene db_gene_symbol db_ncbi_gene db_ensembl_gene
+  &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;
+1 Abca1       11303     ENSMUSG0000… ABCA1          19           ENSG00000165029
+2 Abcb8       74610     ENSMUSG0000… ABCB8          11194        ENSG00000197150
+3 Acaa2       52538     ENSMUSG0000… ACAA2          10449        ENSG00000167315
+4 Acadl       11363     ENSMUSG0000… ACADL          33           ENSG00000115361
+5 Acadm       11364     ENSMUSG0000… ACADM          34           ENSG00000117054
+6 Acads       11409     ENSMUSG0000… ACADS          35           ENSG00000122971
+# ℹ 20 more variables: source_gene &lt;chr&gt;, gs_id &lt;chr&gt;, gs_name &lt;chr&gt;,
+#   gs_collection &lt;chr&gt;, gs_subcollection &lt;chr&gt;, gs_collection_name &lt;chr&gt;,
+#   gs_description &lt;chr&gt;, gs_source_species &lt;chr&gt;, gs_pmid &lt;chr&gt;,
+#   gs_geoid &lt;chr&gt;, gs_exact_source &lt;chr&gt;, gs_url &lt;chr&gt;, db_version &lt;chr&gt;,
+#   db_target_species &lt;chr&gt;, ortholog_taxon_id &lt;int&gt;, ortholog_sources &lt;chr&gt;,
+#   num_ortholog_sources &lt;dbl&gt;, entrez_gene &lt;chr&gt;, gs_cat &lt;chr&gt;,
+#   gs_subcat &lt;chr&gt;</code></pre>
 </div>
 <p>As mentioned before, it is important the gene ID type in the gene
 sets should be the same as in the DE genes, so here we choose the
 <code>"gene_symbol"</code> column.</p>
-<div class="codewrapper sourceCode" id="cb95">
+<div class="codewrapper sourceCode" id="cb90">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">resTimeHallmark</span> <span class="op">=</span> <span class="fu">enricher</span><span class="op">(</span>gene <span class="op">=</span> <span class="va">timeDEgenes</span>, </span>
-<span>                           TERM2GENE <span class="op">=</span> <span class="va">gene_sets</span>,</span>
+<span>                           TERM2GENE <span class="op">=</span> <span class="va">gene_sets</span><span class="op">[</span>, <span class="fu">c</span><span class="op">(</span><span class="st">"gs_name"</span>, <span class="st">"gene_symbol"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>                           pvalueCutoff <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                           qvalueCutoff <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">resTimeHallmarkTable</span> <span class="op">=</span> <span class="fu">as.data.frame</span><span class="op">(</span><span class="va">resTimeHallmark</span><span class="op">)</span></span>
@@ -6798,48 +6780,48 @@ sets should be the same as in the DE genes, so here we choose the
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>                                                                   ID
-HALLMARK_MYOGENESIS                               HALLMARK_MYOGENESIS
-HALLMARK_INTERFERON_GAMMA_RESPONSE HALLMARK_INTERFERON_GAMMA_RESPONSE
-HALLMARK_COAGULATION                             HALLMARK_COAGULATION
-HALLMARK_ALLOGRAFT_REJECTION             HALLMARK_ALLOGRAFT_REJECTION
-HALLMARK_INTERFERON_ALPHA_RESPONSE HALLMARK_INTERFERON_ALPHA_RESPONSE
-HALLMARK_IL2_STAT5_SIGNALING             HALLMARK_IL2_STAT5_SIGNALING
-                                                          Description GeneRatio
-HALLMARK_MYOGENESIS                               HALLMARK_MYOGENESIS    39/333
-HALLMARK_INTERFERON_GAMMA_RESPONSE HALLMARK_INTERFERON_GAMMA_RESPONSE    35/333
-HALLMARK_COAGULATION                             HALLMARK_COAGULATION    27/333
-HALLMARK_ALLOGRAFT_REJECTION             HALLMARK_ALLOGRAFT_REJECTION    33/333
-HALLMARK_INTERFERON_ALPHA_RESPONSE HALLMARK_INTERFERON_ALPHA_RESPONSE    21/333
-HALLMARK_IL2_STAT5_SIGNALING             HALLMARK_IL2_STAT5_SIGNALING    30/333
-                                    BgRatio RichFactor FoldEnrichment   zScore
-HALLMARK_MYOGENESIS                307/5435  0.1270358       2.073393 4.946130
-HALLMARK_INTERFERON_GAMMA_RESPONSE 298/5435  0.1174497       1.916934 4.159135
-HALLMARK_COAGULATION               211/5435  0.1279621       2.088510 4.119874
-HALLMARK_ALLOGRAFT_REJECTION       285/5435  0.1157895       1.889837 3.942222
-HALLMARK_INTERFERON_ALPHA_RESPONSE 171/5435  0.1228070       2.004373 3.409155
-HALLMARK_IL2_STAT5_SIGNALING       280/5435  0.1071429       1.748713 3.286183
-                                         pvalue     p.adjust       qvalue
-HALLMARK_MYOGENESIS                7.558671e-06 0.0003779335 0.0002784773
-HALLMARK_INTERFERON_GAMMA_RESPONSE 1.194293e-04 0.0029857318 0.0022000129
-HALLMARK_COAGULATION               1.819948e-04 0.0030332474 0.0022350244
-HALLMARK_ALLOGRAFT_REJECTION       2.467925e-04 0.0030849069 0.0022730893
-HALLMARK_INTERFERON_ALPHA_RESPONSE 1.614367e-03 0.0141933353 0.0104582471
-HALLMARK_IL2_STAT5_SIGNALING       1.703200e-03 0.0141933353 0.0104582471
-                                                                                                                                                                                                                                                                         geneID
-HALLMARK_MYOGENESIS                Myl1/Vil1/Casq1/Aplnr/Tnnc2/Ptgis/Bche/Gja5/Col15a1/Slc6a12/Tnnt1/Ryr1/Mybpc2/Tnni2/Lsp1/Hspb2/Cryab/Fabp7/Avil/Myo1a/Erbb3/Myh3/Myh1/Myh13/Smtnl2/Nos2/Myo1d/Col1a1/Itgb3/Cacng1/Itgb4/Bdkrb2/Mapk12/Myh15/Spdef/Mapk13/Cdkn1a/Actn3/Plxnb3
-HALLMARK_INTERFERON_GAMMA_RESPONSE                         Pla2g4a/Zbp1/Gbp5/Bst1/Gbp9/Gbp4/Gbp6/Oas2/Mthfd2/Ifitm6/Irf7/Bst2/Ccl2/Ccl7/Ccl5/Itgb3/Lgals3bp/Ifi27l2a/Apol6/Csf2rb/Il2rb/Mettl7a3/Ifitm7/Fpr2/Cdkn1a/H2-K1/Psmb9/Tap1/Psmb8/H2-Q1/H2-Q2/H2-Q6/H2-T23/Cd274/Ifit1
-HALLMARK_COAGULATION                                                                                                            Vil1/Serpinb2/Ctse/C8g/Gnb4/Ctsk/Masp2/Pf4/Sh2b2/Vwf/Apoc1/Klkb1/Mmp15/Mmp8/Pcsk4/Avil/Itgb3/Hmgcs1/Dct/Tmprss6/Maff/Plg/C4b/Crip3/C3/Fbn2/Tll2
-HALLMARK_ALLOGRAFT_REJECTION                                                          Il18rap/Cd247/Bche/Ctsk/Gbp5/Gm21104/Pf4/Gbp9/Gbp4/Gbp6/Capg/Ccnd2/Irf7/Il12rb1/Icosl/Erbb3/Nos2/Ccl2/Ccl7/Ccl5/Itgb3/Gpr65/Gzmb/Il2rb/H2-K1/Tap1/Tap2/H2-Q1/H2-Q2/H2-Q6/H2-T23/Cfp/Il2rg
-HALLMARK_INTERFERON_ALPHA_RESPONSE                                                                                                               Sell/Gbp5/Gbp9/Gbp4/Gbp6/Oas1c/Trim5/Ifitm6/Irf7/Bst2/Lgals3bp/Ifi27l2a/Ifitm7/H2-K1/Psmb9/Tap1/Psmb8/H2-Q1/H2-Q2/H2-Q6/H2-T23
-HALLMARK_IL2_STAT5_SIGNALING                                                                      Il1r2/Sell/Traf1/Scn7a/Gbp5/Ttc39a/Hopx/Gbp9/Gbp4/Gbp6/Capg/Ccnd2/Ifitm6/Scn11a/Enpp1/Enpp3/P4ha1/Hkdc1/Pcsk4/Phlda1/Myo1a/Xbp1/Myo1d/Etv4/Gpr65/Il2rb/Maff/Ifitm7/Ager/Gsto2
-                                   Count
-HALLMARK_MYOGENESIS                   39
-HALLMARK_INTERFERON_GAMMA_RESPONSE    35
-HALLMARK_COAGULATION                  27
-HALLMARK_ALLOGRAFT_REJECTION          33
-HALLMARK_INTERFERON_ALPHA_RESPONSE    21
-HALLMARK_IL2_STAT5_SIGNALING          30</code></pre>
+<pre class="output" tabindex="0"><code>                                                             ID
+HALLMARK_MYOGENESIS                         HALLMARK_MYOGENESIS
+HALLMARK_COMPLEMENT                         HALLMARK_COMPLEMENT
+HALLMARK_COAGULATION                       HALLMARK_COAGULATION
+HALLMARK_ALLOGRAFT_REJECTION       HALLMARK_ALLOGRAFT_REJECTION
+HALLMARK_ESTROGEN_RESPONSE_LATE HALLMARK_ESTROGEN_RESPONSE_LATE
+HALLMARK_INFLAMMATORY_RESPONSE   HALLMARK_INFLAMMATORY_RESPONSE
+                                                    Description GeneRatio
+HALLMARK_MYOGENESIS                         HALLMARK_MYOGENESIS    31/291
+HALLMARK_COMPLEMENT                         HALLMARK_COMPLEMENT    26/291
+HALLMARK_COAGULATION                       HALLMARK_COAGULATION    20/291
+HALLMARK_ALLOGRAFT_REJECTION       HALLMARK_ALLOGRAFT_REJECTION    23/291
+HALLMARK_ESTROGEN_RESPONSE_LATE HALLMARK_ESTROGEN_RESPONSE_LATE    23/291
+HALLMARK_INFLAMMATORY_RESPONSE   HALLMARK_INFLAMMATORY_RESPONSE    22/291
+                                 BgRatio RichFactor FoldEnrichment   zScore
+HALLMARK_MYOGENESIS             201/4393  0.1542289       2.328273 5.133984
+HALLMARK_COMPLEMENT             196/4393  0.1326531       2.002560 3.824271
+HALLMARK_COAGULATION            139/4393  0.1438849       2.172118 3.739899
+HALLMARK_ALLOGRAFT_REJECTION    201/4393  0.1144279       1.727428 2.811625
+HALLMARK_ESTROGEN_RESPONSE_LATE 206/4393  0.1116505       1.685500 2.683920
+HALLMARK_INFLAMMATORY_RESPONSE  201/4393  0.1094527       1.652323 2.521330
+                                      pvalue     p.adjust       qvalue
+HALLMARK_MYOGENESIS             5.736712e-06 0.0002753622 0.0002294685
+HALLMARK_COMPLEMENT             4.315862e-04 0.0103580695 0.0086317246
+HALLMARK_COAGULATION            7.108706e-04 0.0113739297 0.0094782747
+HALLMARK_ALLOGRAFT_REJECTION    6.414928e-03 0.0769791391 0.0641492826
+HALLMARK_ESTROGEN_RESPONSE_LATE 8.606752e-03 0.0826248216 0.0688540180
+HALLMARK_INFLAMMATORY_RESPONSE  1.259890e-02 0.0963081013 0.0802567511
+                                                                                                                                                                                                                geneID
+HALLMARK_MYOGENESIS             Myl1/Casq1/Aplnr/Tnnc2/Ptgis/Gja5/Col15a1/Cav3/Tnnt1/Ryr1/Cox6a2/Tnni2/Lsp1/Nqo1/Hspb2/Cryab/Erbb3/Stc2/Gpx3/Sparc/Myh3/Myh1/Col1a1/Cacng1/Itgb4/Bdkrb2/Mapk12/Apod/Spdef/Cdkn1a/Actn3
+HALLMARK_COMPLEMENT                                                Serpinb2/Pla2g4a/Cd46/Hspa5/Cp/Gnb4/S100a9/Cda/Cxcl1/Apoc1/Itgam/Irf7/Klkb1/Mmp15/Mmp8/Ccl5/Lgals3/Gzmb/Tmprss6/Maff/Plg/Psmb9/Hspa1a/C3/Dusp5/Phex
+HALLMARK_COAGULATION                                                                                         Serpinb2/Ctse/C8g/Ctsk/Masp2/Pf4/Sh2b2/Vwf/Apoc1/Klkb1/Mmp15/Mmp8/Trf/Sparc/Itgb3/Dct/Tmprss6/Maff/Plg/C3
+HALLMARK_ALLOGRAFT_REJECTION                                                           Il18rap/Cd247/Il12a/Pf4/Capg/Ccnd2/Igsf6/Irf7/Il12rb1/Icosl/Itk/Nos2/Ccl2/Ccl7/Ccl5/Gpr65/Gzmb/Il2rb/Tap1/Tap2/H2-T23/Cfp/Il2rg
+HALLMARK_ESTROGEN_RESPONSE_LATE                                                    Clic3/Ass1/Mdk/S100a9/Cdc20/Nbl1/Cav1/Idh2/Th/Pdlim3/Ascl1/Xbp1/Top2a/Dcxr/Fos/Serpina3n/Dhrs2/Tst/Emp2/Fkbp5/Mapk13/Cyp4f15/Kif20a
+HALLMARK_INFLAMMATORY_RESPONSE                                                              Il18rap/Sell/Aplnr/Abca1/Lpar1/Cxcl5/Adm/Irf7/Msr1/Bst2/Ccl17/Icosl/Ccl2/Ccl7/Ccl5/Ccr7/Itgb3/Has2/Il2rb/Cdkn1a/Cd70/Best1
+                                Count
+HALLMARK_MYOGENESIS                31
+HALLMARK_COMPLEMENT                26
+HALLMARK_COAGULATION               20
+HALLMARK_ALLOGRAFT_REJECTION       23
+HALLMARK_ESTROGEN_RESPONSE_LATE    23
+HALLMARK_INFLAMMATORY_RESPONSE     22</code></pre>
 </div>
 <div id="further-reading-4" class="callout">
 <div class="callout-square">
@@ -6851,7 +6833,7 @@ HALLMARK_IL2_STAT5_SIGNALING          30</code></pre>
 <p>Implementing ORA is rather simple. The following function
 <code>ora()</code> performs ORA on a list of gene sets. Try to read and
 understand the code.</p>
-<div class="codewrapper sourceCode" id="cb97">
+<div class="codewrapper sourceCode" id="cb92">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6887,7 +6869,7 @@ understand the code.</p>
 <span><span class="op">}</span></span></code></pre>
 </div>
 <p>Test on the MSigDB hallmark gene sets:</p>
-<div class="codewrapper sourceCode" id="cb98">
+<div class="codewrapper sourceCode" id="cb93">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -6899,19 +6881,19 @@ understand the code.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>                                                 gene_set hits n_genes
-HALLMARK_ADIPOGENESIS               HALLMARK_ADIPOGENESIS   13    1134
-HALLMARK_ALLOGRAFT_REJECTION HALLMARK_ALLOGRAFT_REJECTION   33    1134
-HALLMARK_ANDROGEN_RESPONSE     HALLMARK_ANDROGEN_RESPONSE    7    1134
-HALLMARK_ANGIOGENESIS               HALLMARK_ANGIOGENESIS    6    1134
-HALLMARK_APICAL_JUNCTION         HALLMARK_APICAL_JUNCTION   28    1134
-HALLMARK_APICAL_SURFACE           HALLMARK_APICAL_SURFACE    4    1134
-                             gene_set_size n_total      p_value     p_adjust
-HALLMARK_ADIPOGENESIS                  247   21198 5.645290e-01 8.301897e-01
-HALLMARK_ALLOGRAFT_REJECTION           264   21198 5.248132e-06 8.746887e-05
-HALLMARK_ANDROGEN_RESPONSE             155   21198 7.290317e-01 9.424457e-01
-HALLMARK_ANGIOGENESIS                   51   21198 5.368200e-02 1.118375e-01
-HALLMARK_APICAL_JUNCTION               304   21198 3.728233e-03 1.331512e-02
-HALLMARK_APICAL_SURFACE                 84   21198 6.640741e-01 8.973974e-01</code></pre>
+HALLMARK_ADIPOGENESIS               HALLMARK_ADIPOGENESIS    9    1134
+HALLMARK_ALLOGRAFT_REJECTION HALLMARK_ALLOGRAFT_REJECTION   23    1134
+HALLMARK_ANDROGEN_RESPONSE     HALLMARK_ANDROGEN_RESPONSE    6    1134
+HALLMARK_ANGIOGENESIS               HALLMARK_ANGIOGENESIS    4    1134
+HALLMARK_APICAL_JUNCTION         HALLMARK_APICAL_JUNCTION   14    1134
+HALLMARK_APICAL_SURFACE           HALLMARK_APICAL_SURFACE    3    1134
+                             gene_set_size n_total     p_value    p_adjust
+HALLMARK_ADIPOGENESIS                  185   21198 0.662392856 0.871569547
+HALLMARK_ALLOGRAFT_REJECTION           191   21198 0.000234807 0.002935087
+HALLMARK_ANDROGEN_RESPONSE             107   21198 0.512665196 0.753919406
+HALLMARK_ANGIOGENESIS                   36   21198 0.124351058 0.260206520
+HALLMARK_APICAL_JUNCTION               186   21198 0.124899130 0.260206520
+HALLMARK_APICAL_SURFACE                 41   21198 0.376915129 0.588929889</code></pre>
 </div>
 </div>
 </div>
@@ -6999,16 +6981,14 @@ similar reason, small universes tend to generate large
 universe genes can be set via the <code>universe</code> argument. By
 default the universe is the total genes in the gene sets collection.
 When a self-defined universe is provided, this might be different from
-what you may think, the universe is <a href="https://github.com/YuLab-SMU/DOSE/blob/93a4b981c0251e5c6eb1f2413f4a02b8e6d06ff5/R/enricher_internal.R#L65C43-L65C51" class="external-link"><em>the
-intersection of user-provided universe and total genes in the gene set
-collection</em></a>. Thus the universe setting in
+what you may think, the universe is . Thus the universe setting in
 <strong>clusterProfiler</strong> is very conservative.</p>
 <p>Check the more discusstions at <a href="https://twitter.com/mdziemann/status/1626407797939384320" class="external-link uri">https://twitter.com/mdziemann/status/1626407797939384320</a>.</p>
 <p>We can do a simple experiment on the small MSigDB hallmark gene sets.
 We use the <code>ora()</code> function which we have implemented in
 previous “Further reading” section and we compare three different
 universe settings.</p>
-<div class="codewrapper sourceCode" id="cb100">
+<div class="codewrapper sourceCode" id="cb95">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7058,7 +7038,7 @@ normally do better jobs. Recently the visualization code in
 <strong>enrichplot</strong> package. The full sets of visualizations
 that <strong>enrichplot</strong> supports can be found from <a href="https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html" class="external-link uri">https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html</a>.</p>
 <p>We first re-generate the enrichment table.</p>
-<div class="codewrapper sourceCode" id="cb101">
+<div class="codewrapper sourceCode" id="cb96">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7108,13 +7088,13 @@ GO:0071674    32</code></pre>
 a small number of significant gene sets. Note the two functions are
 directly applied on <code>resTimeGO</code> returned by
 <code>enrichGO()</code>.</p>
-<div class="codewrapper sourceCode" id="cb103">
+<div class="codewrapper sourceCode" id="cb98">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">barplot</span><span class="op">(</span><span class="va">resTimeGO</span>, showCategory <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/07-gene-set-analysis-rendered-more-enrichplots-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div class="codewrapper sourceCode" id="cb104">
+<figure><img src="fig/07-gene-set-analysis-rendered-more-enrichplots-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div class="codewrapper sourceCode" id="cb99">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7157,7 +7137,7 @@ the enrichment of ORA.</p>
 genes on gene sets. Recall the denotations in the 2x2 contingency table
 (we are too far from that!). Let’s take these numbers from the
 enrichment table.</p>
-<div class="codewrapper sourceCode" id="cb105">
+<div class="codewrapper sourceCode" id="cb100">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7169,7 +7149,7 @@ enrichment table.</p>
 <p>Instead of using <code>GeneRatio</code>, we use the fraction of DE
 genes in the gene sets which are kind of like a “scaled” value for all
 gene sets. Let’s calculate it:</p>
-<div class="codewrapper sourceCode" id="cb106">
+<div class="codewrapper sourceCode" id="cb101">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7180,26 +7160,26 @@ gene sets. Let’s calculate it:</p>
 value, we could say DE genes have a higher enrichment<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> in it.</p>
 <p>We can measure the enrichment in two other ways. First, the log2 fold
 enrichment, defined as:</p>
-<p><span class="math display">\[ \log_2(\mathrm{Fold\_enrichment}) =
+<p><span class="math display">\[\log_2(\mathrm{Fold\_enrichment}) =
 \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} =
-\frac{n_{11}n}{n_{10}n_{01}} \]</span></p>
+\frac{n_{11}n}{n_{10}n_{01}}\]</span></p>
 <p>which is the log2 of the ratio of <em>DE% in the gene set</em> and
 <em>DE% in the universe</em> or the log2 of the ratio of <em>gene_set%
 in the DE genes</em> and <em>gene_set% in the universe</em>. The two are
 identical.</p>
-<div class="codewrapper sourceCode" id="cb107">
+<div class="codewrapper sourceCode" id="cb102">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">resTimeGOTable</span><span class="op">$</span><span class="va">log2_Enrichment</span> <span class="op">=</span> <span class="fu">log</span><span class="op">(</span> <span class="op">(</span><span class="va">n_11</span><span class="op">/</span><span class="va">n_10</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">n_01</span><span class="op">/</span><span class="va">n</span><span class="op">)</span> <span class="op">)</span></span></code></pre>
 </div>
 <p>Second, it is also common to use <em>z</em>-score which is</p>
-<p><span class="math display">\[ z = \frac{n_{11} - \mu}{\sigma}
-\]</span></p>
-<p>where <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> are <a href="https://en.wikipedia.org/wiki/Hypergeometric_distribution" class="external-link">the
-mean and standard deviation of the hypergeometric distribution</a>. They
-can be calculated as:</p>
-<div class="codewrapper sourceCode" id="cb108">
+<p><span class="math display">\[z = \frac{n_{11} -
+\mu}{\sigma}\]</span></p>
+<p>where <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> are the mean and standard
+deviation of the hypergeometric distribution. They can be calculated
+as:</p>
+<div class="codewrapper sourceCode" id="cb103">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7218,7 +7198,7 @@ bars.</p>
 <p>In <code>resTimeGOTable</code>, gene sets are already ordered by the
 significance, so we take the first 10 gene sets which are the 10 most
 significant gene sets.</p>
-<div class="codewrapper sourceCode" id="cb109">
+<div class="codewrapper sourceCode" id="cb104">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7234,7 +7214,7 @@ significant gene sets.</p>
 <figure><img src="fig/07-gene-set-analysis-rendered-plot-enrichment-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>In the next example, we use <em>z</em>-score as the primary variable
 to map to the offset to origin, <code>DE_Ratio</code> and
 <code>Count</code> to map to dot colors and sizes.</p>
-<div class="codewrapper sourceCode" id="cb110">
+<div class="codewrapper sourceCode" id="cb105">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7256,7 +7236,7 @@ one-sided. We can set two cutoffs on the log2 fold enrichment and
 adjusted <em>p</em>-values, then the gene sets on the top right region
 can be thought as being both statistically significant and also
 biologically sensible.</p>
-<div class="codewrapper sourceCode" id="cb111">
+<div class="codewrapper sourceCode" id="cb106">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7280,7 +7260,7 @@ and down-regulated separately. And we want to combine the significant
 gene sets from the two ORA analysis in one plot. In the following code,
 we first generate two enrichment tables for up-regulated genes and
 down-regulated separately.</p>
-<div class="codewrapper sourceCode" id="cb112">
+<div class="codewrapper sourceCode" id="cb107">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7324,7 +7304,7 @@ down-regulated separately.</p>
 for up-regulated genes and the first 5 most significant terms for
 down-regulated genes. The following <strong>ggplot2</strong> code should
 be easy to read.</p>
-<div class="codewrapper sourceCode" id="cb113">
+<div class="codewrapper sourceCode" id="cb108">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7352,7 +7332,7 @@ common functions via word clouds.</p>
 <p>The input of the <code>simplifyGO()</code> function is a vector of GO
 IDs. It is recommended to have at least 100 GO IDs for summarization and
 visualization.</p>
-<div class="codewrapper sourceCode" id="cb114">
+<div class="codewrapper sourceCode" id="cb109">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -7376,10 +7356,9 @@ genes pass the cutoff are set as 1 (DE gene) and others are set as 0
 and a lot of information are lost. There is second class of gene set
 enrichment analysis methods which takes the continuous gene-level score
 as input and weights the importance of a gene in the gene set. Please
-refer to <a href="https://www.pnas.org/doi/10.1073/pnas.0506580102" class="external-link">Subramanian et.
-al. Gene set enrichment analysis: A knowledge-based approach for
-interpreting genome-wide expression profiles, PNAS 2005</a> for more
-information.</p>
+refer to Subramanian et. al. Gene set enrichment analysis: A
+knowledge-based approach for interpreting genome-wide expression
+profiles, PNAS 2005 for more information.</p>
 </div>
 </div>
 </div>
@@ -7561,7 +7540,7 @@ quantified.</li>
         <p>Materials licensed under <a href="LICENSE.html">CC-BY 4.0</a> by the authors</p>
 
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/main" class="external-link">sandpaper (0.16.13.9000)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.16.12" class="external-link">sandpaper (0.16.12)</a>,
         <a href="https://github.com/carpentries/pegboard/tree/main" class="external-link">pegboard (0.7.9)</a>,
       and <a href="https://github.com/mblue9/varnish/tree/3403ad0dd37f7641c6442330fcc182937e7964c5" class="external-link">varnish (0.2.16)</a>.</p>
 			</div>

@@ -180,7 +180,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="01-intro-to-rnaseq.html">1. Introduction to RNA-seq</a>
+        <a href="01-intro-to-rnaseq.html">1. RNA-seq入門</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -327,24 +327,16 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         
         
-<section id="01-intro-to-rnaseq"><h2 class="section-heading"><a href="01-intro-to-rnaseq.html">Introduction to RNA-seqWhat are we measuring in an RNA-seq experiment?<a class="anchor" aria-label="anchor" href="#what-are-we-measuring-in-an-rna-seq-experiment"></a>Experimental design considerations<a class="anchor" aria-label="anchor" href="#experimental-design-considerations"></a>RNA-seq quantification: from reads to count matrix<a class="anchor" aria-label="anchor" href="#rna-seq-quantification-from-reads-to-count-matrix"></a>Finding the reference sequences<a class="anchor" aria-label="anchor" href="#finding-the-reference-sequences"></a>Where are we heading towards in this workshop?<a class="anchor" aria-label="anchor" href="#where-are-we-heading-towards-in-this-workshop"></a></a></h2>
+<section id="01-intro-to-rnaseq"><h2 class="section-heading"><a href="01-intro-to-rnaseq.html">RNA-seq入門RNA-seq実験では何を測定するのか？<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9F%E9%A8%93%E3%81%A7%E3%81%AF%E4%BD%95%E3%82%92%E6%B8%AC%E5%AE%9A%E3%81%99%E3%82%8B%E3%81%AE%E3%81%8B"></a>実験デザインの考察<a class="anchor" aria-label="anchor" href="#%E5%AE%9F%E9%A8%93%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%81%AE%E8%80%83%E5%AF%9F"></a>RNA-seq定量化：リードからカウントマトリックスまで<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9A%E9%87%8F%E5%8C%96%E3%83%AA%E3%83%BC%E3%83%89%E3%81%8B%E3%82%89%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88%E3%83%9E%E3%83%88%E3%83%AA%E3%83%83%E3%82%AF%E3%82%B9%E3%81%BE%E3%81%A7"></a>参照配列の検索<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E7%85%A7%E9%85%8D%E5%88%97%E3%81%AE%E6%A4%9C%E7%B4%A2"></a>このワークショップで我々はどこに向かっているのか？<a class="anchor" aria-label="anchor" href="#%E3%81%93%E3%81%AE%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97%E3%81%A7%E6%88%91%E3%80%85%E3%81%AF%E3%81%A9%E3%81%93%E3%81%AB%E5%90%91%E3%81%8B%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E3%81%AE%E3%81%8B"></a></a></h2>
 <hr class="half-width">
 <ul>
-<li>RNA-seq is a technique of measuring the amount of RNA expressed
-within a cell/tissue and state at a given time.</li>
-<li>Many choices have to be made when planning an RNA-seq experiment,
-such as whether to perform poly-A selection or ribosomal depletion,
-whether to apply a stranded or an unstranded protocol, and whether to
-sequence the reads in a single-end or paired-end fashion. Each of the
-choices have consequences for the processing and interpretation of the
-data.</li>
-<li>Many approaches exist for quantification of RNA-seq data. Some
-methods align reads to the genome and count the number of reads
-overlapping gene loci. Other methods map reads to the transcriptome and
-use a probabilistic approach to estimate the abundance of each gene or
-transcript.</li>
-<li>Information about annotated genes can be accessed via several
-sources, including Ensembl, UCSC and GENCODE.</li>
+<li>RNA-seqは、ある細胞／組織内で発現しているRNAの量と、ある時点での状態を測定する技術である。</li>
+<li>RNA-seq実験を計画する際には、ポリA選択とリボソーム除去のどちらを行うか、ストランドプロトコルとアンストランドプロトコルのどちらを適用するか、シングルエンドとペアエンドのどちらでリードをシーケンスするかなど、多くの選択をしなければならない。
+それぞれの選択は、データの処理と解釈に結果をもたらす。</li>
+<li>RNA-seqデータの定量化には多くのアプローチが存在する。
+リードをゲノムにアライメントし、遺伝子座にオーバーラップするリードの数をカウントする方法もある。
+他の方法は、リードをトランスクリプトームにマッピングし、確率的アプローチを使って各遺伝子や転写産物の存在量を推定する。</li>
+<li>注釈付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
 </ul></section><section id="02-setup"><h2 class="section-heading"><a href="02-setup.html">RStudio Project and Experimental Data</a></h2>
 <hr class="half-width">
 <ul>
@@ -356,16 +348,7 @@ project’s working directory and facilitating analysis.</li>
 <li>The <code>download.file</code> function in R can be used for
 downloading datasets from the internet.</li>
 </ul></section><section id="03-import-annotate"><h2 class="section-heading"><a href="03-import-annotate.html">Importing and annotating quantified data into R</a></h2>
-<hr class="half-width">
-<ul>
-<li>Depending on the gene expression quantification tool used, there are
-different ways (often distributed in Bioconductor packages) to read the
-output into a <code>SummarizedExperiment</code> or <code>DGEList</code>
-object for further processing in R.</li>
-<li>Stable gene identifiers such as Ensembl or Entrez IDs should
-preferably be used as the main identifiers throughout an RNA-seq
-analysis, with gene symbols added for easier interpretation.</li>
-</ul></section><section id="04-exploratory-qc"><h2 class="section-heading"><a href="04-exploratory-qc.html">Exploratory analysis and quality control</a></h2>
+<hr class="half-width"></section><section id="04-exploratory-qc"><h2 class="section-heading"><a href="04-exploratory-qc.html">Exploratory analysis and quality control</a></h2>
 <hr class="half-width">
 <ul>
 <li>Exploratory analysis is essential for quality control and to detect
@@ -431,7 +414,7 @@ quantified.</li>
         <p>Materials licensed under <a href="LICENSE.html">CC-BY 4.0</a> by the authors</p>
 
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/main" class="external-link">sandpaper (0.16.13.9000)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.16.12" class="external-link">sandpaper (0.16.12)</a>,
         <a href="https://github.com/carpentries/pegboard/tree/main" class="external-link">pegboard (0.7.9)</a>,
       and <a href="https://github.com/mblue9/varnish/tree/3403ad0dd37f7641c6442330fcc182937e7964c5" class="external-link">varnish (0.2.16)</a>.</p>
 			</div>
