@@ -18,17 +18,15 @@ editor_options:
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- Why is exploratory analysis an essential part of an RNA-seq analysis? 
-- How should one preprocess the raw count matrix for exploratory analysis?  
+- Why is exploratory analysis an essential part of an RNA-seq analysis?
+- How should one preprocess the raw count matrix for exploratory analysis?
 - Are two dimensions sufficient to represent your data?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
 ## Load packages
 
 Assuming you just started RStudio again, load some packages we will use in this lesson along with the `SummarizedExperiment` object we created in the last lesson.
-
 
 
 ``` r
@@ -49,14 +47,13 @@ suppressPackageStartupMessages({
 se <- readRDS("data/GSE96870_se.rds")
 ```
 
-
 ## Remove unexpressed genes
 
 Exploratory analysis is crucial for quality control and to get to know our data.
 It can help us detect quality problems, sample swaps and contamination, as well as give us a sense of the most salient patterns present in the data.
 In this episode, we will learn about two common ways of performing exploratory analysis for RNA-seq data; namely clustering and principal component analysis (PCA).
 These tools are in no way limited to (or developed for) analysis of RNA-seq data.
-However, there are certain characteristics of count assays that need to be taken into account when they are applied to this type of data. First of all, not all mouse genes in the genome will be expressed in our Cerebellum samples. There are many different threshold you could use to say whether a gene's expression was detectable or not; here we are going to use a very minimal one that if a gene does not have more than 5 counts total across all samples, there is simply not enough data to be able to do anything with it anyway. 
+However, there are certain characteristics of count assays that need to be taken into account when they are applied to this type of data. First of all, not all mouse genes in the genome will be expressed in our Cerebellum samples. There are many different threshold you could use to say whether a gene's expression was detectable or not; here we are going to use a very minimal one that if a gene does not have more than 5 counts total across all samples, there is simply not enough data to be able to do anything with it anyway.
 
 
 ``` r
@@ -77,22 +74,22 @@ nrow(se)
 [1] 27430
 ```
 
-
 :::::::::::::::::::::::::::::::::::::::  challenge
 
 ## Challenge: What kind of genes survived this filtering?
 
 Last episode we discussed subsetting down to only mRNA genes. Here we subsetted based on a minimal expression level.
-  
-  1. How many of each type of gene survived the filtering?
-  2. Compare the number of genes that survived filtering using different thresholds.
-  3. What are pros and cons of more aggressive filtering? What are important considerations? 
-  
+
+1. How many of each type of gene survived the filtering?
+2. Compare the number of genes that survived filtering using different thresholds.
+3. What are pros and cons of more aggressive filtering? What are important considerations?
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::: solution
 
 1.
+
 
 ``` r
 table(rowData(se)$gbkey)
@@ -107,6 +104,7 @@ table(rowData(se)$gbkey)
 ```
 
 2.
+
 
 ``` r
 nrow(se)  # represents the number of genes using 5 as filtering threshold
@@ -133,21 +131,24 @@ length(which(rowSums(assay(se, "counts")) > 20))
 ```
 
 3.
+
 Cons: Risk of removing interesting information
-Pros: 
- - Not or lowly expressed genes are unlikely to be biological meaningful.
- - Reduces number of statistical tests (multiple testing).
- - More reliable estimation of mean-variance relationship
- 
+Pros:
+
+- Not or lowly expressed genes are unlikely to be biological meaningful.
+- Reduces number of statistical tests (multiple testing).
+- More reliable estimation of mean-variance relationship
+
 Potential considerations:
- - Is a gene expressed in both groups?
- - How many samples of each group express a gene?
-:::::::::::::::::::::::::::::::::::
+
+- Is a gene expressed in both groups?
+- How many samples of each group express a gene?
+ :::::::::::::::::::::::::::::::::::
 
 ## Library size differences
 
 Differences in the total number of reads assigned to genes between samples typically occur for technical reasons. In practice, it means that we can not simply compare a gene's raw read count directly between samples and conclude that a sample with a higher read count also expresses the gene more strongly - the higher count may be caused by an overall higher number of reads in that sample.
-In the rest of this section, we will use the term *library size* to refer to the total number of reads assigned to genes for a sample. First we should compare the library sizes of all samples. 
+In the rest of this section, we will use the term _library size_ to refer to the total number of reads assigned to genes for a sample. First we should compare the library sizes of all samples.
 
 
 ``` r
@@ -167,11 +168,10 @@ colData(se) |>
          theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 ```
 
-<img src="fig/04-exploratory-qc-rendered-lib-size-1.png" alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million." style="display: block; margin: auto;" />
-
+<img src="fig/04-exploratory-qc-rendered-lib-size-1.png" style="display: block; margin: auto;" />
 
 We need to adjust for the differences in library size between samples, to avoid drawing incorrect conclusions. The way this is typically done for RNA-seq data can be described as a two-step procedure.
-First, we estimate *size factors* - sample-specific correction factors such that if the raw counts were to be divided by these factors, the resulting values would be more comparable across samples.
+First, we estimate _size factors_ - sample-specific correction factors such that if the raw counts were to be divided by these factors, the resulting values would be more comparable across samples.
 Next, these size factors are incorporated into the statistical analysis of the data.
 It is important to pay close attention to how this is done in practice for a given analysis method.
 Sometimes the division of the counts by the size factors needs to be done explicitly by the analyst.
@@ -180,7 +180,7 @@ Other times (as we will see for the differential expression analysis) it is impo
 With `DESeq2`, size factors are calculated using the `estimateSizeFactors()` function.
 The size factors estimated by this function combines an adjustment for differences in library sizes with an adjustment for differences in the RNA composition of the samples.
 The latter is important due to the compositional nature of RNA-seq data.
-There is a fixed number of reads to distribute between the genes, and if a single (or a few) very highly expressed gene consume a large part of the reads, all other genes will consequently receive very low counts. We now switch our `SummarizedExperiment` object over to a `DESeqDataSet` as it has the internal structure to store these size factors. We also need to tell it our main experiment design, which is sex and time: 
+There is a fixed number of reads to distribute between the genes, and if a single (or a few) very highly expressed gene consume a large part of the reads, all other genes will consequently receive very low counts. We now switch our `SummarizedExperiment` object over to a `DESeqDataSet` as it has the internal structure to store these size factors. We also need to tell it our main experiment design, which is sex and time:
 
 
 ``` r
@@ -206,7 +206,7 @@ ggplot(data.frame(libSize = colSums(assay(dds)),
     labs(x = "Library size", y = "Size factor")
 ```
 
-<img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables." style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" style="display: block; margin: auto;" />
 
 ## Transform data
 
@@ -220,7 +220,7 @@ In fact, the variance increases with the average read count.
 meanSdPlot(assay(dds), ranks = FALSE)
 ```
 
-<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values." style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" style="display: block; margin: auto;" />
 
 There are two ways around this: either we develop methods specifically adapted to count data, or we adapt (transform) the count data so that the existing methods are applicable.
 Both ways have been explored; however, at the moment the second approach is arguably more widely applied in practice. We can transform our data using DESeq2's variance stabilizing transformation and then verify that it has removed the correlation between average read count and variance.
@@ -231,7 +231,7 @@ vsd <- DESeq2::vst(dds, blind = TRUE)
 meanSdPlot(assay(vsd), ranks = FALSE)
 ```
 
-<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation." style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" style="display: block; margin: auto;" />
 
 ## Heatmaps and clustering
 
@@ -255,14 +255,14 @@ ComplexHeatmap::Heatmap(
 )
 ```
 
-<img src="fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-heatmap-1.png" style="display: block; margin: auto;" />
 
 ## PCA
 
 Principal component analysis is a dimensionality reduction method, which projects the samples into a lower-dimensional space.
 This lower-dimensional representation can be used for visualization, or as the input for other analysis methods.
 The principal components are defined in such a way that they are orthogonal, and that the projection of the samples into the space they span contains as much variance as possible.
-It is an *unsupervised* method in the sense that no external information about the samples (e.g., the treatment condition) is taken into account.
+It is an _unsupervised_ method in the sense that no external information about the samples (e.g., the treatment condition) is taken into account.
 In the plot below we represent the samples in a two-dimensional principal component space.
 For each of the two dimensions, we indicate the fraction of the total variance that is represented by that component.
 By definition, the first principal component will always represent more of the variance than the subsequent ones.
@@ -289,7 +289,7 @@ ggplot(pcaData, aes(x = PC1, y = PC2)) +
     scale_color_manual(values = c(Male = "blue", Female = "red"))
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by sex and shaped according to the experimental day. The main separation along PC1 is between male and female samples. The main separation along PC2 is between samples from day 8 and samples from days 0 and 4." style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-pca-1.png" style="display: block; margin: auto;" />
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
@@ -304,33 +304,30 @@ ggplot(pcaData, aes(x = PC1, y = PC2)) +
 using ntop=500 top features by variance
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-exercise-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by a hypothetical sample ID annotation and shaped according to a hypothetical experimental day annotation. In the plot, samples with the same sample ID tend to cluster together." style="display: block; margin: auto;" />
-
-
-
+<img src="fig/04-exploratory-qc-rendered-pca-exercise-1.png" style="display: block; margin: auto;" />
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::: solution
+
 1. The major signal in this data (37% variance) is associated with sex. As we are not interested in sex-specific changes over time, we need to adjust for this in downstream analysis (see [next episodes](../episodes/05-differential-expression.Rmd)) and keep it in mind for further exploratory downstream analysis. A possible way to do so is to remove genes on sex chromosomes.
 
 2.
- - A strong donor effect, that needs to be accounted for. 
- - What does PC1 (37% variance) represent? Looks like 2 donor groups?
- - No association of PC1 and PC2 with time --> no or weak transcriptional effect of time
-    --> Check association with higher PCs (e.g., PC3,PC4, ..)
- 
+
+- A strong donor effect, that needs to be accounted for.
+- What does PC1 (37% variance) represent? Looks like 2 donor groups?
+- No association of PC1 and PC2 with time --> no or weak transcriptional effect of time
+ \--> Check association with higher PCs (e.g., PC3,PC4, ..)
+
 :::::::::::::::::::::::::::::::::::
-
-
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Plot the PCA colored by library sizes. 
+## Challenge: Plot the PCA colored by library sizes.
 
 Compare before and after variance stabilizing transformation.
 
-*Hint: The `DESeq2::plotPCA` expect an object of the class `DESeqTransform` as input. You can transform a `SummarizedExperiment` object using `plotPCA(DESeqTransform(se))`*
+_Hint: The `DESeq2::plotPCA` expect an object of the class `DESeqTransform` as input. You can transform a `SummarizedExperiment` object using `plotPCA(DESeqTransform(se))`_
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -357,8 +354,7 @@ ggplot(pcaDataVst, aes(x = PC1, y = PC2)) +
     scale_color_continuous("Total count in millions", type = "viridis")
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-lib-1.png" alt="Scatterplot of samples projected onto the first two principal components of the variance-stabilized data, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. There is no strong association between the library sizes and the principal components." style="display: block; margin: auto;" />
-
+<img src="fig/04-exploratory-qc-rendered-pca-lib-1.png" style="display: block; margin: auto;" />
 
 
 ``` r
@@ -381,8 +377,7 @@ ggplot(pcaDataCts, aes(x = PC1, y = PC2)) +
     scale_color_continuous("Total count in millions", type = "viridis")
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" alt="Scatterplot of samples projected onto the first two principal components of the count matrix, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. The first principal component is strongly correlated with the library size." style="display: block; margin: auto;" />
-
+<img src="fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" style="display: block; margin: auto;" />
 
 :::::::::::::::::::::::::::::::::::
 
@@ -391,10 +386,9 @@ ggplot(pcaDataCts, aes(x = PC1, y = PC2)) +
 Often it is useful to look at QC plots in an interactive way to directly explore different experimental factors or get insides from someone without coding experience.
 Useful tools for interactive exploratory data analysis for RNA-seq are [Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html) and [iSEE](https://bioconductor.org/packages/release/bioc/html/iSEE.html)
 
-
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Interactively explore our data using iSEE 
+## Challenge: Interactively explore our data using iSEE
 
 
 ``` r
@@ -414,9 +408,7 @@ app <- iSEE(sce)
 shiny::runApp(app)
 ```
 
-
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 ## Session info
 
@@ -460,45 +452,41 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] rlang_1.1.6             magrittr_2.0.3          shinydashboard_0.7.3   
- [4] clue_0.3-66             GetoptLong_1.0.5        pegboard_0.7.9         
- [7] compiler_4.5.1          mgcv_1.9-3              png_0.1-8              
-[10] callr_3.7.6             vctrs_0.6.5             pkgconfig_2.0.3        
-[13] shape_1.4.6.1           crayon_1.5.3            fastmap_1.2.0          
-[16] XVector_0.48.0          labeling_0.4.3          promises_1.3.3         
-[19] shinyAce_0.4.4          UCSC.utils_1.4.0        ps_1.9.1               
-[22] preprocessCore_1.70.0   purrr_1.1.0             xfun_0.52              
-[25] cachem_1.1.0            jsonlite_2.0.0          listviewer_4.0.0       
-[28] later_1.4.2             DelayedArray_0.34.1     BiocParallel_1.42.1    
-[31] parallel_4.5.1          cluster_2.1.8.1         R6_2.6.1               
-[34] bslib_0.9.0             limma_3.64.1            jquerylib_0.1.4        
-[37] Rcpp_1.0.14             assertthat_0.2.1        iterators_1.0.14       
-[40] knitr_1.50              splines_4.5.1           igraph_2.1.4           
-[43] httpuv_1.6.16           Matrix_1.7-3            tidyselect_1.2.1       
-[46] abind_1.4-8             yaml_2.3.10             doParallel_1.0.17      
-[49] codetools_0.2-20        affy_1.86.0             miniUI_0.1.2           
-[52] processx_3.8.6          lattice_0.22-7          tibble_3.3.0           
-[55] shiny_1.11.0            withr_3.0.2             evaluate_1.0.4         
-[58] sandpaper_0.16.13.9000  xml2_1.3.8              circlize_0.4.16        
-[61] pillar_1.10.2           affyio_1.78.0           BiocManager_1.30.26    
-[64] renv_1.1.4              DT_0.33                 foreach_1.5.2          
-[67] shinyjs_2.1.0           scales_1.4.0            xtable_1.8-4           
-[70] glue_1.8.0              tools_4.5.1             colourpicker_1.3.0     
-[73] locfit_1.5-9.12         colorspace_2.1-1        nlme_3.1-168           
-[76] GenomeInfoDbData_1.2.14 tinkr_0.3.0             vipor_0.4.7            
-[79] cli_3.6.5               viridisLite_0.4.2       S4Arrays_1.8.1         
-[82] dplyr_1.1.4             gtable_0.3.6            rintrojs_0.3.4         
-[85] sass_0.4.10             digest_0.6.37           SparseArray_1.8.0      
-[88] ggrepel_0.9.6           rjson_0.2.23            htmlwidgets_1.6.4      
-[91] farver_2.1.2            htmltools_0.5.8.1       lifecycle_1.0.4        
-[94] shinyWidgets_0.9.0      httr_1.4.7              GlobalOptions_0.1.2    
-[97] statmod_1.5.0           mime_0.13              
+ [4] clue_0.3-66             GetoptLong_1.0.5        compiler_4.5.1         
+ [7] mgcv_1.9-3              png_0.1-8               vctrs_0.6.5            
+[10] pkgconfig_2.0.3         shape_1.4.6.1           crayon_1.5.3           
+[13] fastmap_1.2.0           XVector_0.48.0          labeling_0.4.3         
+[16] promises_1.3.3          shinyAce_0.4.4          UCSC.utils_1.4.0       
+[19] preprocessCore_1.70.0   xfun_0.52               cachem_1.1.0           
+[22] jsonlite_2.0.0          listviewer_4.0.0        later_1.4.2            
+[25] DelayedArray_0.34.1     BiocParallel_1.42.1     parallel_4.5.1         
+[28] cluster_2.1.8.1         R6_2.6.1                bslib_0.9.0            
+[31] limma_3.64.1            jquerylib_0.1.4         Rcpp_1.0.14            
+[34] iterators_1.0.14        knitr_1.50              httpuv_1.6.16          
+[37] Matrix_1.7-3            splines_4.5.1           igraph_2.1.4           
+[40] tidyselect_1.2.1        abind_1.4-8             yaml_2.3.10            
+[43] doParallel_1.0.17       codetools_0.2-20        affy_1.86.0            
+[46] miniUI_0.1.2            lattice_0.22-7          tibble_3.3.0           
+[49] shiny_1.11.0            withr_3.0.2             evaluate_1.0.4         
+[52] circlize_0.4.16         pillar_1.10.2           affyio_1.78.0          
+[55] BiocManager_1.30.26     renv_1.1.4              DT_0.33                
+[58] foreach_1.5.2           shinyjs_2.1.0           scales_1.4.0           
+[61] xtable_1.8-4            glue_1.8.0              tools_4.5.1            
+[64] colourpicker_1.3.0      locfit_1.5-9.12         colorspace_2.1-1       
+[67] nlme_3.1-168            GenomeInfoDbData_1.2.14 vipor_0.4.7            
+[70] cli_3.6.5               viridisLite_0.4.2       S4Arrays_1.8.1         
+[73] dplyr_1.1.4             gtable_0.3.6            rintrojs_0.3.4         
+[76] sass_0.4.10             digest_0.6.37           SparseArray_1.8.0      
+[79] ggrepel_0.9.6           rjson_0.2.23            htmlwidgets_1.6.4      
+[82] farver_2.1.2            htmltools_0.5.8.1       lifecycle_1.0.4        
+[85] shinyWidgets_0.9.0      httr_1.4.7              GlobalOptions_0.1.2    
+[88] statmod_1.5.0           mime_0.13              
 ```
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
-- Exploratory analysis is essential for quality control and to detect potential problems with a data set. 
-- Different classes of exploratory analysis methods expect differently preprocessed data. The most commonly used methods expect counts to be normalized and log-transformed (or similar- more sensitive/sophisticated), to be closer to homoskedastic. Other methods work directly on the raw counts.  
-
+- Exploratory analysis is essential for quality control and to detect potential problems with a data set.
+- Different classes of exploratory analysis methods expect differently preprocessed data. The most commonly used methods expect counts to be normalized and log-transformed (or similar- more sensitive/sophisticated), to be closer to homoskedastic. Other methods work directly on the raw counts.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 

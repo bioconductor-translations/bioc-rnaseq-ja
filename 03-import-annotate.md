@@ -1,5 +1,5 @@
 ---
-title: "Importing and annotating quantified data into R"
+title: Importing and annotating quantified data into R
 source: Rmd
 teaching: 80
 output:
@@ -13,14 +13,16 @@ exercises: 40
 
 
 ::::::::::::::::::::::::::::::::::::::: objectives
--   Learn how to import the quantifications into a SummarizedExperiment object.
--   Learn how to add additional gene annotations to the object.
-::::::::::::::::::::::::::::::::::::::::::::::::::
+
+- Learn how to import the quantifications into a SummarizedExperiment object.
+- Learn how to add additional gene annotations to the object.
+  ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
--   How can one import quantified gene expression data into an object suitable for downstream statistical analysis in R?
--   What types of gene identifiers are typically used, and how are mappings between them done?
-::::::::::::::::::::::::::::::::::::::::::::::::::
+
+- How can one import quantified gene expression data into an object suitable for downstream statistical analysis in R?
+- What types of gene identifiers are typically used, and how are mappings between them done?
+  ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ## Load packages
 
@@ -36,13 +38,12 @@ suppressPackageStartupMessages({
 })
 ```
 
-If you get any error messages about `there is no package called 'XXXX'` it means you have not installed the package/s yet for this version of R. See the bottom of the [Summary and Setup](https://carpentries-incubator.github.io/bioc-rnaseq/index.html) to install all the necessary packages for this workshop. If you have to install, remember to re-run the `library` commands above to load them. 
+If you get any error messages about `there is no package called 'XXXX'` it means you have not installed the package/s yet for this version of R. See the bottom of the [Summary and Setup](https://carpentries-incubator.github.io/bioc-rnaseq/index.html) to install all the necessary packages for this workshop. If you have to install, remember to re-run the `library` commands above to load them.
 
 ## Load data
 
 In the last episode, we used R to download 4 files from the internet and saved them on our computer. But we do not have these files loaded into R yet so that we can work with them. The original experimental design in [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/) was fairly complex: 8 week old male and female C57BL/6 mice were collected at Day 0 (before influenza infection), Day 4 and Day 8 after influenza infection. From each mouse, cerebellum and spinal cord tissues were taken for RNA-seq. There were originally 4 mice per 'Sex x Time x Tissue' group, but a few were lost along the way resulting in a total of 45 samples. For this workshop, we are going to simplify the analysis by only using the 22 cerebellum samples. Expression quantification was done using STAR to align to the mouse genome and then counting reads that map to genes. In addition to the counts per gene per sample, we also need information on which sample belongs to which Sex/Time point/Replicate. And for the genes, it is helpful to have extra information called annotation.
 Let's read in the data files that we downloaded in the last episode and start to explore them:
-
 
 ### Counts
 
@@ -85,6 +86,7 @@ dim(coldata)
 Now samples are in rows with the GEO sample IDs as the rownames, and we have 10 columns of information. The columns that are the most useful for this workshop are `geo_accession` (GEO sample IDs again), `sex` and `time`.
 
 ### Gene annotations
+
 The counts only have gene symbols, which while short and somewhat recognizable to the human brain, are not always good absolute identifiers for exactly what gene was measured. For this we need additional gene annotations that were provided by the authors. The `count` and `coldata` files were in comma separated value (.csv) format, but we cannot use that for our gene annotation file because the descriptions can contain commas that would prevent a .csv file from being read in correctly. Instead the gene annotation file is in tab separated value (.tsv) format. Likewise, the descriptions can contain the single quote `'` (e.g., 5'), which by default R assumes indicates a character entry. So we have to use a more generic function `read.delim()` with extra arguments to specify that we have tab-separated data (`sep = "\t"`) with no quotes used (`quote = ""`). We also put in other arguments to specify that the first row contains our column names (`header = TRUE`), the gene symbols that should be our `row.names` are in the 5th column (`row.names = 5`), and that NCBI's species-specific gene ID (i.e., ENTREZID) should be read in as character data even though they look like numbers (`colClasses` argument). You can look up this details on available arguments by simply entering the function name starting with question mark. (e.g., `?read.delim`)
 
 
@@ -106,9 +108,9 @@ dim(rowranges)
 # View(rowranges)
 ```
 
-For each of the 41,786 genes, we have the `seqnames` (e.g., chromosome number), 
-`start` and `end` positions, `strand`, `ENTREZID`, gene product description 
-(`product`) and the feature type (`gbkey`). These gene-level metadata are 
+For each of the 41,786 genes, we have the `seqnames` (e.g., chromosome number),
+`start` and `end` positions, `strand`, `ENTREZID`, gene product description
+(`product`) and the feature type (`gbkey`). These gene-level metadata are
 useful for the downstream analysis. For example, from the `gbkey` column, we
 can check what types of genes and how many of them are in our dataset:
 
@@ -134,33 +136,33 @@ table(rowranges$gbkey)
 1. How are the 3 objects `counts`, `coldata` and `rowranges` related to each other in terms of their rows and columns?
 2. If you only wanted to analyse the mRNA genes, what would you have to do keep just those (generally speaking, not exact codes)?
 3. If you decided the first two samples were outliers, what would you have to do to remove those (generally speaking, not exact codes)?
-  
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::: solution
 
-1. In `counts`, the rows are genes just like the rows in `rowranges`. The columns in `counts` are the samples, but this corresponds to the rows in `coldata`. 
+1. In `counts`, the rows are genes just like the rows in `rowranges`. The columns in `counts` are the samples, but this corresponds to the rows in `coldata`.
 2. I would have to remember subset both the rows of `counts` and the rows of `rowranges` to just the mRNA genes.
 3. I would have to remember to subset both the columns of `counts` but the rows of `coldata` to exclude the first two samples.
 
 :::::::::::::::::::::::::::::::::::
 
-You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` were covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop. 
+You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` were covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop.
 As a reminder, let's take a look at the figure below representing the anatomy of the `SummarizedExperiment` class:
 
-<img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list." width="80%" style="display: block; margin: auto;" />
+<img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" width="80%" style="display: block; margin: auto;" />
 
-It is designed to hold any type of quantitative 'omics data (`assays`) along with linked sample annotations (`colData`) and feature annotations with (`rowRanges`) or without (`rowData`) chromosome, start and stop positions. Once these three tables are (correctly!) linked, subsetting either samples and/or features will correctly subset the `assay`, `colData` and `rowRanges`. Additionally, most Bioconductor packages are built around the same core data infrastructure so they will recognize and be able to manipulate `SummarizedExperiment` objects. Two of the most popular RNA-seq statistical analysis packages have their own extended S4 classes similar to a `SummarizedExperiment` with the additional slots for statistical results: [DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)'s `DESeqDataSet` and [edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)'s `DGEList`. No matter which one you end up using for statistical analysis, you can start by putting your data in a `SummarizedExperiment`. 
+It is designed to hold any type of quantitative 'omics data (`assays`) along with linked sample annotations (`colData`) and feature annotations with (`rowRanges`) or without (`rowData`) chromosome, start and stop positions. Once these three tables are (correctly!) linked, subsetting either samples and/or features will correctly subset the `assay`, `colData` and `rowRanges`. Additionally, most Bioconductor packages are built around the same core data infrastructure so they will recognize and be able to manipulate `SummarizedExperiment` objects. Two of the most popular RNA-seq statistical analysis packages have their own extended S4 classes similar to a `SummarizedExperiment` with the additional slots for statistical results: [DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)'s `DESeqDataSet` and [edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)'s `DGEList`. No matter which one you end up using for statistical analysis, you can start by putting your data in a `SummarizedExperiment`.
 
 ## Assemble SummarizedExperiment
+
 We will create a `SummarizedExperiment` from these objects:
 
-- The `count` object will be saved in `assays` slot    
-- The `coldata` object with sample information will be stored in `colData` slot (_**sample metadata**_)    
-- The `rowranges` object describing the genes will be stored in `rowRanges` slot (_**features metadata**_)     
+- The `count` object will be saved in `assays` slot
+- The `coldata` object with sample information will be stored in `colData` slot (_**sample metadata**_)
+- The `rowranges` object describing the genes will be stored in `rowRanges` slot (_**features metadata**_)
 
 Before we put them together, you ABSOLUTELY MUST MAKE SURE THE SAMPLES AND GENES ARE IN THE SAME ORDER! Even though we saw that `count` and `coldata` had the same number of samples and `count` and `rowranges` had the same number of genes, we never explicitly checked to see if they were in the same order. One quick way to check:
-
 
 
 ``` r
@@ -198,8 +200,8 @@ all.equal(colnames(counts), rownames(coldata))
 :::::::::::::::::::::::::::::::::::::::  challenge
 
 If the features (i.e., genes) in the assay (e.g., `counts`) and the gene
-annotation table (e.g., `rowranges`) are different, how can we fix them? 
-Write the codes. 
+annotation table (e.g., `rowranges`) are different, how can we fix them?
+Write the codes.
 
 :::::::::::::::::::::::::::::::::::::::
 
@@ -213,11 +215,9 @@ rowranges <- rowranges[tempindex, ]
 all.equal(rownames(counts), rownames(rowranges)) 
 ```
 
-
 :::::::::::::::::::::::::::::::::::
 
-
-Once we have verified that samples and genes are in the same order, we can 
+Once we have verified that samples and genes are in the same order, we can
 then create our `SummarizedExperiment` object.
 
 
@@ -233,8 +233,7 @@ se <- SummarizedExperiment(
 )
 ```
 
-
-Because matching the genes and samples is so important, the `SummarizedExperiment()` constructor does some internal check to make sure they contain the same number of 
+Because matching the genes and samples is so important, the `SummarizedExperiment()` constructor does some internal check to make sure they contain the same number of
 genes/samples and the sample/row names match. If not, you will get some error messages:
 
 
@@ -254,7 +253,6 @@ Error in validObject(.Object): invalid class "SummarizedExperiment" object:
 ```
 
 
-
 ``` r
 # same number of genes but in different order:
 
@@ -270,8 +268,6 @@ Error in SummarizedExperiment(assays = list(counts = as.matrix(counts)), : the r
   to those of the RangedSummarizedExperiment object (or derivative) to
   construct
 ```
-
-
 
 A brief recap of how to access the various data slots in a `SummarizedExperiment` and how to make some manipulations:
 
@@ -523,12 +519,11 @@ se$Label <- factor(se$Label, levels = se$Label)
 
 1. How many samples are there for each level of the `Infection` variable?
 2. Create 2 objects named `se_infected` and `se_noninfected` containing
-a subset of `se` with only infected and non-infected samples, respectively.
-Then, calculate the mean expression levels of the first 500 genes for each
-object, and use the `summary()` function to explore the distribution
-of expression levels for infected and non-infected samples based on these genes.
+  a subset of `se` with only infected and non-infected samples, respectively.
+  Then, calculate the mean expression levels of the first 500 genes for each
+  object, and use the `summary()` function to explore the distribution
+  of expression levels for infected and non-infected samples based on these genes.
 3. How many samples represent female mice infected with Influenza A on day 8?
-
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -582,10 +577,9 @@ ncol(se[, se$sex == "Female" & se$infection == "InfluenzaA" & se$time == "Day8"]
 
 :::::::::::::::::::::::::::::::::::
 
-
 ## Save SummarizedExperiment
 
-This was a bit of code and time to create our `SummarizedExperiment` object. We will need to keep using it throughout the workshop, so it can be useful to save it as an actual single file on our computer to read it back in to R's memory if we have to shut down RStudio. To save an R-specific file we can use the `saveRDS()` function and later read it back into R using the `readRDS()` function. 
+This was a bit of code and time to create our `SummarizedExperiment` object. We will need to keep using it throughout the workshop, so it can be useful to save it as an actual single file on our computer to read it back in to R's memory if we have to shut down RStudio. To save an R-specific file we can use the `saveRDS()` function and later read it back into R using the `readRDS()` function.
 
 
 ``` r
@@ -594,20 +588,18 @@ rm(se) # remove the object!
 se <- readRDS("data/GSE96870_se.rds")
 ```
 
-
 ## Data provenance and reproducibility
 
-We have now created an external .rds file that represents our RNA-Seq data in a format that can be read into R and used by various packages for our analyses. But we should still keep a record of the codes that created the .rds file from the 3 files we downloaded from the internet. But what is the provenance of those files - i.e, where did they come from and how were they made? The original counts and gene information were deposited in the GEO public database, accession number [GSE96870](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE96870). But these counts were generated by running alignment/quantification programs on the also-deposited fastq files that hold the sequence base calls and quality scores, which in turn were generated by a specific sequencing machine using some library preparation method on RNA extracted from samples collected in a particular experiment. Whew! 
+We have now created an external .rds file that represents our RNA-Seq data in a format that can be read into R and used by various packages for our analyses. But we should still keep a record of the codes that created the .rds file from the 3 files we downloaded from the internet. But what is the provenance of those files - i.e, where did they come from and how were they made? The original counts and gene information were deposited in the GEO public database, accession number [GSE96870](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE96870). But these counts were generated by running alignment/quantification programs on the also-deposited fastq files that hold the sequence base calls and quality scores, which in turn were generated by a specific sequencing machine using some library preparation method on RNA extracted from samples collected in a particular experiment. Whew!
 
-If you conducted the original experiment ideally you would have the complete record of where and how the data were generated. But you might use publicly-available data sets so the best you can do is to keep track of what original files you got from where and what manipulations you have done to them. Using R codes to keep track of everything is an excellent way to be able to reproduce the entire analysis from the original input files. The exact results you get can differ depending on the R version, add-on package versions and even what operating system you use, so make sure to keep track of all this information as well by running `sessionInfo()` and recording the output (see example at end of lesson). 
-
+If you conducted the original experiment ideally you would have the complete record of where and how the data were generated. But you might use publicly-available data sets so the best you can do is to keep track of what original files you got from where and what manipulations you have done to them. Using R codes to keep track of everything is an excellent way to be able to reproduce the entire analysis from the original input files. The exact results you get can differ depending on the R version, add-on package versions and even what operating system you use, so make sure to keep track of all this information as well by running `sessionInfo()` and recording the output (see example at end of lesson).
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
 ## Challenge: How to subset to mRNA genes
 
 Before, we conceptually discussed subsetting to only the mRNA genes. Now that we have our `SummarizedExperiment` object, it becomes much easier to write the codes to subset `se` to a new object called `se_mRNA` that contains only the genes/rows where the `rowData(se)$gbkey` is equal to mRNA. Write the codes and then check you correctly got the 21,198 mRNA genes:
-  
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::: solution
@@ -624,36 +616,36 @@ dim(se_mRNA)
 
 :::::::::::::::::::::::::::::::::::
 
-
-
 ## Gene Annotations
-Depending on who generates your count data, you might not have a nice file of 
-additional gene annotations. There may only be the count row names, which 
-could be gene symbols or ENTREZIDs or another database's ID. Characteristics 
-of gene annotations differ based on their annotation strategies and information 
-sources. For example, RefSeq human gene models (i.e., Entrez from NCBI) are 
-well supported and broadly used in various studies. The UCSC Known Genes 
-dataset is based on protein data from Swiss-Prot/TrEMBL (UniProt) and the 
-associated mRNA data from GenBank, and serves as a foundation for the UCSC 
-Genome Browser. Ensembl genes contain both automated genome annotation and 
+
+Depending on who generates your count data, you might not have a nice file of
+additional gene annotations. There may only be the count row names, which
+could be gene symbols or ENTREZIDs or another database's ID. Characteristics
+of gene annotations differ based on their annotation strategies and information
+sources. For example, RefSeq human gene models (i.e., Entrez from NCBI) are
+well supported and broadly used in various studies. The UCSC Known Genes
+dataset is based on protein data from Swiss-Prot/TrEMBL (UniProt) and the
+associated mRNA data from GenBank, and serves as a foundation for the UCSC
+Genome Browser. Ensembl genes contain both automated genome annotation and
 manual curation.
 
 You can find more information in Bioconductor [Annotation Workshop](https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html)
 material.
 
-Bioconductor has many packages and functions that can help you to get additional annotation information for your genes. The available resources are covered in more detail in [Episode 7 Gene set enrichment analysis](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources). 
+Bioconductor has many packages and functions that can help you to get additional annotation information for your genes. The available resources are covered in more detail in [Episode 7 Gene set enrichment analysis](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources).
 
 Here, we will introduce one of the gene ID mapping functions, `mapIds`:
+
 ```
 mapIds(annopkg, keys, column, keytype, ..., multiVals)
 ```
 
-Where 
+Where
 
-- *annopkg* is the annotation package        
-- *keys* are the IDs that we **know**       
-- *column* is the value we **want**    
-- *keytype* is the type of key used    
+- _annopkg_ is the annotation package
+- _keys_ are the IDs that we **know**
+- _column_ is the value we **want**
+- _keytype_ is the type of key used
 
 
 ``` r
@@ -669,9 +661,9 @@ mapIds(org.Mm.eg.db, keys = "497097", column = "SYMBOL", keytype = "ENTREZID")
 "Xkr4" 
 ```
 
-Different from the `select()` function, `mapIds()` function handles 1:many 
+Different from the `select()` function, `mapIds()` function handles 1:many
 mapping between keys and columns through an additional argument, `multiVals`.
-The below example demonstrate this functionality using the `hgu95av2.db` 
+The below example demonstrate this functionality using the `hgu95av2.db`
 package, an Affymetrix Human Genome U95 Set annotation data.
 
 
@@ -740,10 +732,6 @@ $`10001`
 [1] "ARC33"     "NY-REN-28" "MED6"     
 ```
 
-
-
-
-
 ## Session info
 
 
@@ -784,26 +772,22 @@ other attached packages:
 [15] knitr_1.50                 
 
 loaded via a namespace (and not attached):
- [1] renv_1.1.4              SparseArray_1.8.0       xml2_1.3.8             
- [4] RSQLite_2.4.1           lattice_0.22-7          tinkr_0.3.0            
- [7] magrittr_2.0.3          evaluate_1.0.4          grid_4.5.1             
-[10] fastmap_1.2.0           blob_1.2.4              jsonlite_2.0.0         
-[13] Matrix_1.7-3            processx_3.8.6          DBI_1.2.3              
-[16] ps_1.9.1                BiocManager_1.30.26     httr_1.4.7             
-[19] purrr_1.1.0             UCSC.utils_1.4.0        Biostrings_2.76.0      
-[22] abind_1.4-8             cli_3.6.5               rlang_1.1.6            
-[25] crayon_1.5.3            XVector_0.48.0          bit64_4.6.0-1          
-[28] cachem_1.1.0            withr_3.0.2             DelayedArray_0.34.1    
-[31] yaml_2.3.10             S4Arrays_1.8.1          tools_4.5.1            
-[34] sandpaper_0.16.13.9000  memoise_2.0.1           GenomeInfoDbData_1.2.14
-[37] assertthat_0.2.1        png_0.1-8               vctrs_0.6.5            
-[40] R6_2.6.1                lifecycle_1.0.4         KEGGREST_1.48.1        
-[43] bit_4.6.0               pkgconfig_2.0.3         callr_3.7.6            
-[46] glue_1.8.0              xfun_0.52               pegboard_0.7.9         
-[49] compiler_4.5.1         
+ [1] Matrix_1.7-3            bit_4.6.0               jsonlite_2.0.0         
+ [4] compiler_4.5.1          BiocManager_1.30.26     renv_1.1.4             
+ [7] crayon_1.5.3            blob_1.2.4              Biostrings_2.76.0      
+[10] png_0.1-8               fastmap_1.2.0           yaml_2.3.10            
+[13] lattice_0.22-7          R6_2.6.1                XVector_0.48.0         
+[16] S4Arrays_1.8.1          DelayedArray_0.34.1     GenomeInfoDbData_1.2.14
+[19] DBI_1.2.3               rlang_1.1.6             KEGGREST_1.48.1        
+[22] cachem_1.1.0            xfun_0.52               bit64_4.6.0-1          
+[25] memoise_2.0.1           SparseArray_1.8.0       RSQLite_2.4.1          
+[28] cli_3.6.5               grid_4.5.1              vctrs_0.6.5            
+[31] evaluate_1.0.4          abind_1.4-8             httr_1.4.7             
+[34] pkgconfig_2.0.3         tools_4.5.1             UCSC.utils_1.4.0       
 ```
 
 ::: keypoints
--   Depending on the gene expression quantification tool used, there are different ways (often distributed in Bioconductor packages) to read the output into a `SummarizedExperiment` or `DGEList` object for further processing in R.
--   Stable gene identifiers such as Ensembl or Entrez IDs should preferably be used as the main identifiers throughout an RNA-seq analysis, with gene symbols added for easier interpretation.
-:::
+
+- Depending on the gene expression quantification tool used, there are different ways (often distributed in Bioconductor packages) to read the output into a `SummarizedExperiment` or `DGEList` object for further processing in R.
+- Stable gene identifiers such as Ensembl or Entrez IDs should preferably be used as the main identifiers throughout an RNA-seq analysis, with gene symbols added for easier interpretation.
+  :::

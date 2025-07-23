@@ -9,7 +9,6 @@ exercises: 45
 
 
 
-
 <style>
 body h3 {
     margin-top: 50px;
@@ -21,7 +20,7 @@ body h3 {
 - Learn the method of gene set enrichment analysis.
 - Learn how to obtain gene sets from various resources in R.
 - Learn how to perform gene set enrichment analysis and how to visualize
-  enrichment results.
+ enrichment results.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -32,7 +31,6 @@ body h3 {
 - What are the commonly-used gene set databases?
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 After we have obtained a list of differentially expressed (DE) genes, the next
 question naturally to ask is what biological functions these DE genes may
@@ -69,7 +67,6 @@ end, we will learn several visualization methods on the GSEA results.
 Following is a list of packages that will be used in this episode:
 
 
-
 ``` r
 library(SummarizedExperiment)
 library(DESeq2)
@@ -77,7 +74,7 @@ library(gplots)
 library(microbenchmark)
 library(org.Hs.eg.db)
 library(org.Mm.eg.db)
-library(msigdb)
+library(msigdbr)
 library(clusterProfiler)
 library(enrichplot)
 library(ggplot2)
@@ -184,7 +181,6 @@ sets are from public databases), it is very possible that gene IDs are not
 consistent in the two. Later in this episode, we will learn how to perform
 gene ID conversion in the ORA analysis.
 
-
 Since the DE genes and the gene set can be mathematically thought of as two sets,
 a natural way is to first visualize them with a Venn diagram.
 
@@ -265,7 +261,6 @@ matrix(c(n_11, n_12, n_10, n_21, n_22, n_20, n_01, n_02, n),
 
 And we fill these numbers into the 2x2 contingency table:
 
-
 <center>
 |            | In the gene set | Not in the gene set | Total
 | ---------- | --------------- | --------------------| -------
@@ -273,7 +268,6 @@ And we fill these numbers into the 2x2 contingency table:
 | **Not DE** |     1121    |    20023         | 21144
 | **Total**  |     1134    |    20064         | 21198
 </center>
-
 
 Fisher's exact test can be used to test the associations of the two marginal
 attributes, i.e. is there a dependency of a gene to be a DE gene and to be in
@@ -321,14 +315,13 @@ t$p.value
 
 Odds ratio from the Fisher's exact test is defined as follows:
 
-$$ 
+$$
 \mathrm{Odds\_ratio} = \frac{n_{11}/n_{21}}{n_{12}/n_{22}} = \frac{n_{11}/n_{12}}{n_{21}/n_{22}} = \frac{n_{11} * n_{22}}{n_{12} * n_{21}}
 $$
 
 If there is no association between DE genes and the gene set, odds ratio is
 expected to be 1. And it is larger than 1 if there is an over-representation
 of DE genes on the gene set.
-
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
@@ -340,11 +333,12 @@ and put whether genes are DE on columns.
 
 <center>
 
-|                         |    DE       | Not DE    | Total
-| ----------------------- | ----------- | ----------| -------
-| **In the gene set**     |  13   |  1121 | 1134
-| **Not in the gene set** |  41   |  20023 | 20064
-| **Total**               |  54   |  21144 | 21198
+|                         | DE       | Not DE   | Total    |
+| ----------------------- | -------- | -------- | -------- |
+| **In the gene set**     | 13 | 1121 | 1134 |
+| **Not in the gene set** | 41 | 20023 | 20064 |
+| **Total**               | 54 | 21144 | 21198    |
+
 </center>
 
 And the corresponding `fisher.test()` is:
@@ -406,7 +400,6 @@ $$P = \frac{\binom{n_{1+}}{n_{11}} \binom{n_{2+}}{n_{21}}}{\binom{n}{n_{+1}}} = 
 
 where in the denominator is the number of ways of picking $n_{+1}$ genes
 without distinguishing whether they are DE or not.
-
 
 If $n$ (number of total genes), $n_{1+}$ (number of DE genes) and $n_{+1}$
 (size of gene set) are all fixed values, the number of DE genes that are
@@ -488,7 +481,6 @@ because in Fisher's exact test, hypergeometric distribution is the exact distrib
 Let's test the runtime of the two functions:
 
 
-
 ``` r
 library(microbenchmark)
 microbenchmark(
@@ -500,9 +492,9 @@ microbenchmark(
 
 ``` output
 Unit: microseconds
-   expr     min       lq      mean   median       uq      max neval
- fisher 245.528 251.1780 273.13470 254.2295 268.3155 1701.303   100
-  hyper   1.513   1.7285   2.58602   3.0855   3.2760    6.733   100
+   expr     min       lq      mean   median      uq     max neval
+ fisher 248.333 253.2025 262.59121 256.0980 268.220 461.841   100
+  hyper   1.533   1.7980   2.55009   2.8605   3.156   6.622   100
 ```
 
 It is very astonishing that `phyper()` is hundreds of times faster than
@@ -510,19 +502,17 @@ It is very astonishing that `phyper()` is hundreds of times faster than
 calculations besides calculating the _p_-value. So if you want to implement ORA
 analysis by yourself, always consider to use `phyper()`^[Also note `phyper()` can be vectorized.].
 
-
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ### Further reading
 
 Current tools also use Binomial distribution or chi-square test for ORA
-analysis. These two are just approximations. Please refer to [Rivals et al.,
+analysis. These two are just approximations. Please refer to Rivals et al.,
 Enrichment or depletion of a GO category within a class of genes: which test?
-Bioinformatics 2007](https://doi.org/10.1093/bioinformatics/btl633) which gives
+Bioinformatics 2007 which gives
 an overview of statistical methods used in ORA analysis.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 ## Gene set resources
 
@@ -545,11 +535,11 @@ definitions, to name a few:
 
 - Locations in the cell, e.g. cell membrane or cell nucleus.
 - Positions on chromosomes, e.g. sex chromosomes or the cytogenetic band p13
-  on chromome 10.
+ on chromome 10.
 - Target genes of a transcription factor or a microRNA, e.g. all genes that
-  are transcriptionally regulationed by NF-κB.
+ are transcriptionally regulationed by NF-κB.
 - Signature genes in a certain tumor type, i.e. genes that are uniquely highly
-  expressed in a tumor type.
+ expressed in a tumor type.
 
 The [MSigDB database](https://www.gsea-msigdb.org/gsea/msigdb) contains gene
 sets in many topics. We will introduce it later in this section.
@@ -620,7 +610,6 @@ data.frame(gene_set = rep(names(lt), times = sapply(lt, length)),
 Or genes be in the first column:
 
 
-
 ``` output
      gene   gene_set
 1  gene_1 gene_set_1
@@ -635,20 +624,17 @@ Or genes be in the first column:
 10 gene_7 gene_set_3
 ```
 
-
 Not very often, gene sets are represented as a matrix where one dimension
 corresponds to gene sets and the other dimension corresponds to genes. The
 values in the matix are binary where a value of 1 represents the gene is a
 member of the corresponding gene sets. In some methods, 1 is replaced by
 $w_{ij}$ to weight the effect of the genes in the gene set.
 
-
 ```
 #            gene_1 gene_2 gene_3 gene_4
 # gene_set_1      1      1      0      0
 # gene_set_2      1      0      1      1
 ```
-
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
@@ -711,34 +697,31 @@ $gene_set_3
 
 :::::::::::::::::::::::::::::::::::::::
 
-
-
 Next, let's go through gene sets from several major databases: the GO, KEGG
 and MSigDB databases.
 
-
-### Gene Ontology gene sets 
+### Gene Ontology gene sets
 
 Gene Ontology (GO) is the standard source for gene set enrichment analysis. GO
 contains three namespaces of biological process (BP), cellular components (CC)
 and molecular function (MF) which describe a biological entity from different
 aspect. The associations between GO terms and genes are integrated in the
 Bioconductor standard packages: _the organism annotation packages_. In the current
-Bioconductor release, there are the following organism packages:
+Bioconductor release (3.17), there are the following organism packages:
 
 <center>
 
-|    Package    |   Organism   |   Package         | Organism
-| ------------- | ------------ | ----------------- | -----
-| org.Hs.eg.db  |  Human       | org.Mm.eg.db      | Mouse
-| org.Rn.eg.db  |  Rat         | org.Dm.eg.db      | Fly
-| org.At.tair.db|  Arabidopsis | org.Dr.eg.db      | Zebrafish
-| org.Sc.sgd.db |  Yeast       | org.Ce.eg.db      | Worm
-| org.Bt.eg.db  |  Bovine      | org.Gg.eg.db      | Chicken
-| org.Ss.eg.db  |  Pig         | org.Mmu.eg.db     | Rhesus
-| org.Cf.eg.db  |  Canine      | org.EcK12.eg.db   | E coli strain K12
-| org.Xl.eg.db  |  Xenopus     | org.Pt.eg.db      | Chimp
-| org.Ag.eg.db  |  Anopheles   | org.EcSakai.eg.db | E coli strain Sakai
+| Package                                                        | Organism    | Package                                                           | Organism            |
+| -------------------------------------------------------------- | ----------- | ----------------------------------------------------------------- | ------------------- |
+| org.Hs.eg.db   | Human       | org.Mm.eg.db      | Mouse               |
+| org.Rn.eg.db   | Rat         | org.Dm.eg.db      | Fly                 |
+| org.At.tair.db | Arabidopsis | org.Dr.eg.db      | Zebrafish           |
+| org.Sc.sgd.db  | Yeast       | org.Ce.eg.db      | Worm                |
+| org.Bt.eg.db   | Bovine      | org.Gg.eg.db      | Chicken             |
+| org.Ss.eg.db   | Pig         | org.Mmu.eg.db     | Rhesus              |
+| org.Cf.eg.db   | Canine      | org.EcK12.eg.db   | E coli strain K12   |
+| org.Xl.eg.db   | Xenopus     | org.Pt.eg.db      | Chimp               |
+| org.Ag.eg.db   | Anopheles   | org.EcSakai.eg.db | E coli strain Sakai |
 
 </center>
 
@@ -841,9 +824,7 @@ In most cases, because `OrgDb` is a standard Bioconductor data structure, most
 tools can automatically construct GO gene sets internally. There is no need
 for users to touch such low-level processings.
 
-
 :::::::::::::::::::::::::::::::::::::::::  callout
-
 
 ### Further reading
 
@@ -854,7 +835,6 @@ mapping between GO terms and genes. Readers can check the documentation of
 `org.Hs.egGO2ALLEGS`. Additional information on GO terms such as GO names and
 long descriptions are available in the package **GO.db**.
 
-
 Bioconductor has already provided a large number of organism packages.
 However, if the organism you are working on is not supported there, you may
 consider to look for it with the **AnnotationHub** package, which additionally
@@ -862,7 +842,6 @@ provide `OrgDb` objects for approximately 2000 organisms. The `OrgDb`
 object can be directly used in the ORA analysis introduced in the next section.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 ### KEGG gene sets
 
@@ -894,7 +873,6 @@ hsa:126 path:hsa00010
 We can directly read the text output with `read.table()`. Wrapping the URL
 with the function `url()`, you can pretend to directly read data from the
 remote web server.
-
 
 
 ``` r
@@ -952,15 +930,13 @@ head(keggNames)
 ```
 
 In both commands, we obtained data for human where the corresponding KEGG code
-is `"hsa"`. The code for other organisms can be found from the [KEGG
-website](https://www.genome.jp/kegg/) (e.g. `"mmu"` for mouse), or via
+is `"hsa"`. The code for other organisms can be found from the KEGG
+website (e.g. `"mmu"` for mouse), or via
 https://rest.kegg.jp/list/organism.
 
-
 Keep in mind, KEGG pathways are only free for academic users. If you use it
-for commercial purposes, [please contact the KEGG team to get a
-licence](https://www.kegg.jp/kegg/legal.html).
-
+for commercial purposes, please contact the KEGG team to get a
+licence.
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
@@ -973,149 +949,192 @@ essentially, they all obtain KEGG data with the REST API.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
 ### MSigDB gene sets
 
 [Molecular signature database](https://www.gsea-msigdb.org/gsea/msigdb/)
 (MSigDB) is a manually curated gene set database. Initially, it was proposed
-as a supplementary dataset for [the original GSEA
-paper](https://www.nature.com/articles/ng1180). Later it has been separated
+as a supplementary dataset for the original GSEA
+paper. Later it has been separated
 out and developed independently. In the first version in 2005, there were only
 two gene sets collections and in total 843 gene sets. Now in the newest version
 of MSigDB (v2023.1.Hs), it has grown into nine gene sets collections, covering
+
 > 30K gene sets. It provides gene sets on a variety of topics.
 
 MSigDB categorizes gene sets into nine collections where each collection
 focuses on a specific topic. For some collections, they are additionally split
 into sub-collections. There are several ways to obtain gene sets from MSigDB.
-One convenient way is to use the **msigdb** package. Another option is to use 
-the **msigdbr** CRAN package, which supports organisms other than human and 
-mouse by mapping to orthologs.
+One convenient way is to use the **msigdbr** package. The advantages is
+**msigdbr** supports many other organisms by mapping to orthologs.
 
-**msigdb** provides mouse and human gene sets, defined using either gene 
-symbols or Entrez IDs. Let's get the mouse collection.
+Let's check which organisms are supported and which gene sets collections it provides.
 
 
 
 
 ``` r
-library(msigdb)
-library(ExperimentHub)
-library(GSEABase)
-MSigDBGeneSets <- getMsigdb(org = "mm", id = "SYM", version = "7.4")
-```
-
-The `msigdb` object above is a `GeneSetCollection`, storing all gene sets 
-from MSigDB. The `GeneSetCollection` object class is defined in the `GSEABase` 
-package, and it is a linear data structure similar to a base list object, but 
-with additional metadata such as the type of gene identifier or provenance 
-information about the gene sets.
-
-
-``` r
-MSigDBGeneSets
+library(msigdbr)
+msigdbr_species()
 ```
 
 ``` output
-GeneSetCollection
-  names: 10qA1, 10qA2, ..., ZZZ3_TARGET_GENES (44688 total)
-  unique identifiers: Epm2a, Esr1, ..., Gm52481 (53805 total)
-  types in collection:
-    geneIdType: SymbolIdentifier (1 total)
-    collectionType: BroadCollection (1 total)
+# A tibble: 20 × 2
+   species_name                    species_common_name                          
+   <chr>                           <chr>                                        
+ 1 Anolis carolinensis             Carolina anole, green anole                  
+ 2 Bos taurus                      bovine, cattle, cow, dairy cow, domestic cat…
+ 3 Caenorhabditis elegans          <NA>                                         
+ 4 Canis lupus familiaris          dog, dogs                                    
+ 5 Danio rerio                     leopard danio, zebra danio, zebra fish, zebr…
+ 6 Drosophila melanogaster         fruit fly                                    
+ 7 Equus caballus                  domestic horse, equine, horse                
+ 8 Felis catus                     cat, cats, domestic cat                      
+ 9 Gallus gallus                   bantam, chicken, chickens, Gallus domesticus 
+10 Homo sapiens                    human                                        
+11 Macaca mulatta                  rhesus macaque, rhesus macaques, Rhesus monk…
+12 Monodelphis domestica           gray short-tailed opossum                    
+13 Mus musculus                    house mouse, mouse                           
+14 Ornithorhynchus anatinus        duck-billed platypus, duckbill platypus, pla…
+15 Pan troglodytes                 chimpanzee                                   
+16 Rattus norvegicus               brown rat, Norway rat, rat, rats             
+17 Saccharomyces cerevisiae        baker's yeast, brewer's yeast, S. cerevisiae 
+18 Schizosaccharomyces pombe 972h- <NA>                                         
+19 Sus scrofa                      pig, pigs, swine, wild boar                  
+20 Xenopus tropicalis              tropical clawed frog, western clawed frog    
 ```
 
 ``` r
-length(MSigDBGeneSets)
+msigdbr_collections()
 ```
 
 ``` output
-[1] 44688
+# A tibble: 25 × 4
+   gs_collection gs_subcollection  gs_collection_name               num_genesets
+   <chr>         <chr>             <chr>                                   <int>
+ 1 C1            ""                "Positional"                              302
+ 2 C2            "CGP"             "Chemical and Genetic Perturbat…         3538
+ 3 C2            "CP"              "Canonical Pathways"                       19
+ 4 C2            "CP:BIOCARTA"     "BioCarta Pathways"                       292
+ 5 C2            "CP:KEGG_LEGACY"  "KEGG Legacy Pathways"                    186
+ 6 C2            "CP:KEGG_MEDICUS" "KEGG Medicus Pathways"                   658
+ 7 C2            "CP:PID"          "PID Pathways"                            196
+ 8 C2            "CP:REACTOME"     "Reactome Pathways"                      1787
+ 9 C2            "CP:WIKIPATHWAYS" "WikiPathways"                            885
+10 C3            "MIR:MIRDB"       "miRDB"                                  2377
+11 C3            "MIR:MIR_LEGACY"  "MIR_Legacy"                              221
+12 C3            "TFT:GTRD"        "GTRD"                                    505
+13 C3            "TFT:TFT_LEGACY"  "TFT_Legacy"                              610
+14 C4            "3CA"             "Curated Cancer Cell Atlas gene…          148
+15 C4            "CGN"             "Cancer Gene Neighborhoods"               427
+16 C4            "CM"              "Cancer Modules"                          431
+17 C5            "GO:BP"           "GO Biological Process"                  7583
+18 C5            "GO:CC"           "GO Cellular Component"                  1042
+19 C5            "GO:MF"           "GO Molecular Function"                  1855
+20 C5            "HPO"             "Human Phenotype Ontology"               5748
+21 C6            ""                "Oncogenic Signature"                     189
+22 C7            "IMMUNESIGDB"     "ImmuneSigDB"                            4872
+23 C7            "VAX"             "HIPC Vaccine Response"                   347
+24 C8            ""                "Cell Type Signature"                     866
+25 H             ""                "Hallmark"                                 50
 ```
 
-Each signature is stored in a `GeneSet` object, also defined in the `GSEABase` 
-package.
+The first column in the above output is the primary category of gene sets.
+Some gene sets collections may have sub-collections, and they are shown in the
+second column. The description of gene sets collections from MSigDB is in the
+following figure.
+
+<img src="fig/msigdb.png" />
+
+The core function `msigdbr()` retrieves gene sets in a specific category (or a
+subcategory if it exists).
+
+```r
+msigdbr(species, category, subcategory)
+```
+
+For example, we want to obtain the hallmark gene sets for mouse.
 
 
 ``` r
-gs <- MSigDBGeneSets[[2000]]
-gs
+MSigDBGeneSets = msigdbr(species = "mouse", category = "H")
+head(MSigDBGeneSets)
 ```
 
 ``` output
-setName: DESCARTES_MAIN_FETAL_CHROMAFFIN_CELLS 
-geneIds: Asic5, Cntfr, ..., Slc22a22 (total: 28)
-geneIdType: Symbol
-collectionType: Broad
-  bcCategory: c8 (Cell Type Signatures)
-  bcSubCategory: NA
-details: use 'details(object)'
+# A tibble: 6 × 26
+  gene_symbol ncbi_gene ensembl_gene db_gene_symbol db_ncbi_gene db_ensembl_gene
+  <chr>       <chr>     <chr>        <chr>          <chr>        <chr>          
+1 Abca1       11303     ENSMUSG0000… ABCA1          19           ENSG00000165029
+2 Abcb8       74610     ENSMUSG0000… ABCB8          11194        ENSG00000197150
+3 Acaa2       52538     ENSMUSG0000… ACAA2          10449        ENSG00000167315
+4 Acadl       11363     ENSMUSG0000… ACADL          33           ENSG00000115361
+5 Acadm       11364     ENSMUSG0000… ACADM          34           ENSG00000117054
+6 Acads       11409     ENSMUSG0000… ACADS          35           ENSG00000122971
+# ℹ 20 more variables: source_gene <chr>, gs_id <chr>, gs_name <chr>,
+#   gs_collection <chr>, gs_subcollection <chr>, gs_collection_name <chr>,
+#   gs_description <chr>, gs_source_species <chr>, gs_pmid <chr>,
+#   gs_geoid <chr>, gs_exact_source <chr>, gs_url <chr>, db_version <chr>,
+#   db_target_species <chr>, ortholog_taxon_id <int>, ortholog_sources <chr>,
+#   num_ortholog_sources <dbl>, entrez_gene <chr>, gs_cat <chr>,
+#   gs_subcat <chr>
 ```
 
-``` r
-collectionType(gs)
-```
-
-``` output
-collectionType: Broad
-  bcCategory: c8 (Cell Type Signatures)
-  bcSubCategory: NA
-```
-
-``` r
-geneIds(gs)
-```
-
-``` output
- [1] "Asic5"    "Cntfr"    "Galnt16"  "Galnt14"  "Gip"      "Hmx1"    
- [7] "Il7"      "Insl5"    "Insm2"    "Insm1"    "Mab21l1"  "Mab21l2" 
-[13] "Npy"      "Pyy"      "Ntrk1"    "Ntrk2"    "Ntrk3"    "Phox2a"  
-[19] "Ptchd1"   "Ptchd4"   "Reg4"     "Slc22a26" "Slc22a30" "Slc22a19"
-[25] "Slc22a27" "Slc22a29" "Slc22a28" "Slc22a22"
-```
-
-We can also subset the collection. First, let's list the available collections 
-and subcollections.
+The output is in the `tibble` class. If you have no experience with it, don't
+worry, just take it as a table. As you can see, the three major gene IDs type
+`"gene_symbol"`, `"entrez_gene"` and `"ensembl_gene"` are all included in the
+table. So users can easily pick one with the same gene ID type as in the DE gene
+list. For example:
 
 
 ``` r
-listCollections(MSigDBGeneSets)
+MSigDBGeneSets[, c("gs_name", "ensembl_gene")]
 ```
 
 ``` output
-[1] "c1" "c3" "c2" "c8" "c6" "c7" "c4" "c5" "h" 
+# A tibble: 7,379 × 2
+   gs_name               ensembl_gene      
+   <chr>                 <chr>             
+ 1 HALLMARK_ADIPOGENESIS ENSMUSG00000015243
+ 2 HALLMARK_ADIPOGENESIS ENSMUSG00000028973
+ 3 HALLMARK_ADIPOGENESIS ENSMUSG00000036880
+ 4 HALLMARK_ADIPOGENESIS ENSMUSG00000026003
+ 5 HALLMARK_ADIPOGENESIS ENSMUSG00000062908
+ 6 HALLMARK_ADIPOGENESIS ENSMUSG00000029545
+ 7 HALLMARK_ADIPOGENESIS ENSMUSG00000020917
+ 8 HALLMARK_ADIPOGENESIS ENSMUSG00000022477
+ 9 HALLMARK_ADIPOGENESIS ENSMUSG00000020777
+10 HALLMARK_ADIPOGENESIS ENSMUSG00000022994
+# ℹ 7,369 more rows
 ```
 
 ``` r
-listSubCollections(MSigDBGeneSets)
+# or put genes in the first column
+MSigDBGeneSets[, c("ensembl_gene", "gs_name")]
 ```
 
 ``` output
- [1] "MIR:MIR_Legacy"  "TFT:TFT_Legacy"  "CGP"             "TFT:GTRD"       
- [5] "VAX"             "CP:BIOCARTA"     "CGN"             "GO:BP"          
- [9] "GO:CC"           "IMMUNESIGDB"     "GO:MF"           "HPO"            
-[13] "MIR:MIRDB"       "CM"              "CP"              "CP:PID"         
-[17] "CP:REACTOME"     "CP:WIKIPATHWAYS"
+# A tibble: 7,379 × 2
+   ensembl_gene       gs_name              
+   <chr>              <chr>                
+ 1 ENSMUSG00000015243 HALLMARK_ADIPOGENESIS
+ 2 ENSMUSG00000028973 HALLMARK_ADIPOGENESIS
+ 3 ENSMUSG00000036880 HALLMARK_ADIPOGENESIS
+ 4 ENSMUSG00000026003 HALLMARK_ADIPOGENESIS
+ 5 ENSMUSG00000062908 HALLMARK_ADIPOGENESIS
+ 6 ENSMUSG00000029545 HALLMARK_ADIPOGENESIS
+ 7 ENSMUSG00000020917 HALLMARK_ADIPOGENESIS
+ 8 ENSMUSG00000022477 HALLMARK_ADIPOGENESIS
+ 9 ENSMUSG00000020777 HALLMARK_ADIPOGENESIS
+10 ENSMUSG00000022994 HALLMARK_ADIPOGENESIS
+# ℹ 7,369 more rows
 ```
 
-Then, we retrieve only the 'hallmarks' collection.
+If you only want to use a sub-category gene sets, e.g. `"CP:KEGG"` from `"C2"`,
+you can simply specify both `category` and `subcategory` arguments:
 
-
-``` r
-(hm <- subsetCollection(MSigDBGeneSets, collection = "h"))
+```r
+msigdbr(species = "mouse", category = "C2", subcategory = "CP:KEGG")
 ```
-
-``` output
-GeneSetCollection
-  names: HALLMARK_ADIPOGENESIS, HALLMARK_ALLOGRAFT_REJECTION, ..., HALLMARK_XENOBIOTIC_METABOLISM (50 total)
-  unique identifiers: Abca1, Abca4, ..., Upb1 (5435 total)
-  types in collection:
-    geneIdType: SymbolIdentifier (1 total)
-    collectionType: BroadCollection (1 total)
-```
-
-If you only want to use a sub-category, specify both the `collection` and 
-`subcollection` arguments to `subsetCollection`. 
 
 ## ORA with clusterProfiler
 
@@ -1191,7 +1210,7 @@ resTimeGO = enrichGO(gene = timeDEgenes,
 ```
 
 ``` output
---> Expected input gene ID: 11799,723903,20085,21853,21958,54388
+--> Expected input gene ID: 235587,71986,102871,232314,117599,22596
 ```
 
 ``` output
@@ -1269,7 +1288,7 @@ In the output data frame, there are the following columns:
 - `geneID`: A list of DE genes in the gene set.
 - `Count`: Number of DE genes in the gene set.
 
-You may have found the total number of DE genes changes. There are 
+You may have found the total number of DE genes changes. There are
 1134 in `timeDEgenes`, but only 983 DE genes are included in
 the enrichment result table (in the `GeneRatio` column). The main reason is by default DE genes not
 annotated to any GO gene set are filtered out. This relates to the "universe"
@@ -1278,17 +1297,17 @@ of all genes in ORA, which we will touch in the end of this section.
 There are several additional arguments in `enrichGO()`:
 
 - `universe`: the universe set of genes, i.e. total genes to use. By default it
-  uses the union of the genes in all gene sets. If it is set, DE genes and all gene
-  sets will take intersections with it. We will discuss it in the end of this section.
+ uses the union of the genes in all gene sets. If it is set, DE genes and all gene
+ sets will take intersections with it. We will discuss it in the end of this section.
 - `minGSSize`: Minimal size of gene sets. Normally gene sets with very small
-  size have very specific biological meanings which are not helpful too much
-  for the interpretation. Gene sets with size smaller than it will be removed
-  from the analysis. By default it is 10.
+ size have very specific biological meanings which are not helpful too much
+ for the interpretation. Gene sets with size smaller than it will be removed
+ from the analysis. By default it is 10.
 - `maxGSSize`: Maximal size of gene sets. Normally gene sets with huge size
-  provide too general biological meanings and are not helpful either. By
-  default is 500.
+ provide too general biological meanings and are not helpful either. By
+ default is 500.
 - `pvalueCutoff`: Cutoff for both _p_-values and adjusted _p_-values. By default is
-  0.05.
+ 0.05.
 - `qvalueCutoff`: Cutoff for _q_-values. by default is 0.2.
 
 Note, `enrichGO()` only returns significant gene sets that pass the
@@ -1347,7 +1366,6 @@ GO:0060326    41
 GO:0071674    32
 ```
 
-
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ## Perform GO enrichment on other organisms
@@ -1360,8 +1378,6 @@ perform ORA analysis on any organism as long as there is a corresponding
 - For other organisms, the `OrgDb` object can be found with the **AnnotationHub** package.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
 
 ### KEGG pathway enrichment
 
@@ -1404,7 +1420,6 @@ head(EntrezIDs)
 We have to set the KEGG organism code if it is not human. Similarly it is suggested
 to set `pvalueCutoff` and `qvalueCutoff` both to 1 and convert the result to a
 data frame.
-
 
 
 ``` r
@@ -1468,7 +1483,6 @@ mmu04913    12
 mmu04061    14
 ```
 
-
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ## Perform KEGG pathway enrichment on other organisms
@@ -1480,32 +1494,38 @@ Extending ORA to other organisms is rather simple.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
 ### MSigDB enrichment
 
 For MSigDB gene sets, there is no pre-defined enrichment function. We need to
 directly use the low-level enrichment function `enricher()` which accepts
 self-defined gene sets. The gene sets should be in a format of a two-column
 data frame of genes and gene sets (or a class that can be converted to a data
-frame). Let's use the hallmark collection (`hm`) that we generated above. 
+frame).
 
 
 ``` r
-gene_sets <- stack(geneIds(hm)) |>
-    as.data.frame() |>
-    dplyr::select(ind, values) |>
-    dplyr::rename(gs_name = ind, gene_symbol = values)
+library(msigdbr)
+gene_sets = msigdbr(category = "H", species = "mouse")
 head(gene_sets)
 ```
 
 ``` output
-                gs_name gene_symbol
-1 HALLMARK_ADIPOGENESIS       Abca1
-2 HALLMARK_ADIPOGENESIS       Abca4
-3 HALLMARK_ADIPOGENESIS       Abca7
-4 HALLMARK_ADIPOGENESIS      Abca13
-5 HALLMARK_ADIPOGENESIS      Abca12
-6 HALLMARK_ADIPOGENESIS      Abca17
+# A tibble: 6 × 26
+  gene_symbol ncbi_gene ensembl_gene db_gene_symbol db_ncbi_gene db_ensembl_gene
+  <chr>       <chr>     <chr>        <chr>          <chr>        <chr>          
+1 Abca1       11303     ENSMUSG0000… ABCA1          19           ENSG00000165029
+2 Abcb8       74610     ENSMUSG0000… ABCB8          11194        ENSG00000197150
+3 Acaa2       52538     ENSMUSG0000… ACAA2          10449        ENSG00000167315
+4 Acadl       11363     ENSMUSG0000… ACADL          33           ENSG00000115361
+5 Acadm       11364     ENSMUSG0000… ACADM          34           ENSG00000117054
+6 Acads       11409     ENSMUSG0000… ACADS          35           ENSG00000122971
+# ℹ 20 more variables: source_gene <chr>, gs_id <chr>, gs_name <chr>,
+#   gs_collection <chr>, gs_subcollection <chr>, gs_collection_name <chr>,
+#   gs_description <chr>, gs_source_species <chr>, gs_pmid <chr>,
+#   gs_geoid <chr>, gs_exact_source <chr>, gs_url <chr>, db_version <chr>,
+#   db_target_species <chr>, ortholog_taxon_id <int>, ortholog_sources <chr>,
+#   num_ortholog_sources <dbl>, entrez_gene <chr>, gs_cat <chr>,
+#   gs_subcat <chr>
 ```
 
 As mentioned before, it is important the gene ID type in the gene sets should
@@ -1514,7 +1534,7 @@ be the same as in the DE genes, so here we choose the `"gene_symbol"` column.
 
 ``` r
 resTimeHallmark = enricher(gene = timeDEgenes, 
-                           TERM2GENE = gene_sets,
+                           TERM2GENE = gene_sets[, c("gs_name", "gene_symbol")],
                            pvalueCutoff = 1,
                            qvalueCutoff = 1)
 resTimeHallmarkTable = as.data.frame(resTimeHallmark)
@@ -1522,50 +1542,49 @@ head(resTimeHallmarkTable)
 ```
 
 ``` output
-                                                                   ID
-HALLMARK_MYOGENESIS                               HALLMARK_MYOGENESIS
-HALLMARK_INTERFERON_GAMMA_RESPONSE HALLMARK_INTERFERON_GAMMA_RESPONSE
-HALLMARK_COAGULATION                             HALLMARK_COAGULATION
-HALLMARK_ALLOGRAFT_REJECTION             HALLMARK_ALLOGRAFT_REJECTION
-HALLMARK_INTERFERON_ALPHA_RESPONSE HALLMARK_INTERFERON_ALPHA_RESPONSE
-HALLMARK_IL2_STAT5_SIGNALING             HALLMARK_IL2_STAT5_SIGNALING
-                                                          Description GeneRatio
-HALLMARK_MYOGENESIS                               HALLMARK_MYOGENESIS    39/333
-HALLMARK_INTERFERON_GAMMA_RESPONSE HALLMARK_INTERFERON_GAMMA_RESPONSE    35/333
-HALLMARK_COAGULATION                             HALLMARK_COAGULATION    27/333
-HALLMARK_ALLOGRAFT_REJECTION             HALLMARK_ALLOGRAFT_REJECTION    33/333
-HALLMARK_INTERFERON_ALPHA_RESPONSE HALLMARK_INTERFERON_ALPHA_RESPONSE    21/333
-HALLMARK_IL2_STAT5_SIGNALING             HALLMARK_IL2_STAT5_SIGNALING    30/333
-                                    BgRatio RichFactor FoldEnrichment   zScore
-HALLMARK_MYOGENESIS                307/5435  0.1270358       2.073393 4.946130
-HALLMARK_INTERFERON_GAMMA_RESPONSE 298/5435  0.1174497       1.916934 4.159135
-HALLMARK_COAGULATION               211/5435  0.1279621       2.088510 4.119874
-HALLMARK_ALLOGRAFT_REJECTION       285/5435  0.1157895       1.889837 3.942222
-HALLMARK_INTERFERON_ALPHA_RESPONSE 171/5435  0.1228070       2.004373 3.409155
-HALLMARK_IL2_STAT5_SIGNALING       280/5435  0.1071429       1.748713 3.286183
-                                         pvalue     p.adjust       qvalue
-HALLMARK_MYOGENESIS                7.558671e-06 0.0003779335 0.0002784773
-HALLMARK_INTERFERON_GAMMA_RESPONSE 1.194293e-04 0.0029857318 0.0022000129
-HALLMARK_COAGULATION               1.819948e-04 0.0030332474 0.0022350244
-HALLMARK_ALLOGRAFT_REJECTION       2.467925e-04 0.0030849069 0.0022730893
-HALLMARK_INTERFERON_ALPHA_RESPONSE 1.614367e-03 0.0141933353 0.0104582471
-HALLMARK_IL2_STAT5_SIGNALING       1.703200e-03 0.0141933353 0.0104582471
-                                                                                                                                                                                                                                                                         geneID
-HALLMARK_MYOGENESIS                Myl1/Vil1/Casq1/Aplnr/Tnnc2/Ptgis/Bche/Gja5/Col15a1/Slc6a12/Tnnt1/Ryr1/Mybpc2/Tnni2/Lsp1/Hspb2/Cryab/Fabp7/Avil/Myo1a/Erbb3/Myh3/Myh1/Myh13/Smtnl2/Nos2/Myo1d/Col1a1/Itgb3/Cacng1/Itgb4/Bdkrb2/Mapk12/Myh15/Spdef/Mapk13/Cdkn1a/Actn3/Plxnb3
-HALLMARK_INTERFERON_GAMMA_RESPONSE                         Pla2g4a/Zbp1/Gbp5/Bst1/Gbp9/Gbp4/Gbp6/Oas2/Mthfd2/Ifitm6/Irf7/Bst2/Ccl2/Ccl7/Ccl5/Itgb3/Lgals3bp/Ifi27l2a/Apol6/Csf2rb/Il2rb/Mettl7a3/Ifitm7/Fpr2/Cdkn1a/H2-K1/Psmb9/Tap1/Psmb8/H2-Q1/H2-Q2/H2-Q6/H2-T23/Cd274/Ifit1
-HALLMARK_COAGULATION                                                                                                            Vil1/Serpinb2/Ctse/C8g/Gnb4/Ctsk/Masp2/Pf4/Sh2b2/Vwf/Apoc1/Klkb1/Mmp15/Mmp8/Pcsk4/Avil/Itgb3/Hmgcs1/Dct/Tmprss6/Maff/Plg/C4b/Crip3/C3/Fbn2/Tll2
-HALLMARK_ALLOGRAFT_REJECTION                                                          Il18rap/Cd247/Bche/Ctsk/Gbp5/Gm21104/Pf4/Gbp9/Gbp4/Gbp6/Capg/Ccnd2/Irf7/Il12rb1/Icosl/Erbb3/Nos2/Ccl2/Ccl7/Ccl5/Itgb3/Gpr65/Gzmb/Il2rb/H2-K1/Tap1/Tap2/H2-Q1/H2-Q2/H2-Q6/H2-T23/Cfp/Il2rg
-HALLMARK_INTERFERON_ALPHA_RESPONSE                                                                                                               Sell/Gbp5/Gbp9/Gbp4/Gbp6/Oas1c/Trim5/Ifitm6/Irf7/Bst2/Lgals3bp/Ifi27l2a/Ifitm7/H2-K1/Psmb9/Tap1/Psmb8/H2-Q1/H2-Q2/H2-Q6/H2-T23
-HALLMARK_IL2_STAT5_SIGNALING                                                                      Il1r2/Sell/Traf1/Scn7a/Gbp5/Ttc39a/Hopx/Gbp9/Gbp4/Gbp6/Capg/Ccnd2/Ifitm6/Scn11a/Enpp1/Enpp3/P4ha1/Hkdc1/Pcsk4/Phlda1/Myo1a/Xbp1/Myo1d/Etv4/Gpr65/Il2rb/Maff/Ifitm7/Ager/Gsto2
-                                   Count
-HALLMARK_MYOGENESIS                   39
-HALLMARK_INTERFERON_GAMMA_RESPONSE    35
-HALLMARK_COAGULATION                  27
-HALLMARK_ALLOGRAFT_REJECTION          33
-HALLMARK_INTERFERON_ALPHA_RESPONSE    21
-HALLMARK_IL2_STAT5_SIGNALING          30
+                                                             ID
+HALLMARK_MYOGENESIS                         HALLMARK_MYOGENESIS
+HALLMARK_COMPLEMENT                         HALLMARK_COMPLEMENT
+HALLMARK_COAGULATION                       HALLMARK_COAGULATION
+HALLMARK_ALLOGRAFT_REJECTION       HALLMARK_ALLOGRAFT_REJECTION
+HALLMARK_ESTROGEN_RESPONSE_LATE HALLMARK_ESTROGEN_RESPONSE_LATE
+HALLMARK_INFLAMMATORY_RESPONSE   HALLMARK_INFLAMMATORY_RESPONSE
+                                                    Description GeneRatio
+HALLMARK_MYOGENESIS                         HALLMARK_MYOGENESIS    31/291
+HALLMARK_COMPLEMENT                         HALLMARK_COMPLEMENT    26/291
+HALLMARK_COAGULATION                       HALLMARK_COAGULATION    20/291
+HALLMARK_ALLOGRAFT_REJECTION       HALLMARK_ALLOGRAFT_REJECTION    23/291
+HALLMARK_ESTROGEN_RESPONSE_LATE HALLMARK_ESTROGEN_RESPONSE_LATE    23/291
+HALLMARK_INFLAMMATORY_RESPONSE   HALLMARK_INFLAMMATORY_RESPONSE    22/291
+                                 BgRatio RichFactor FoldEnrichment   zScore
+HALLMARK_MYOGENESIS             201/4393  0.1542289       2.328273 5.133984
+HALLMARK_COMPLEMENT             196/4393  0.1326531       2.002560 3.824271
+HALLMARK_COAGULATION            139/4393  0.1438849       2.172118 3.739899
+HALLMARK_ALLOGRAFT_REJECTION    201/4393  0.1144279       1.727428 2.811625
+HALLMARK_ESTROGEN_RESPONSE_LATE 206/4393  0.1116505       1.685500 2.683920
+HALLMARK_INFLAMMATORY_RESPONSE  201/4393  0.1094527       1.652323 2.521330
+                                      pvalue     p.adjust       qvalue
+HALLMARK_MYOGENESIS             5.736712e-06 0.0002753622 0.0002294685
+HALLMARK_COMPLEMENT             4.315862e-04 0.0103580695 0.0086317246
+HALLMARK_COAGULATION            7.108706e-04 0.0113739297 0.0094782747
+HALLMARK_ALLOGRAFT_REJECTION    6.414928e-03 0.0769791391 0.0641492826
+HALLMARK_ESTROGEN_RESPONSE_LATE 8.606752e-03 0.0826248216 0.0688540180
+HALLMARK_INFLAMMATORY_RESPONSE  1.259890e-02 0.0963081013 0.0802567511
+                                                                                                                                                                                                                geneID
+HALLMARK_MYOGENESIS             Myl1/Casq1/Aplnr/Tnnc2/Ptgis/Gja5/Col15a1/Cav3/Tnnt1/Ryr1/Cox6a2/Tnni2/Lsp1/Nqo1/Hspb2/Cryab/Erbb3/Stc2/Gpx3/Sparc/Myh3/Myh1/Col1a1/Cacng1/Itgb4/Bdkrb2/Mapk12/Apod/Spdef/Cdkn1a/Actn3
+HALLMARK_COMPLEMENT                                                Serpinb2/Pla2g4a/Cd46/Hspa5/Cp/Gnb4/S100a9/Cda/Cxcl1/Apoc1/Itgam/Irf7/Klkb1/Mmp15/Mmp8/Ccl5/Lgals3/Gzmb/Tmprss6/Maff/Plg/Psmb9/Hspa1a/C3/Dusp5/Phex
+HALLMARK_COAGULATION                                                                                         Serpinb2/Ctse/C8g/Ctsk/Masp2/Pf4/Sh2b2/Vwf/Apoc1/Klkb1/Mmp15/Mmp8/Trf/Sparc/Itgb3/Dct/Tmprss6/Maff/Plg/C3
+HALLMARK_ALLOGRAFT_REJECTION                                                           Il18rap/Cd247/Il12a/Pf4/Capg/Ccnd2/Igsf6/Irf7/Il12rb1/Icosl/Itk/Nos2/Ccl2/Ccl7/Ccl5/Gpr65/Gzmb/Il2rb/Tap1/Tap2/H2-T23/Cfp/Il2rg
+HALLMARK_ESTROGEN_RESPONSE_LATE                                                    Clic3/Ass1/Mdk/S100a9/Cdc20/Nbl1/Cav1/Idh2/Th/Pdlim3/Ascl1/Xbp1/Top2a/Dcxr/Fos/Serpina3n/Dhrs2/Tst/Emp2/Fkbp5/Mapk13/Cyp4f15/Kif20a
+HALLMARK_INFLAMMATORY_RESPONSE                                                              Il18rap/Sell/Aplnr/Abca1/Lpar1/Cxcl5/Adm/Irf7/Msr1/Bst2/Ccl17/Icosl/Ccl2/Ccl7/Ccl5/Ccr7/Itgb3/Has2/Il2rb/Cdkn1a/Cd70/Best1
+                                Count
+HALLMARK_MYOGENESIS                31
+HALLMARK_COMPLEMENT                26
+HALLMARK_COAGULATION               20
+HALLMARK_ALLOGRAFT_REJECTION       23
+HALLMARK_ESTROGEN_RESPONSE_LATE    23
+HALLMARK_INFLAMMATORY_RESPONSE     22
 ```
-
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
@@ -1619,23 +1638,22 @@ head(df)
 
 ``` output
                                                  gene_set hits n_genes
-HALLMARK_ADIPOGENESIS               HALLMARK_ADIPOGENESIS   13    1134
-HALLMARK_ALLOGRAFT_REJECTION HALLMARK_ALLOGRAFT_REJECTION   33    1134
-HALLMARK_ANDROGEN_RESPONSE     HALLMARK_ANDROGEN_RESPONSE    7    1134
-HALLMARK_ANGIOGENESIS               HALLMARK_ANGIOGENESIS    6    1134
-HALLMARK_APICAL_JUNCTION         HALLMARK_APICAL_JUNCTION   28    1134
-HALLMARK_APICAL_SURFACE           HALLMARK_APICAL_SURFACE    4    1134
-                             gene_set_size n_total      p_value     p_adjust
-HALLMARK_ADIPOGENESIS                  247   21198 5.645290e-01 8.301897e-01
-HALLMARK_ALLOGRAFT_REJECTION           264   21198 5.248132e-06 8.746887e-05
-HALLMARK_ANDROGEN_RESPONSE             155   21198 7.290317e-01 9.424457e-01
-HALLMARK_ANGIOGENESIS                   51   21198 5.368200e-02 1.118375e-01
-HALLMARK_APICAL_JUNCTION               304   21198 3.728233e-03 1.331512e-02
-HALLMARK_APICAL_SURFACE                 84   21198 6.640741e-01 8.973974e-01
+HALLMARK_ADIPOGENESIS               HALLMARK_ADIPOGENESIS    9    1134
+HALLMARK_ALLOGRAFT_REJECTION HALLMARK_ALLOGRAFT_REJECTION   23    1134
+HALLMARK_ANDROGEN_RESPONSE     HALLMARK_ANDROGEN_RESPONSE    6    1134
+HALLMARK_ANGIOGENESIS               HALLMARK_ANGIOGENESIS    4    1134
+HALLMARK_APICAL_JUNCTION         HALLMARK_APICAL_JUNCTION   14    1134
+HALLMARK_APICAL_SURFACE           HALLMARK_APICAL_SURFACE    3    1134
+                             gene_set_size n_total     p_value    p_adjust
+HALLMARK_ADIPOGENESIS                  185   21198 0.662392856 0.871569547
+HALLMARK_ALLOGRAFT_REJECTION           191   21198 0.000234807 0.002935087
+HALLMARK_ANDROGEN_RESPONSE             107   21198 0.512665196 0.753919406
+HALLMARK_ANGIOGENESIS                   36   21198 0.124351058 0.260206520
+HALLMARK_APICAL_JUNCTION               186   21198 0.124899130 0.260206520
+HALLMARK_APICAL_SURFACE                 41   21198 0.376915129 0.588929889
 ```
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 ### Choose a proper universe
 
@@ -1644,15 +1662,14 @@ normally ignored in many analyses. In current tools, there are mainly
 following different universe settings:
 
 1. Using all genes in the genome, this also includes non-protein coding genes.
-   For human, the size of universe is 60k ~ 70k.
+ For human, the size of universe is 60k ~ 70k.
 2. Using all protein-coding genes. For human, the size of universe is ~ 20k.
 3. In the era of microarray, total genes that are measured on the chip is
-   taken as the universe. For RNASeq, since reads are aligned to all genes, we
-   can set a cutoff and only use those "expressed" genes as the universe.
+ taken as the universe. For RNASeq, since reads are aligned to all genes, we
+ can set a cutoff and only use those "expressed" genes as the universe.
 4. Using all genes in a gene sets collection. Then the size of the universe
-   depends on the size of the gene sets collection. For example GO gene sets
-   collection is much larger than the KEGG pathway gene sets collection.
-
+ depends on the size of the gene sets collection. For example GO gene sets
+ collection is much larger than the KEGG pathway gene sets collection.
 
 If the universe is set, DE genes as well as genes in the gene sets are first
 intersected to the universe. However, in general the universe affects three
@@ -1666,7 +1683,6 @@ genes or non-gene-set genes.
 | **Not DE** |     $n_{21}$    |    $\color{red}{n_{22}}$         | $\color{red}{n_{2+}}$
 | **Total**  |     $n_{+1}$    |    $\color{red}{n_{+2}}$         | $\color{red}{n}$
 </center>
-
 
 In the contingency table, we are testing the dependency of whether genes being
 DE and whether genes being in the gene set. In the model, each gene has a
@@ -1683,17 +1699,13 @@ $n_{20}$, makes the observation $n_{11}$ getting further away from the null
 distribution, eventually generates a smaller _p_-value. For the similar
 reason, small universes tend to generate large _p_-values.
 
-
 In `enrichGO()`/`enrichKEGG()`/`enricher()`, universe genes can be set via the
 `universe` argument. By default the universe is the total genes in the gene
 sets collection. When a self-defined universe is provided, this might be
-different from what you may think, the universe is [_the intersection of
-user-provided universe and total genes in the gene set
-collection_](https://github.com/YuLab-SMU/DOSE/blob/93a4b981c0251e5c6eb1f2413f4a02b8e6d06ff5/R/enricher_internal.R#L65C43-L65C51).
+different from what you may think, the universe is .
 Thus the universe setting in **clusterProfiler** is very conservative.
 
 Check the more discusstions at https://twitter.com/mdziemann/status/1626407797939384320.
-
 
 We can do a simple experiment on the small MSigDB hallmark gene sets. We use
 the `ora()` function which we have implemented in previous "Further reading"
@@ -1867,7 +1879,7 @@ statistically.] in it.
 We can measure the enrichment in two other ways. First, the log2 fold
 enrichment, defined as:
 
-$$ \log_2(\mathrm{Fold\_enrichment}) = \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} = \frac{n_{11}n}{n_{10}n_{01}} $$
+$$\log_2(\mathrm{Fold\_enrichment}) = \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} = \frac{n_{11}n}{n_{10}n_{01}}$$
 
 which is the log2 of the ratio of _DE% in the gene set_ and _DE% in the
 universe_ or the log2 of the ratio of _gene\_set% in the DE genes_ and
@@ -1880,11 +1892,11 @@ resTimeGOTable$log2_Enrichment = log( (n_11/n_10)/(n_01/n) )
 
 Second, it is also common to use _z_-score which is
 
-$$ z = \frac{n_{11} - \mu}{\sigma} $$
+$$z = \frac{n_{11} - \mu}{\sigma}$$
 
-where $\mu$ and $\sigma$ are [the mean and standard deviation of the
+where $\mu$ and $\sigma$ are the mean and standard deviation of the
 hypergeometric
-distribution](https://en.wikipedia.org/wiki/Hypergeometric_distribution). They
+distribution. They
 can be calculated as:
 
 
@@ -1896,7 +1908,6 @@ n_20 = n - n_10
 hyper_var = n_01*n_10/n * n_20*n_02/n/(n-1)
 resTimeGOTable$zScore = (n_11 - hyper_mean)/sqrt(hyper_var)
 ```
-
 
 We will use log2 fold change as the primary variable to map to bar heights and
 `DE_Ratio` as the secondary variable to map to colors. This can be done
@@ -1969,7 +1980,6 @@ reach a small _p_-value with a small DE_ratio and a small log2 fold
 enrichment, while a small gene set needs to have a large DE ratio to be
 significant.
 
-
 It is also common that we perform ORA analysis on up-regulated genes and
 down-regulated separately. And we want to combine the significant gene sets from
 the two ORA analysis in one plot. In the following code, we first generate
@@ -2037,7 +2047,6 @@ ggplot(rbind(resTimeGOupTable[1:5, ],
 
 <img src="fig/07-gene-set-analysis-rendered-plot-up-down-1.png" style="display: block; margin: auto;" />
 
-
 Specifically for GO enrichment, it is often that GO enrichment returns a long
 list of significant GO terms (e.g. several hundreds). This makes it difficult
 to summarize the common functions from the long list. The last package we will
@@ -2071,24 +2080,20 @@ the cutoff are set as 1 (DE gene) and others are set as 0 (non-DE gene). This
 binary transformation over-simplifies the problem and a lot of information are
 lost. There is second class of gene set enrichment analysis methods which
 takes the continuous gene-level score as input and weights the importance of a
-gene in the gene set. Please refer to [Subramanian et. al. Gene set enrichment
+gene in the gene set. Please refer to Subramanian et. al. Gene set enrichment
 analysis: A knowledge-based approach for interpreting genome-wide expression
-profiles, PNAS 2005](https://www.pnas.org/doi/10.1073/pnas.0506580102) for
+profiles, PNAS 2005 for
 more information.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
 - ORA analysis is based on the gene counts and it is based on Fisher's exact
-  test or the hypergeometric distribution.
+ test or the hypergeometric distribution.
 - In R, it is easy to obtain gene sets from a large number of sources.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
 
 <script>
 $(function() {

@@ -1,199 +1,192 @@
 ---
 source: Rmd
-title: Introduction to RNA-seq
+title: RNA-seq入門
 teaching: 65
 exercises: 35
 ---
 
-
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Explain what RNA-seq is.
-- Describe some of the most common design choices that have to be made before running an RNA-seq experiment.
-- Provide an overview of the procedure to go from the raw data to the read count matrix that will be used for downstream analysis.
-- Show some common types of results and visualizations generated in RNA-seq analyses.
+- RNA-seqとは何か？
+- RNA-seq実験を実施する前に行わなければならない最も一般的なデザイン選択のいくつかを説明する。
+- 生データから下流の解析に使用されるリードカウントマトリックスまでの手順の概要を説明する。
+- RNA-seq解析で生成されるいくつかの一般的なタイプの結果と可視化を示す。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- What are the different choices to consider when planning an RNA-seq experiment? 
-- How does one process the raw fastq files to generate a table with read counts per gene and sample?
-- Where does one find information about annotated genes for a given organism?
-- What are the typical steps in an RNA-seq analysis?
-
+- RNA-seq実験を計画する際に考慮すべきさまざまな選択とは？
+- どのように生のfastqファイルを処理して、遺伝子ごと、サンプルごとのリードカウントの表を作成するのですか？
+- ある生物についてアノテーションされた遺伝子の情報はどこで見つけることができますか？
+- RNA-seq解析の典型的なステップとは？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-# What are we measuring in an RNA-seq experiment? 
+# RNA-seq実験では何を測定するのか？
 
 <img src="fig/alternative_splicing_sub.png" alt="Illustration of part of the central dogma of molecular biology, where DNA is transcribed to RNA, and intronic sequences are spliced out"/>
 
-In order to produce an RNA molecule, a stretch of DNA is first transcribed into mRNA. 
-Subsequently, intronic regions are spliced out, and exonic regions are combined into different _isoforms_ of a gene. 
+RNA分子を作るには、まずDNAがmRNAに転写される。
+その後、イントロン領域がスプライシングされ、エキソン領域が組み合わされて遺伝子の異なる_isoforms_となる。
 
 <img src="fig/rnaseq_martin_wang.png" alt="Illustration of the major experimental steps of an RNA-seq experiment"/>
 
-(figure adapted from [Martin & Wang (2011)](https://www.nature.com/articles/nrg3068)).
+(図は[Martin & Wang (2011)](https://www.nature.com/articles/nrg3068)より引用）。
 
-In a typical RNA-seq experiment, RNA molecules are first collected from a sample of interest.
-After a potential enrichment for molecules with polyA tails (predominantly mRNA), or depletion of otherwise highly abundant ribosomal RNA, the remaining molecules are fragmented into smaller pieces (there are also long-read protocols where entire molecules are considered, but those are not the focus of this lesson).
-It is important to keep in mind that because of the splicing excluding intronic sequences, an RNA molecule (and hence a generated fragment) may not correspond to an uninterrupted region of the genome. 
-The RNA fragments are then reverse transcribed into cDNA, whereafter sequencing adapters are added to each end. 
-These adapters allow the fragments to attach to the flow cell. 
-Once attached, each fragment will be heavily amplified to generate a cluster of identical sequences on the flow cell.
-The sequencer then determines the sequence of the first 50-200 nucleotides of the cDNA fragments in each such cluster, starting from one end, which corresponds to a _read_. 
-Many data sets are generated with so called paired-end protocols, in which the fragments are read from both ends. 
-Millions of such reads (or pairs of reads) will be generated in an experiment, and these will be represented in a (pair of) FASTQ files. 
-Each read is represented by four consecutive lines in such a file: first a line with a unique read identifier, next the inferred sequence of the read, then another identifier line, and finally a line containing the base quality for each inferred nucleotide, representing the probability that the nucleotide in the corresponding position has been correctly identified. 
+典型的なRNA-seq実験では、まず目的のサンプルからRNA分子を収集する。
+ポリA末端を持つ分子（主にmRNA）を濃縮する、あるいは、そうでなければ非常に豊富なリボソームRNAを除去した後、残りの分子を細かく断片化する（分子全体を考慮するロングリード・プロトコルもあるが、このレッスンの焦点ではない）。
+イントロン配列を除いたスプライシングのために、RNA分子（したがって生成された断片）はゲノムの途切れることのない領域に対応しない可能性があることを心に留めておくことが重要である。
+その後、RNA断片はcDNAに逆転写され、両端に配列決定用アダプターが付加される。
+これらのアダプターにより、フラグメントをフローセルに取り付けることができる。
+一旦くっつくと、各フラグメントは大きく増幅され、フローセル上に同一配列のクラスターを生成する。
+次にシークエンサーは、このようなクラスターに含まれるcDNA断片の最初の50-200塩基の塩基配列を、一端から順に決定する。
+多くのデータセットは、両端から断片を読み取る、いわゆるペアエンドプロトコルで作成される。
+このようなリード（またはリードのペア）は1回の実験で数百万本生成され、これらは（ペアの）FASTQファイルに表現される。
+それぞれのリードは、このようなファイルでは4つの連続した行で表現される。最初に一意のリード識別子の行、次にリードの推定配列、次に別の識別子の行、最後に各推定ヌクレオチドの塩基品質を含む行で、対応する位置のヌクレオチドが正しく同定された確率を表す。
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Discuss the following points with your neighbor
+## チャレンジ隣人と以下の点について話し合ってください。
 
-1. What are potential advantages and disadvantages of paired-end protocols compared to only sequencing one end of a fragment?
-2. What quality assessment can you think of that would be useful to perform on the FASTQ files with read sequences? 
+1. ペアエンドプロトコルの利点と欠点を教えてください。
+2. リード配列を含むFASTQファイルに対して実行するのに有用な品質評価として、どのようなものが考えられますか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+# 実験デザインの考察
 
-# Experimental design considerations
-
-Before starting to collect data, it is essential to take some time to think about the design of the experiment. 
-Experimental design concerns the organization of experiments with the purpose of making sure that the right type of data, and enough of it, is available to answer the questions of interest as efficiently as possible. 
-Aspects such as which conditions or sample groups to consider, how many replicates to collect, and how to plan the data collection in practice are important questions to consider. 
-Many high-throughput biological experiments (including RNA-seq) are sensitive to ambient conditions, and it is often difficult to directly compare measurements that have been done on different days, by different analysts, in different centers, or using different batches of reagents. 
-For this reason, it is very important to design experiments properly, to make it possible to disentangle different types of (primary and secondary) effects.
+データ収集を始める前に、実験計画について考える時間を取ることが不可欠である。
+実験計画とは、関心のある問題にできるだけ効率的に答えるために、適切な種類のデータと十分な量のデータを確実に入手できるようにすることを目的とした実験の組織に関するものである。
+どのような条件や標本群を考慮するか、どれだけの複製を収集するか、実際のデータ収集をどのように計画するかといった側面は、考慮すべき重要な問題である。
+多くのハイスループット生物学的実験（RNA-seqを含む）は環境条件に敏感であり、異なる日に、異なる分析者によって、異なるセンターで、異なるバッチの試薬を用いて行われた測定を直接比較することはしばしば困難である。
+このため、実験を適切にデザインし、異なるタイプの（一次的効果と二次的効果を）区別できるようにすることが非常に重要である。
 
 <img src="fig/factors-affecting-measurements.png" alt="A classification of many different factors affecting measurements obtained from an experiment into treatment, biological, technical and error effects"/>
 
-(figure from [Lazic (2017)](https://www.amazon.com/Experimental-Design-Laboratory-Biologists-Reproducibility/dp/1107424887)).
+(図は[Lazic (2017)](https://www.amazon.com/Experimental-Design-Laboratory-Biologists-Reproducibility/dp/1107424887)より）。
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Discuss with your neighbor
+## チャレンジ隣人と話し合う
 
-1. Why is it essential to have replicates? 
+1. なぜ複製が必要なのですか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-Importantly, not all replicates are equally useful, from a statistical point of view. 
-One common way to classify the different types of replicates is as 'biological' and 'technical', where the latter are typically used to test the reproducibility of the measurement device, while biological replicates inform about the variability between different samples from a population of interest.
-Another scheme classifies replicates (or units) into 'biological', 'experimental' and 'observational'. 
-Here, biological units are entities we want to make inferences about (e.g., animals, persons).
-Replication of biological units is required to make a general statement of the effect of a treatment - we can not draw a conclusion about the effect of drug on a population of mice by studying a single mouse only.
-Experimental units are the smallest entities that can be _independently assigned to a treatment_ (e.g., animal, litter, cage, well). 
-Only replication of experimental units constitute true replication.
-Observational units, finally, are entities at which measurements are made.
+重要なのは、統計学的な観点から見ると、すべての反復が同じように有用というわけではないということである。
+後者は通常、測定装置の再現性をテストするために使用され、一方、生物学的な複製は、対象集団からの異なるサンプル間のばらつきについて情報を提供する。
+別の方式では、複製（または単位）を「生物学的」、「実験的」、「観察的」に分類する。
+ここでいう生物学的単位とは、推論を行いたい実体のことである（動物や人など）。
+ある治療法の効果について一般的な見解を述べるには、生物学的単位の再現が必要である。1匹のマウスだけを研究して、マウスの集団に対する薬物の効果について結論を出すことはできない。
+実験単位とは、ある処置に独立に割り当てることができる最小の実体である（動物、子、ケージ、井戸など）。
+実験単位の再現のみが真の再現となる。
+最後に、観測単位とは、測定が行われる実体のことである。
 
-
-To explore the impact of experimental design on the ability to answer questions of interest, we are going to use an interactive application, provided in the [ConfoundingExplorer](https://csoneson.github.io/ConfoundingExplorer/) package. 
+興味のある質問に答える能力に対する実験デザインの影響を調べるために、[ConfoundingExplorer](https://csoneson.github.io/ConfoundingExplorer/)パッケージで提供されている対話型アプリケーションを使用する。
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge
+## チャレンジ
 
-Launch the ConfoundingExplorer application and familiarize yourself with the interface.
+ConfoundingExplorerアプリケーションを起動し、インターフェイスに慣れる。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge
+## チャレンジ
 
-1. For a balanced design (equal distribution of replicates between the two groups in each batch), what is the effect of increasing the strength of the batch effect? Does it matter whether one adjusts for the batch effect or not?
-2. For an increasingly unbalanced design (most or all replicates of one group coming from one batch), what is the effect of increasing the strength of the batch effect? Does it matter whether one adjusts for the batch effect or not?
+1. 平衡計画（各バッチの2群間の反復分布が等しい）の場合、バッチ効果の強さを増すとどのような効果がありますか？ バッチ効果を調整するかどうかは重要か？
+2. アンバランスなデザイン（1つのグループのほとんど、またはすべての複製が1つのバッチから得られている）が増えている場合、バッチ効果の強さを増すとどのような影響がありますか？ バッチ効果を調整するかどうかは重要か？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-# RNA-seq quantification: from reads to count matrix
+# RNA-seq定量化：リードからカウントマトリックスまで
 
 <img src="fig/rna-quant.jpeg" alt="Illustration of a set of reads generated by a sequencer, and genomic and transcriptomic reference sequences"/>
 
-The read sequences contained in the FASTQ files from the sequencer are typically not directly useful as they are, since we do not have the information about which gene or transcript they originate from. 
-Thus, the first processing step is to attempt to identify the location of origin for each read, and use this to obtain an estimate of the number of reads originating from a gene (or another features, such as an individual transcript).
-This can then be used as a proxy for the abundance, or expression level, of the gene.
-There is a plethora of RNA quantification pipelines, and the most common approaches can be categorized into three main types:
+シーケンサーからのFASTQファイルに含まれるリード配列は、どの遺伝子や転写産物に由来するかという情報を持っていないため、そのままでは一般的に直接役に立たない。
+したがって、最初の処理ステップは、各リードの起源の位置を特定し、これを使用して遺伝子（または個々の転写産物などの別の特徴）に由来するリードの数の推定値を取得しようとするものである。
+そして、これを遺伝子の存在量、すなわち発現レベルの代用として用いることができる。
+RNA定量パイプラインは数多く存在し、最も一般的なアプローチは主に3つのタイプに分類できる：
 
-1. Align reads to the genome, and count the number of reads that map within the exons of each gene.
-   This is the one of simplest methods. For species for which the transcriptome is poorly annotated, this would be the preferred approach.
-   Example: `STAR` alignment to GRCm39 + `Rsubread` [featureCounts](https://doi.org/10.1093%2Fnar%2Fgkz114)
+1. リードをゲノムにアライメントし、各遺伝子のエクソン内にマップされたリードの数をカウントする。
+   これは最もシンプルな方法のひとつだ。 トランスクリプトームのアノテーションが不十分な種については、この方法が望ましい。
+   例：GRCm39 への `STAR` アライメント + `Rsubread` [featureCounts](https://doi.org/10.1093%2Fnar%2Fgkz114)
 
-2. Align reads to the transcriptome, quantify transcript expression, and summarize transcript expression into gene expression.
-   This approach can produce accurate quantification results ([independent benchmarking](https://doi.org/10.1186/s13059-016-0940-1)), 
-   particularly for high-quality samples without DNA contamination.
-   Example: RSEM quantification using `rsem-calculate-expression --star` on the GENCODE GRCh38 transcriptome + `tximport`
+2. トランスクリプトームへのリードのアラインメント、トランスクリプトーム発現の定量化、トランスクリプトーム発現を遺伝子発現に要約する。
+   このアプローチは、正確な定量結果（[independent benchmarking](https://doi.org/10.1186/s13059-016-0940-1)）を得ることができる。
+   、特にDNA汚染のない高品質のサンプルについて。
+   例GENCODE GRCh38 のトランスクリプトームに対する `rsem-calculate-expression --star` と `tximport` を用いた RSEM 定量化。
 
-3. Pseudoalign reads against the transcriptome, using the corresponding genome as a decoy, quantifying transcript expression in the process, 
-   and summarize the transcript-level expression into gene-level expression.
-   The advantages of this approach include: computational efficiency, mitigation of the effect of DNA contamination, and GC bias correction.
-   Example: `salmon quant --gcBias` + `tximport`
-   
-At typical sequencing read depth, gene expression quantification is often more accurate than transcript expression quantification.
-However, differential gene expression analyses can be [improved](https://doi.org/10.12688/f1000research.7563.1)
-by having access also to transcript-level quantifications.
+3. 対応するゲノムをおとりとして、トランスクリプトームに対してリードを疑似整列させ、その過程で転写産物の発現を定量化し、
+   、転写産物レベルの発現を遺伝子レベルの発現に要約する。
+   この方法の利点は、計算の効率化、DNA汚染の影響の緩和、GCバイアスの補正などである。
+   例：`salmon quant --gcBias` + `tximport`
 
-Other tools used in RNA-seq quantification include: TopHat2, bowtie2, kallisto, HTseq, among many others.
+一般的なシーケンスリード深度では、遺伝子発現定量は転写産物発現定量よりも正確であることが多い。
+しかし、遺伝子発現の差分解析は、転写産物レベルの定量化にもアクセスすることで、[改善](https://doi.org/10.12688/f1000research.7563.1)
+。
 
-The choice of an appropriate RNA-seq quantification depends on the quality of the transcriptome annotation,
-the quality of the RNA-seq library preparation, the presence of contaminating sequences, among many factors.
-Often, it can be informative to compare the quantification results of multiple approaches. 
+RNA-seqの定量に使われる他のツールには以下のようなものがある：TopHat2、bowtie2、kallisto、HTseqなどである。
 
-Because the best quantification method is species- and experiment-dependent, and often requires large amounts of computing resources, this workshop will not cover any specifics of how to generate the counts. 
-Instead, we recommend checking out the references above and consulting with a local bioinformatics expert if you need help.
+適切なRNA-seq定量化の選択は、多くの要因の中でも、トランスクリプトームアノテーションの質、
+、RNA-seqライブラリー調製の質、コンタミネーション配列の有無に依存する。
+多くの場合、複数のアプローチによる定量結果を比較することは有益である。
 
-:::::::::::::::::::::::::::::::::::::::  challenge
-
-## Challenge: Discuss the following points with your neighbor
-
-1. Which of the mentioned RNA-Seq quantification tools have you heard about? Do you know other pros and cons of the methods?
-2. Have you done your own RNA-Seq experiment? If so, what quantification tool did you use and why did you choose it?
-3. Do you have access to specific tools / local bioinformatics expert / computational resources for quantification? If you don't, how might you gain access?
-  
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-# Finding the reference sequences
-
-In order to quantify abundances of known genes or transcripts from RNA-seq data, we need a reference database informing us of the sequence of these features, to which we can then compare our reads. 
-This information can be obtained from different online repositories. 
-It is highly recommended to choose one of these for a particular project, and not mix information from different sources. 
-Depending on the quantification tool you have chosen, you will need different types of reference information. 
-If you are aligning your reads to the genome and investigating the overlap with known annotated features, you will need the full genome sequence (provided in a fasta file) and a file that tells you the genomic location of each annotated feature (typically provided in a gtf file). 
-If you are mapping your reads to the transcriptome, you will instead need a file with the sequence of each transcript (again, a fasta file). 
-
-* If you are working with mouse or human samples, the [GENCODE project](https://www.gencodegenes.org/) provides well-curated reference files. 
-* [Ensembl](https://www.ensembl.org/info/data/ftp/index.html) provides reference files for a large set of organisms, including [plants](https://plants.ensembl.org/info/data/ftp/index.html) and [fungi](https://fungi.ensembl.org/info/data/ftp/index.html).
-* [UCSC](https://hgdownload.soe.ucsc.edu/downloads.html) also provides reference files for many organisms.
+最適な定量化方法は生物種や実験に依存し、しばしば大量の計算資源を必要とするため、このワークショップではカウントの生成方法に関する具体的な説明は行わない。
+その代わりに、上記の参考文献をチェックし、助けが必要であれば地元のバイオインフォマティクスの専門家に相談することをお勧めする。
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge
+## チャレンジ隣人と以下の点について話し合ってください。
 
-Download the latest mouse transcriptome fasta file from GENCODE. What do the entries look like? Tip: to read the file into R, consider the `readDNAStringSet()` function from the `Biostrings` package.
-  
+1. RNA-Seq定量化ツールについて聞いたことがあるものはどれですか？ その他の方法の長所と短所をご存知ですか？
+2. 独自のRNA-Seq実験を行ったことがありますか？ もしそうなら、どのような定量化ツールを使い、なぜそれを選んだのか？
+3. 定量化のための特定のツール／地元のバイオインフォマティクスの専門家／計算リソースにアクセスできるか？ そうでなければ、どうやってアクセスするのか？
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-# Where are we heading towards in this workshop? 
+# 参照配列の検索
 
-During the coming two days, we will discuss and practice how to perform differential expression analysis with Bioconductor, and how to interpret the results. 
-We will start from a count matrix, and thus assume that the initial quality assessment and quantification of gene expression have already been done. 
-The outcome of a differential expression analysis is often represented using graphical representations, such as MA plots and heatmaps (see below for examples). 
+RNA-seqデータから既知の遺伝子や転写産物の量を定量するためには、これらの特徴の配列を知らせてくれる参照データベースが必要であり、これと我々のリードを比較することができる。
+この情報は、さまざまなオンラインレポジトリから得ることができる。
+特定のプロジェクトには、異なるソースからの情報を混在させず、これらのうちの1つを選択することを強く推奨する。
+選択した定量化ツールによって、必要な参照情報の種類は異なる。
+リードをゲノムにアライメントし、既知の注釈付きフィーチャーとのオーバーラップを調べる場合、全ゲノム配列（fastaファイルで提供）と、各注釈付きフィーチャーのゲノム上の位置を示すファイル（通常gtfファイルで提供）が必要です。
+リードをトランスクリプトームにマッピングする場合は、代わりに各トランスクリプトの配列を含むファイル（これもfastaファイル）が必要になります。
+
+- マウスやヒトのサンプルを扱う場合、[GENCODEプロジェクト](https://www.gencodegenes.org/)は、十分にキュレートされた参照ファイルを提供している。
+- [Ensembl](https://www.ensembl.org/info/data/ftp/index.html)は、[植物](https://plants.ensembl.org/info/data/ftp/index.html)や[菌類](https://fungi.ensembl.org/info/data/ftp/index.html)を含む、多数の生物の参照ファイルを提供している。
+- また、[UCSC](https://hgdownload.soe.ucsc.edu/downloads.html)は、多くの生物の参照ファイルを提供している。
+
+:::::::::::::::::::::::::::::::::::::::  challenge
+
+## チャレンジ
+
+GENCODEから最新のマウストランスクリプトームファスタファイルをダウンロードする。 エントリーはどのようなものですか？ ヒント：ファイルをRに読み込むには、`Biostrings` パッケージの `readDNAStringSet()` 関数を使う。
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
+
+# このワークショップで我々はどこに向かっているのか？
+
+この2日間で、Bioconductorを使ってどのように微分発現解析を行うか、そして結果をどのように解釈するかについて議論し、実践する。
+カウントマトリックスから始めるので、最初の品質評価と遺伝子発現の定量はすでに行われていると仮定する。
+差次的発現解析の結果は、MAプロットやヒートマップなどのグラフを用いて表現されることが多い（例は下記参照）。
 
 <img src="fig/maPlot-example.png" alt="An example MA plot"/>
 <img src="fig/heatmap-example.png" alt="An example heatmap"/>
 
-In the following episodes we will learn, among other things, how to generate and interpret these plots. 
-It is also common to perform follow-up analyses to investigate whether there is a functional relationship among the top-ranked genes, so called gene set (enrichment) analysis, which will also be covered in a later episode. 
+以下のエピソードでは、特にこれらのプロットの作成と解釈の仕方を学ぶ。
+また、上位にランクされた遺伝子間に機能的関係があるかどうかを調べるために、遺伝子セット（濃縮）解析と呼ばれるフォローアップ解析を行うことも一般的であるが、これについても後のエピソードで取り上げる。
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
-- RNA-seq is a technique of measuring the amount of RNA expressed within a cell/tissue and state at a given time.
-- Many choices have to be made when planning an RNA-seq experiment, such as whether to perform poly-A selection or ribosomal depletion, whether to apply a stranded or an unstranded protocol, and whether to sequence the reads in a single-end or paired-end fashion. Each of the choices have consequences for the processing and interpretation of the data. 
-- Many approaches exist for quantification of RNA-seq data. Some methods align reads to the genome and count the number of reads overlapping gene loci. Other methods map reads to the transcriptome and use a probabilistic approach to estimate the abundance of each gene or transcript. 
-- Information about annotated genes can be accessed via several sources, including Ensembl, UCSC and GENCODE. 
+- RNA-seqは、ある細胞／組織内で発現しているRNAの量と、ある時点での状態を測定する技術である。
+- RNA-seq実験を計画する際には、ポリA選択とリボソーム除去のどちらを行うか、ストランドプロトコルとアンストランドプロトコルのどちらを適用するか、シングルエンドとペアエンドのどちらでリードをシーケンスするかなど、多くの選択をしなければならない。 それぞれの選択は、データの処理と解釈に結果をもたらす。
+- RNA-seqデータの定量化には多くのアプローチが存在する。 リードをゲノムにアライメントし、遺伝子座にオーバーラップするリードの数をカウントする方法もある。 他の方法は、リードをトランスクリプトームにマッピングし、確率的アプローチを使って各遺伝子や転写産物の存在量を推定する。
+- 注釈付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 

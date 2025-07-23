@@ -16,26 +16,23 @@ exercises: 45
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- What are the steps performed in a typical differential expression analysis? 
+- What are the steps performed in a typical differential expression analysis?
 - How does one interpret the output of DESeq2?
 
-
 ::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
 
 ## Differential expression inference
 
 A major goal of RNA-seq data analysis is the quantification and statistical inference of systematic changes between experimental groups or conditions (e.g., treatment vs. control, timepoints, tissues). This is typically performed by identifying genes with differential expression pattern using between- and within-condition variability and thus requires biological replicates (multiple sample of the same condition).
-Multiple software packages exist to perform differential expression analysis. Comparative studies have shown some concordance of differentially expressed (DE) genes, but also variability between tools with no tool consistently outperforming all others (see [Soneson and Delorenzi, 2013](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91)). 
-In the following we will explain and conduct differential expression analysis using the [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html) 
-software package. The [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) package implements similar methods following the same main assumptions about count data. Both packages show a general good and stable performance with comparable results.  
+Multiple software packages exist to perform differential expression analysis. Comparative studies have shown some concordance of differentially expressed (DE) genes, but also variability between tools with no tool consistently outperforming all others (see [Soneson and Delorenzi, 2013](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91)).
+In the following we will explain and conduct differential expression analysis using the [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
+software package. The [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) package implements similar methods following the same main assumptions about count data. Both packages show a general good and stable performance with comparable results.
 
 ## The DESeqDataSet
 
 To run `DESeq2` we need to represent our count data as object of the `DESeqDataSet` class.
-The `DESeqDataSet` is an extension of the `SummarizedExperiment` class (see section [Importing and annotating quantified data into R](../episodes/03-import-annotate.Rmd) ) that stores a *design formula* in addition to the count assay(s) and feature (here gene) and sample metadata.
-The *design formula* expresses the variables which will be used in modeling. These are typically the variable of interest (group variable) and other variables you want to account for (e.g., batch effect variables). A detailed explanation of *design formulas* and related *design matrices* will follow in the section about [extra exploration of design matrices](../episodes/06-extra-design.Rmd). Objects of the `DESeqDataSet` class can be build from [count matrices](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat), [SummarizedExperiment objects](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se), [transcript abundance files](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport) or [htseq count files](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq).
+The `DESeqDataSet` is an extension of the `SummarizedExperiment` class (see section [Importing and annotating quantified data into R](../episodes/03-import-annotate.Rmd) ) that stores a _design formula_ in addition to the count assay(s) and feature (here gene) and sample metadata.
+The _design formula_ expresses the variables which will be used in modeling. These are typically the variable of interest (group variable) and other variables you want to account for (e.g., batch effect variables). A detailed explanation of _design formulas_ and related _design matrices_ will follow in the section about [extra exploration of design matrices](../episodes/06-extra-design.Rmd). Objects of the `DESeqDataSet` class can be build from [count matrices](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat), [SummarizedExperiment objects](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se), [transcript abundance files](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport) or [htseq count files](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq).
 
 ### Load packages
 
@@ -54,7 +51,7 @@ suppressPackageStartupMessages({
 
 ### Load data
 
-Let's load in our `SummarizedExperiment` object again. In the last episode for quality control exploration, we removed ~35% genes that had 5 or fewer counts because they had too little information in them. For DESeq2 statistical analysis, we do not technically have to remove these genes because by default it will do some independent filtering, but it can reduce the memory size of the `DESeqDataSet` object resulting in faster computation. Plus, we do not want these genes cluttering up some of the visualizations. 
+Let's load in our `SummarizedExperiment` object again. In the last episode for quality control exploration, we removed ~35% genes that had 5 or fewer counts because they had too little information in them. For DESeq2 statistical analysis, we do not technically have to remove these genes because by default it will do some independent filtering, but it can reduce the memory size of the `DESeqDataSet` object resulting in faster computation. Plus, we do not want these genes cluttering up some of the visualizations.
 
 
 ``` r
@@ -64,7 +61,7 @@ se <- se[rowSums(assay(se, "counts")) > 5, ]
 
 ### Create DESeqDataSet
 
-The design matrix we will use in this example is `~ sex + time`. This will allow us test the difference between males and females (averaged over time point) and the difference between day 0, 4 and 8 (averaged over males and females). If we wanted to test other comparisons (e.g., Female.Day8 vs. Female.Day0 and also Male.Day8 vs. Male.Day0) we could use a different design matrix to more easily extract those pairwise comparisons. 
+The design matrix we will use in this example is `~ sex + time`. This will allow us test the difference between males and females (averaged over time point) and the difference between day 0, 4 and 8 (averaged over males and females). If we wanted to test other comparisons (e.g., Female.Day8 vs. Female.Day0 and also Male.Day8 vs. Male.Day0) we could use a different design matrix to more easily extract those pairwise comparisons.
 
 
 ``` r
@@ -77,9 +74,8 @@ Warning in DESeq2::DESeqDataSet(se, design = ~sex + time): some variables in
 design formula are characters, converting to factors
 ```
 
-
 ::::::::::::::::::::::::::::::::::::: instructor
-The function to generate a `DESeqDataSet` needs to be adapted depending on the input type, e.g, 
+The function to generate a `DESeqDataSet` needs to be adapted depending on the input type, e.g,
 
 
 ``` r
@@ -94,15 +90,14 @@ dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-
 ## Normalization
 
- `DESeq2` and `edgeR` make the following assumptions:
+`DESeq2` and `edgeR` make the following assumptions:
 
 - most genes are not differentially expressed
 - the probability of a read mapping to a specific gene is the same for all samples within the same group
 
-As shown in the [previous section](../episodes/04-exploratory-qc.Rmd) on exploratory data analysis the total counts of a sample (even from the same condition) depends on the library size (total number of reads sequenced). To compare the variability of counts from a specific gene between and within groups we first need to account for library sizes and compositional effects. 
+As shown in the [previous section](../episodes/04-exploratory-qc.Rmd) on exploratory data analysis the total counts of a sample (even from the same condition) depends on the library size (total number of reads sequenced). To compare the variability of counts from a specific gene between and within groups we first need to account for library sizes and compositional effects.
 Recall the `estimateSizeFactors()` function from the previous section:
 
 
@@ -112,15 +107,14 @@ dds <- estimateSizeFactors(dds)
 
 ::::::::::::::::::::::::::::::::::::: instructor
 
-*DESeq2* uses the __"Relative Log Expression” (RLE)__ method to calculate sample-wise *size factors* tĥat account for read depth and library composition.
-*edgeR* uses the __“Trimmed Mean of M-Values” (TMM)__ method to account for library size differences and compositional effects. *edgeR*'s *normalization factors* and *DESeq2*'s *size factors* yield similar results, but are not equivalent theoretical parameters.
+_DESeq2_ uses the **"Relative Log Expression” (RLE)** method to calculate sample-wise _size factors_ tĥat account for read depth and library composition.
+_edgeR_ uses the **“Trimmed Mean of M-Values” (TMM)** method to account for library size differences and compositional effects. _edgeR_'s _normalization factors_ and _DESeq2_'s _size factors_ yield similar results, but are not equivalent theoretical parameters.
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-
 ## Statistical modeling
 
-`DESeq2` and `edgeR` model RNA-seq counts as __negative binomial__ distribution to account for a limited number of replicates per group, a mean-variance dependency (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and a skewed count distribution. 
+`DESeq2` and `edgeR` model RNA-seq counts as **negative binomial** distribution to account for a limited number of replicates per group, a mean-variance dependency (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and a skewed count distribution.
 
 ### Dispersion
 
@@ -128,8 +122,8 @@ The within-group variance of the counts for a gene following a negative binomial
 
 $var = \mu + \theta \mu^2$
 
-$\theta$ represents the gene-specific __dispersion__, a measure of variability or spread in the data. As a second step, we need to estimate gene-wise dispersions to get the expected within-group variance and test for group differences. Good dispersion estimates are challenging with a few samples per group only. Thus, information from genes with similar expression pattern are "borrowed". Gene-wise dispersion estimates are *shrinked* towards center values of the observed distribution of dispersions. With `DESeq2` we can get dispersion estimates using the `estimateDispersions()` function.
-We can visualize the effect of *shrinkage* using `plotDispEsts()`:
+$\theta$ represents the gene-specific **dispersion**, a measure of variability or spread in the data. As a second step, we need to estimate gene-wise dispersions to get the expected within-group variance and test for group differences. Good dispersion estimates are challenging with a few samples per group only. Thus, information from genes with similar expression pattern are "borrowed". Gene-wise dispersion estimates are _shrinked_ towards center values of the observed distribution of dispersions. With `DESeq2` we can get dispersion estimates using the `estimateDispersions()` function.
+We can visualize the effect of _shrinkage_ using `plotDispEsts()`:
 
 
 ``` r
@@ -152,26 +146,25 @@ final dispersion estimates
 plotDispEsts(dds)
 ```
 
-<img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts." style="display: block; margin: auto;" />
+<img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" style="display: block; margin: auto;" />
 
 ### Testing
 
-We can use the `nbinomWaldTest()`function of `DESeq2` to fit a *generalized linear model (GLM)* and compute *log2 fold changes* (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the *design matrix*. The *design matrix* is directly related to the *design formula* and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
+We can use the `nbinomWaldTest()`function of `DESeq2` to fit a _generalized linear model (GLM)_ and compute _log2 fold changes_ (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the _design matrix_. The _design matrix_ is directly related to the _design formula_ and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
 
 $log(μ_j) = β_0 + x_j β_T$,
 
- with $β_T$ corresponding to the log2 fold change of the treatment groups, $x_j$ = 1, if $j$ belongs to the treatment group and $x_j$ = 0, if $j$ belongs to the control group. 
+with $β_T$ corresponding to the log2 fold change of the treatment groups, $x_j$ = 1, if $j$ belongs to the treatment group and $x_j$ = 0, if $j$ belongs to the control group.
 
-Finally, the estimated log2 fold changes are scaled by their standard error and tested for being significantly different from 0 using the *Wald test*. 
-
+Finally, the estimated log2 fold changes are scaled by their standard error and tested for being significantly different from 0 using the _Wald test_.
 
 
 ``` r
 dds <- nbinomWaldTest(dds)
 ```
 
-
 ::::::::::::::::::::::::::::::::::::: callout
+
 ### Note
 
 Standard differential expression analysis as performed above is wrapped into a single function, `DESeq()`. Running the first code chunk is equivalent to running the second one:
@@ -190,23 +183,20 @@ dds <- nbinomWaldTest(dds)
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-
 ## Explore results for specific contrasts
 
-The `results()` function can be used to extract gene-wise test statistics, such as log2 fold changes and (adjusted) p-values. The comparison of interest can be defined using contrasts, which are linear combinations of the model coefficients (equivalent to combinations of columns within the *design matrix*) and thus directly related to the design formula. A detailed explanation of design matrices and how to use them to specify different contrasts of interest can be found in the section on the [exploration of design matrices](../episodes/06-extra-design.Rmd). In the `results()` function a contrast can be represented by the variable of interest (reference variable) and the related level to compare using the `contrast` argument. By default the reference variable will be the __last variable__ of the design formula, the *reference level* will be the first factor level and the *last level* will be used for comparison. You can also explicitly specify a contrast by the `name` argument of the `results()` function. Names of all available contrasts can be accessed using `resultsNames()`.
+The `results()` function can be used to extract gene-wise test statistics, such as log2 fold changes and (adjusted) p-values. The comparison of interest can be defined using contrasts, which are linear combinations of the model coefficients (equivalent to combinations of columns within the _design matrix_) and thus directly related to the design formula. A detailed explanation of design matrices and how to use them to specify different contrasts of interest can be found in the section on the [exploration of design matrices](../episodes/06-extra-design.Rmd). In the `results()` function a contrast can be represented by the variable of interest (reference variable) and the related level to compare using the `contrast` argument. By default the reference variable will be the **last variable** of the design formula, the _reference level_ will be the first factor level and the _last level_ will be used for comparison. You can also explicitly specify a contrast by the `name` argument of the `results()` function. Names of all available contrasts can be accessed using `resultsNames()`.
 
+::::::::::::::::::::::::::::::::::::: challenge
 
-::::::::::::::::::::::::::::::::::::: challenge 
+What will be the default **contrast**, **reference level** and **"last level"** for comparisons when running `results(dds)` for the example used in this lesson?
 
-What will be the default __contrast__, __reference level__ and __"last level"__ for comparisons when running `results(dds)` for the example used in this lesson?
+_Hint: Check the design formula used to build the object._
 
-*Hint: Check the design formula used to build the object.*
+:::::::::::::::::::::::: solution
 
-:::::::::::::::::::::::: solution 
-
-In the lesson example the last variable of the design formula is `time`. 
-The __reference level__ (first in alphabetical order) is `Day0` and the __last level__ is `Day8` 
+In the lesson example the last variable of the design formula is `time`.
+The **reference level** (first in alphabetical order) is `Day0` and the **last level** is `Day8`
 
 
 ``` r
@@ -223,7 +213,6 @@ No worries, if you had difficulties to identify the default contrast the output 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
 To explore the output of the `results()` function we can use the `summary()` function and order results by significance (p-value). Here we assume that we are interested in changes over `time` ("variable of interest"), more specifically genes with differential expression between `Day0` ("reference level") and `Day8` ("level to compare"). The model we used included the `sex` variable (see above). Thus our results will be "corrected" for sex-related differences.
-
 
 
 ``` r
@@ -284,15 +273,13 @@ resTime <- results(dds, name = "time_Day8_vs_Day0")
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-
-::::::::::::::::::::::::::::::::::::: challenge 
+::::::::::::::::::::::::::::::::::::: challenge
 
 Explore the DE genes between males and females independent of time.
 
-*Hint: You don't need to fit the GLM again. Use `resultsNames()` to get the correct contrast.*
+_Hint: You don't need to fit the GLM again. Use `resultsNames()` to get the correct contrast._
 
-:::::::::::::::::::::::: solution 
-
+:::::::::::::::::::::::: solution
 
 
 ``` r
@@ -340,7 +327,6 @@ Uty           1.46702e-87
 LOC105243748  1.11194e-48
 ```
 
-
 :::::::::::::::::::::::::::::::::
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -348,17 +334,16 @@ LOC105243748  1.11194e-48
 
 ### Multiple testing correction
 
-Due to the high number of tests (one per gene) our DE results will contain a substantial number of __false positives__. For example, if we tested 20,000 genes at a threshold of $\alpha = 0.05$ we would expect 1,000 significant DE genes with no differential expression.
+Due to the high number of tests (one per gene) our DE results will contain a substantial number of **false positives**. For example, if we tested 20,000 genes at a threshold of $\alpha = 0.05$ we would expect 1,000 significant DE genes with no differential expression.
 
-To account for this expected high number of false positives, we can correct our results for __multiple testing__. By default `DESeq2` uses the [Benjamini-Hochberg procedure](https://link.springer.com/referenceworkentry/10.1007/978-1-4419-9863-7_1215)
-to calculate __adjusted p-values__ (padj) for DE results.
+To account for this expected high number of false positives, we can correct our results for **multiple testing**. By default `DESeq2` uses the [Benjamini-Hochberg procedure](https://link.springer.com/referenceworkentry/10.1007/978-1-4419-9863-7_1215)
+to calculate **adjusted p-values** (padj) for DE results.
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-
 ## Independent Filtering and log-fold shrinkage
 
-We can visualize the results in many ways. A good check is to explore the relationship between *log2fold changes*, *significant DE genes* and the *genes mean count*.
+We can visualize the results in many ways. A good check is to explore the relationship between _log2fold changes_, _significant DE genes_ and the _genes mean count_.
 `DESeq2` provides a useful function to do so, `plotMA()`.
 
 
@@ -366,11 +351,11 @@ We can visualize the results in many ways. A good check is to explore the relati
 plotMA(resTime)
 ```
 
-<img src="fig/05-differential-expression-rendered-plot-ma-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. The range of log fold changes is larger for low values of the mean normalized counts." style="display: block; margin: auto;" />
+<img src="fig/05-differential-expression-rendered-plot-ma-1.png" style="display: block; margin: auto;" />
 
 We can see that genes with a low mean count tend to have larger log fold changes.
-This is caused by counts from lowly expressed genes tending to be very noisy. 
-We can *shrink* the log fold changes of these genes with low mean and high dispersion, as they contain little information.
+This is caused by counts from lowly expressed genes tending to be very noisy.
+We can _shrink_ the log fold changes of these genes with low mean and high dispersion, as they contain little information.
 
 
 ``` r
@@ -388,14 +373,15 @@ using 'apeglm' for LFC shrinkage. If used in published research, please cite:
 plotMA(resTimeLfc)
 ```
 
-<img src="fig/05-differential-expression-rendered-res-time-lfc-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the shrunken log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. Most log fold changes for low mean normalized counts have been shrunken to be close to zero." style="display: block; margin: auto;" />
+<img src="fig/05-differential-expression-rendered-res-time-lfc-1.png" style="display: block; margin: auto;" />
+
 Shrinkage of log fold changes is useful for visualization and ranking of genes, but for result exploration typically the `independentFiltering` argument is used to remove lowly expressed genes.
 
-::::::::::::::::::::::::::::::::::::: challenge 
+::::::::::::::::::::::::::::::::::::: challenge
 
 By default `independentFiltering` is set to `TRUE`. What happens without filtering lowly expressed genes? Use the `summary()` function to compare the results. Most of the lowly expressed genes are not significantly differential expressed (blue in the above MA plots). What could cause the difference in the results then?
 
-:::::::::::::::::::::::: solution 
+:::::::::::::::::::::::: solution
 
 
 ``` r
@@ -435,18 +421,16 @@ low counts [2]     : 0, 0%
 [2] see 'independentFiltering' argument of ?results
 ```
 
-Genes with very low counts are not likely to see significant differences typically due to high dispersion. Filtering of lowly expressed genes thus increased detection power at the same experiment-wide false positive rate. 
+Genes with very low counts are not likely to see significant differences typically due to high dispersion. Filtering of lowly expressed genes thus increased detection power at the same experiment-wide false positive rate.
 
 :::::::::::::::::::::::::::::::::
 ::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 ## Visualize selected set of genes
 
 The amount of DE genes can be overwhelming and a ranked list of genes can still be hard to interpret with regards to an experimental question. Visualizing gene expression can help to detect expression pattern or group of genes with related functions. We will perform systematic detection of over represented groups of genes in a [later section](../episodes/07-gene-set-analysis.Rmd). Before this visualization can already help us to get a good intuition about what to expect.
 
-We will use transformed data (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and the top differentially expressed genes for visualization. A heatmap can reveal expression pattern across sample groups (columns) and automatically orders genes (rows) according to their similarity. 
-
+We will use transformed data (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and the top differentially expressed genes for visualization. A heatmap can reveal expression pattern across sample groups (columns) and automatically orders genes (rows) according to their similarity.
 
 
 ``` r
@@ -466,18 +450,18 @@ heatmapData <- t(scale(t(heatmapData)))
 heatmapColAnnot <- data.frame(colData(vsd)[, c("time", "sex")])
 heatmapColAnnot <- HeatmapAnnotation(df = heatmapColAnnot)
 
+
 # Plot as heatmap
 ComplexHeatmap::Heatmap(heatmapData,
                         top_annotation = heatmapColAnnot,
                         cluster_rows = TRUE, cluster_columns = FALSE)
 ```
 
-<img src="fig/05-differential-expression-rendered-heatmap-time-1.png" alt="Heatmap showing the vsd-transformed expression levels for the ten most significantly differentially expressed genes over time, in all the samples." style="display: block; margin: auto;" />
+<img src="fig/05-differential-expression-rendered-heatmap-time-1.png" style="display: block; margin: auto;" />
 
-::::::::::::::::::::::::::::::::::::: challenge 
+::::::::::::::::::::::::::::::::::::: challenge
 
 Check the heatmap and top DE genes. Do you find something expected/unexpected in terms of change across all 3 time points?
-
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -496,13 +480,10 @@ temp <- cbind(as.data.frame(rowRanges(se)),
 write.csv(temp, file = "output/Day8vsDay0.csv")
 ```
 
-
-
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
 - With DESeq2, the main steps of a differential expression analysis (size factor estimation, dispersion estimation, calculation of test statistics) are wrapped in a single function: DESeq().
-- Independent filtering of lowly expressed genes is often beneficial. 
-
+- Independent filtering of lowly expressed genes is often beneficial.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
