@@ -1,5 +1,5 @@
 ---
-title: Importing and annotating quantified data into R
+title: "Importing and annotating quantified data into R"
 source: Rmd
 teaching: 80
 output:
@@ -150,7 +150,7 @@ table(rowranges$gbkey)
 You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` were covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop.
 As a reminder, let's take a look at the figure below representing the anatomy of the `SummarizedExperiment` class:
 
-<img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" width="80%" style="display: block; margin: auto;" />
+<img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list." width="80%" style="display: block; margin: auto;" />
 
 It is designed to hold any type of quantitative 'omics data (`assays`) along with linked sample annotations (`colData`) and feature annotations with (`rowRanges`) or without (`rowData`) chromosome, start and stop positions. Once these three tables are (correctly!) linked, subsetting either samples and/or features will correctly subset the `assay`, `colData` and `rowRanges`. Additionally, most Bioconductor packages are built around the same core data infrastructure so they will recognize and be able to manipulate `SummarizedExperiment` objects. Two of the most popular RNA-seq statistical analysis packages have their own extended S4 classes similar to a `SummarizedExperiment` with the additional slots for statistical results: [DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)'s `DESeqDataSet` and [edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)'s `DGEList`. No matter which one you end up using for statistical analysis, you can start by putting your data in a `SummarizedExperiment`.
 

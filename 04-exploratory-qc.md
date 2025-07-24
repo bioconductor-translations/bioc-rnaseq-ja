@@ -143,7 +143,7 @@ Potential considerations:
 
 - Is a gene expressed in both groups?
 - How many samples of each group express a gene?
- :::::::::::::::::::::::::::::::::::
+  :::::::::::::::::::::::::::::::::::
 
 ## Library size differences
 
@@ -168,7 +168,7 @@ colData(se) |>
          theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 ```
 
-<img src="fig/04-exploratory-qc-rendered-lib-size-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-lib-size-1.png" alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million." style="display: block; margin: auto;" />
 
 We need to adjust for the differences in library size between samples, to avoid drawing incorrect conclusions. The way this is typically done for RNA-seq data can be described as a two-step procedure.
 First, we estimate _size factors_ - sample-specific correction factors such that if the raw counts were to be divided by these factors, the resulting values would be more comparable across samples.
@@ -206,7 +206,7 @@ ggplot(data.frame(libSize = colSums(assay(dds)),
     labs(x = "Library size", y = "Size factor")
 ```
 
-<img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables." style="display: block; margin: auto;" />
 
 ## Transform data
 
@@ -220,7 +220,7 @@ In fact, the variance increases with the average read count.
 meanSdPlot(assay(dds), ranks = FALSE)
 ```
 
-<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values." style="display: block; margin: auto;" />
 
 There are two ways around this: either we develop methods specifically adapted to count data, or we adapt (transform) the count data so that the existing methods are applicable.
 Both ways have been explored; however, at the moment the second approach is arguably more widely applied in practice. We can transform our data using DESeq2's variance stabilizing transformation and then verify that it has removed the correlation between average read count and variance.
@@ -231,7 +231,7 @@ vsd <- DESeq2::vst(dds, blind = TRUE)
 meanSdPlot(assay(vsd), ranks = FALSE)
 ```
 
-<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation." style="display: block; margin: auto;" />
 
 ## Heatmaps and clustering
 
@@ -255,7 +255,7 @@ ComplexHeatmap::Heatmap(
 )
 ```
 
-<img src="fig/04-exploratory-qc-rendered-heatmap-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" />
 
 ## PCA
 
@@ -289,7 +289,7 @@ ggplot(pcaData, aes(x = PC1, y = PC2)) +
     scale_color_manual(values = c(Male = "blue", Female = "red"))
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-pca-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by sex and shaped according to the experimental day. The main separation along PC1 is between male and female samples. The main separation along PC2 is between samples from day 8 and samples from days 0 and 4." style="display: block; margin: auto;" />
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
@@ -304,7 +304,7 @@ ggplot(pcaData, aes(x = PC1, y = PC2)) +
 using ntop=500 top features by variance
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-exercise-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-pca-exercise-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by a hypothetical sample ID annotation and shaped according to a hypothetical experimental day annotation. In the plot, samples with the same sample ID tend to cluster together." style="display: block; margin: auto;" />
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -317,7 +317,7 @@ using ntop=500 top features by variance
 - A strong donor effect, that needs to be accounted for.
 - What does PC1 (37% variance) represent? Looks like 2 donor groups?
 - No association of PC1 and PC2 with time --> no or weak transcriptional effect of time
- \--> Check association with higher PCs (e.g., PC3,PC4, ..)
+  \--> Check association with higher PCs (e.g., PC3,PC4, ..)
 
 :::::::::::::::::::::::::::::::::::
 
@@ -354,7 +354,7 @@ ggplot(pcaDataVst, aes(x = PC1, y = PC2)) +
     scale_color_continuous("Total count in millions", type = "viridis")
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-lib-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-pca-lib-1.png" alt="Scatterplot of samples projected onto the first two principal components of the variance-stabilized data, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. There is no strong association between the library sizes and the principal components." style="display: block; margin: auto;" />
 
 
 ``` r
@@ -377,7 +377,7 @@ ggplot(pcaDataCts, aes(x = PC1, y = PC2)) +
     scale_color_continuous("Total count in millions", type = "viridis")
 ```
 
-<img src="fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" style="display: block; margin: auto;" />
+<img src="fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" alt="Scatterplot of samples projected onto the first two principal components of the count matrix, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. The first principal component is strongly correlated with the library size." style="display: block; margin: auto;" />
 
 :::::::::::::::::::::::::::::::::::
 
