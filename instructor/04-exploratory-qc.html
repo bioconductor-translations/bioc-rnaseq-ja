@@ -154,7 +154,7 @@
 <div class="accordion accordion-flush" id="accordionFlush3">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
-        <a href="02-setup.html">2. RStudio Project and Experimental Data</a>
+        <a href="02-setup.html">2. RStudioプロジェクトと実験データ</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -283,7 +283,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Exploratory analysis and quality control</h1>
-        <p> Last updated on 2025-07-23 |
+        <p> Last updated on 2025-07-24 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/04-exploratory-qc.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -497,7 +497,7 @@ compare the library sizes of all samples.</p>
 <span>         <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Sample"</span>, y <span class="op">=</span> <span class="st">"Total count in millions"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>         <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-lib-size-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We need to adjust for the differences in library size between
+<figure><img src="../fig/04-exploratory-qc-rendered-lib-size-1.png" alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We need to adjust for the differences in library size between
 samples, to avoid drawing incorrect conclusions. The way this is
 typically done for RNA-seq data can be described as a two-step
 procedure. First, we estimate <em>size factors</em> - sample-specific
@@ -551,7 +551,7 @@ design formula are characters, converting to factors</code></pre>
 <span>    <span class="fu">geom_point</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Library size"</span>, y <span class="op">=</span> <span class="st">"Size factor"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-est-size-factors-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="transform-data">Transform data<a class="anchor" aria-label="anchor" href="#transform-data"></a></h2>
+<figure><img src="../fig/04-exploratory-qc-rendered-est-size-factors-1.png" alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="transform-data">Transform data<a class="anchor" aria-label="anchor" href="#transform-data"></a></h2>
 <hr class="half-width"><p>There is a rich literature on methods for exploratory analysis. Most
 of these work best in situations where the variance of the input data
 (here, each gene) is relatively independent of the average value. For
@@ -563,7 +563,7 @@ variance increases with the average read count.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>There are two ways around this: either we develop methods
+<figure><img src="../fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>There are two ways around this: either we develop methods
 specifically adapted to count data, or we adapt (transform) the count
 data so that the existing methods are applicable. Both ways have been
 explored; however, at the moment the second approach is arguably more
@@ -577,7 +577,7 @@ the correlation between average read count and variance.</p>
 <code class="sourceCode R"><span><span class="va">vsd</span> <span class="op">&lt;-</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu">vst</span><span class="op">(</span><span class="va">dds</span>, blind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">vsd</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a></h2>
+<figure><img src="../fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a></h2>
 <hr class="half-width"><p>There are many ways to cluster samples based on their similarity of
 expression patterns. One simple way is to calculate Euclidean distances
 between all pairs of samples (longer distance = more different) and then
@@ -605,7 +605,7 @@ females reliably separate.</p>
 <span>                   time <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Day0 <span class="op">=</span> <span class="st">"yellow"</span>, Day4 <span class="op">=</span> <span class="st">"forestgreen"</span>, Day8 <span class="op">=</span> <span class="st">"purple"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-heatmap-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="pca">PCA<a class="anchor" aria-label="anchor" href="#pca"></a></h2>
+<figure><img src="../fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="pca">PCA<a class="anchor" aria-label="anchor" href="#pca"></a></h2>
 <hr class="half-width"><p>Principal component analysis is a dimensionality reduction method,
 which projects the samples into a lower-dimensional space. This
 lower-dimensional representation can be used for visualization, or as
@@ -648,7 +648,7 @@ visualization.</p>
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Male <span class="op">=</span> <span class="st">"blue"</span>, Female <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-pca-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
+<figure><img src="../fig/04-exploratory-qc-rendered-pca-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by sex and shaped according to the experimental day. The main separation along PC1 is between male and female samples. The main separation along PC2 is between samples from day 8 and samples from days 0 and 4." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
@@ -667,7 +667,7 @@ suggest?</p></li>
 </h3>
 <pre class="output" tabindex="0"><code>using ntop=500 top features by variance</code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-pca-exercise-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></div>
+<figure><img src="../fig/04-exploratory-qc-rendered-pca-exercise-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by a hypothetical sample ID annotation and shaped according to a hypothetical experimental day annotation. In the plot, samples with the same sample ID tend to cluster together." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></div>
 </div>
 </div>
 <div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
@@ -741,7 +741,7 @@ class <code>DESeqTransform</code> as input. You can transform a
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_continuous</span><span class="op">(</span><span class="st">"Total count in millions"</span>, type <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-pca-lib-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div class="codewrapper sourceCode" id="cb29">
+<figure><img src="../fig/04-exploratory-qc-rendered-pca-lib-1.png" alt="Scatterplot of samples projected onto the first two principal components of the variance-stabilized data, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. There is no strong association between the library sizes and the principal components." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div class="codewrapper sourceCode" id="cb29">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -766,7 +766,7 @@ class <code>DESeqTransform</code> as input. You can transform a
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_continuous</span><span class="op">(</span><span class="st">"Total count in millions"</span>, type <span class="op">=</span> <span class="st">"viridis"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></div>
+<figure><img src="../fig/04-exploratory-qc-rendered-pca-lib-vst-1.png" alt="Scatterplot of samples projected onto the first two principal components of the count matrix, colored by library size. The library sizes are between approximately 32.5 and 42.5 million. The first principal component is strongly correlated with the library size." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></div>
 </div>
 </div>
 </div>
@@ -950,8 +950,8 @@ work directly on the raw counts.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/04-exploratory-qc.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/04-exploratory-qc.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-07-23",
-  "datePublished": "2025-07-23"
+  "dateModified": "2025-07-24",
+  "datePublished": "2025-07-24"
 }
 
   </script><script>
