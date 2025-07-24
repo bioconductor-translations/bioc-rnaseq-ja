@@ -1,10 +1,10 @@
 ---
-title: "Importing and annotating quantified data into R"
+title: "Rに量的データをインポートして注釈を付ける"
 source: Rmd
 teaching: 80
 output:
   html_document:
-    df_print: paged
+    df_print: ページ付
 exercises: 40
 ---
 
@@ -14,19 +14,19 @@ exercises: 40
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Learn how to import the quantifications into a SummarizedExperiment object.
-- Learn how to add additional gene annotations to the object.
+- 量的データをSummarizedExperimentオブジェクトにインポートする方法を学びます。
+- オブジェクトに追加の遺伝子注釈を追加する方法を学びます。
   ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- How can one import quantified gene expression data into an object suitable for downstream statistical analysis in R?
-- What types of gene identifiers are typically used, and how are mappings between them done?
+- 量的遺伝子発現データをRで下流の統計分析に適したオブジェクトにインポートするにはどうすればよいですか？
+- 通常使用される遺伝子識別子の種類は何ですか？ それらのマッピングはどのように行われますか？
   ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Load packages
+## パッケージを読み込む
 
-In this episode we will use some functions from add-on R packages. In order to use them, we need to load them from our `library`:
+このエピソードでは、アドオンRパッケージの関数をいくつか使用します。 それらを使用するためには、`library`から読み込む必要があります。
 
 
 ``` r
@@ -38,14 +38,14 @@ suppressPackageStartupMessages({
 })
 ```
 
-If you get any error messages about `there is no package called 'XXXX'` it means you have not installed the package/s yet for this version of R. See the bottom of the [Summary and Setup](https://carpentries-incubator.github.io/bioc-rnaseq/index.html) to install all the necessary packages for this workshop. If you have to install, remember to re-run the `library` commands above to load them.
+`there is no package called 'XXXX'`というエラーメッセージが表示された場合、これはこのバージョンのRに対して、パッケージがまだインストールされていないことを意味します。このワークショップに必要なすべてのパッケージをインストールするには、[Summary and Setup](https://carpentries-incubator.github.io/bioc-rnaseq/index.html)の下部を参照してください。 インストールする必要がある場合は、上記の`library`コマンドを再実行してそれらを読み込むことを忘れないでください。
 
-## Load data
+## データを読み込む
 
-In the last episode, we used R to download 4 files from the internet and saved them on our computer. But we do not have these files loaded into R yet so that we can work with them. The original experimental design in [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/) was fairly complex: 8 week old male and female C57BL/6 mice were collected at Day 0 (before influenza infection), Day 4 and Day 8 after influenza infection. From each mouse, cerebellum and spinal cord tissues were taken for RNA-seq. There were originally 4 mice per 'Sex x Time x Tissue' group, but a few were lost along the way resulting in a total of 45 samples. For this workshop, we are going to simplify the analysis by only using the 22 cerebellum samples. Expression quantification was done using STAR to align to the mouse genome and then counting reads that map to genes. In addition to the counts per gene per sample, we also need information on which sample belongs to which Sex/Time point/Replicate. And for the genes, it is helpful to have extra information called annotation.
-Let's read in the data files that we downloaded in the last episode and start to explore them:
+前回のエピソードでは、Rを使用してインターネットから4つのファイルをダウンロードし、それらをコンピュータに保存しました。 しかし、これらのファイルはまだRに読み込まれていないため、作業することができません。 [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/)の元の実験デザインはかなり複雑でした。8週齢のオスとメスのC57BL/6マウスは、インフルエンザ感染前の0日目、感染後の4日目および8日目に収集されました。 各マウスからは、小脳と脊髄の組織がRNA-seq用に取り出されました。 元々は「性別 x 時間 x 組織」群御に4匹のマウスがいましたが、途中でいくつかが失われ、合計で45のサンプルに至りました。 このワークショップでは、分析を簡素化するために22の小脳サンプルのみを使用します。 発現の定量化は、STARを使用してマウスのゲノムにアライメントを行い、その後、遺伝子にマッピングされるリードの数を数えることを通じて行われました。 各遺伝子ごとのサンプルあたりのカウントに加えて、どのサンプルがどの性別/時間点/複製に属するかの情報も必要です。 遺伝子に関しては、注釈と呼ばれる追加の情報があると便利です。
+前回ダウンロードしたデータファイルを読み込み、探索し始めましょう：
 
-### Counts
+### カウント
 
 
 ``` r
@@ -62,11 +62,11 @@ dim(counts)
 # View(counts)
 ```
 
-Genes are in rows and samples are in columns, so we have counts for 41,786 genes and 22 samples. The `View()` command has been commented out for the website, but running it will open a tab in RStudio that lets us look at the data and even sort the table by a particular column. However, the viewer cannot change the data inside the `counts` object, so we can only look, not permanently sort nor edit the entries. When finished, close the viewer using the X in the tab. Looks like the rownames are gene symbols and the column names are the GEO sample IDs, which are not very informative for telling us which sample is what.
+遺伝子は行に、サンプルは列に含まれています。したがって、41,786の遺伝子と22のサンプルのカウントがあります。 `View()`コマンドはウェブサイト用にコメントアウトされていますが、実行するとRStudioでデータを確認したり、特定の列でテーブルを並べ替えたりできます。 ただし、ビューワは`counts`オブジェクト内部のデータを変更できないため、見るだけで、永久に並べ替えたり編集したりすることはできません。 終了したら、タブのXを使ってビューワを閉じます。 行名は遺伝子シンボルであり、列名はGEOのサンプルIDであるようです。これは、私たちがどのサンプルが何かを教えてくれないため、あまり有益ではありません。
 
-### Sample annotations
+### サンプルの注釈
 
-Next read in the sample annotations. Because samples are in columns in the count matrix, we will name the object `coldata`:
+次に、サンプルの注釈を読み込みます。 カウント行列の列にはサンプルが含まれているため、オブジェクトに`coldata`という名前を付けます：
 
 
 ``` r
@@ -83,11 +83,11 @@ dim(coldata)
 # View(coldata)
 ```
 
-Now samples are in rows with the GEO sample IDs as the rownames, and we have 10 columns of information. The columns that are the most useful for this workshop are `geo_accession` (GEO sample IDs again), `sex` and `time`.
+今、サンプルが行にあり、GEOサンプルIDが行名として付いています。そして、私たちには10列の情報があります。 このワークショップで最も便利な列は、`geo_accession`（再度、GEOサンプルID）、`sex`、および`time`です。
 
-### Gene annotations
+### 遺伝子の注釈
 
-The counts only have gene symbols, which while short and somewhat recognizable to the human brain, are not always good absolute identifiers for exactly what gene was measured. For this we need additional gene annotations that were provided by the authors. The `count` and `coldata` files were in comma separated value (.csv) format, but we cannot use that for our gene annotation file because the descriptions can contain commas that would prevent a .csv file from being read in correctly. Instead the gene annotation file is in tab separated value (.tsv) format. Likewise, the descriptions can contain the single quote `'` (e.g., 5'), which by default R assumes indicates a character entry. So we have to use a more generic function `read.delim()` with extra arguments to specify that we have tab-separated data (`sep = "\t"`) with no quotes used (`quote = ""`). We also put in other arguments to specify that the first row contains our column names (`header = TRUE`), the gene symbols that should be our `row.names` are in the 5th column (`row.names = 5`), and that NCBI's species-specific gene ID (i.e., ENTREZID) should be read in as character data even though they look like numbers (`colClasses` argument). You can look up this details on available arguments by simply entering the function name starting with question mark. (e.g., `?read.delim`)
+カウントには遺伝子シンボルしかありませんが、それは短くて人間の脳にとってはある程度認識可能ですが、実際に測定された遺伝子の正確な同定子としてはあまり利便性がありません。 そのため、著者によって提供された追加の遺伝子注釈が必要です。 `count`および`coldata`ファイルはカンマ区切り値（.csv）形式でしたが、遺伝子注釈ファイルにはそれが使用できません。なぜなら、説明には、カンマを含む可能性があるため、.csvファイルを正しく読み込むのを妨げるからです。 その代わりに、遺伝子注釈ファイルはタブ区切り値（.tsv）形式です。 同様に、説明には単一引用符`'`（例：5'）が含まれる可能性があり、Rはデフォルトでこれを文字列として扱うためです。 そのため、データがタブ区切りであることを指定するために、より一般的な関数`read.delim()`に追加の引数を使用する必要があります（`sep = "\t"`）で、引用符は使用しない（`quote = ""`）。 さらに、最初の行に列名が含まれていることを指定するためにその他の引数を追加し（`header = TRUE`）、行名として指定される遺伝子シンボルは5列目（`row.names = 5`）であること、NCBIの種特異的遺伝子ID（すなわちENTREZID）は、数字のように見えるが文字列として読み込む（`colClasses`引数）必要があることを指定します。 使用可能な引数に関する詳細については、関数名の先頭にクエスチョンマークを入力することで確認できます。 (例：`?read.delim`)
 
 
 ``` r
@@ -108,11 +108,7 @@ dim(rowranges)
 # View(rowranges)
 ```
 
-For each of the 41,786 genes, we have the `seqnames` (e.g., chromosome number),
-`start` and `end` positions, `strand`, `ENTREZID`, gene product description
-(`product`) and the feature type (`gbkey`). These gene-level metadata are
-useful for the downstream analysis. For example, from the `gbkey` column, we
-can check what types of genes and how many of them are in our dataset:
+41,786の遺伝子ごとに、`seqnames`（例えば、染色体数）、`start`および`end`位置、`strand`、`ENTREZID`、遺伝子産物説明（`product`）および特徴タイプ（`gbkey`）があります。 これらの遺伝子レベルのメタデータは、下流分析に役立ちます。 たとえば、`gbkey`列から、どのような種類の遺伝子があり、それらがデータセットにどのくらい含まれているかを確認できます：
 
 
 ``` r
@@ -131,38 +127,38 @@ table(rowranges$gbkey)
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Discuss the following points with your neighbor
+## チャレンジ: 以下のポイントを隣の人と話し合ってください。
 
-1. How are the 3 objects `counts`, `coldata` and `rowranges` related to each other in terms of their rows and columns?
-2. If you only wanted to analyse the mRNA genes, what would you have to do keep just those (generally speaking, not exact codes)?
-3. If you decided the first two samples were outliers, what would you have to do to remove those (generally speaking, not exact codes)?
+1. `counts`、`coldata`、`rowranges`の3つのオブジェクトは、行および列に関してどのように関連していますか？
+2. mRNA遺伝子のみを分析したい場合、一般的にはどのようにしてそれらだけを保持しますか？（正確なコードではない）
+3. 最初の2つのサンプルが外れ値であると印象付ける場合、それらを削除するにはどうすればよいですか？（一般的には、正確なコードではない）
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::: solution
 
-1. In `counts`, the rows are genes just like the rows in `rowranges`. The columns in `counts` are the samples, but this corresponds to the rows in `coldata`.
-2. I would have to remember subset both the rows of `counts` and the rows of `rowranges` to just the mRNA genes.
-3. I would have to remember to subset both the columns of `counts` but the rows of `coldata` to exclude the first two samples.
+1. `counts`では、行は遺伝子であり、`rowranges`の行と同じです。 `counts`の列はサンプルですが、これは`coldata`の行に対応します。
+2. `counts`の行をmRNA遺伝子に限定し、`rowranges`の行もそのようにしなければなりません。
+3. `counts`の列と`coldata`の行で、最初の2つのサンプルを除外するために両方の行をサブセットする必要があります。
 
 :::::::::::::::::::::::::::::::::::
 
-You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` were covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop.
-As a reminder, let's take a look at the figure below representing the anatomy of the `SummarizedExperiment` class:
+関連情報を別のオブジェクトに保持することで、カウント、遺伝子の注釈、サンプルの注釈の間で不一致が発生する可能性があります。 これが、Bioconductorが`SummarizedExperiment`という特殊なS4クラスを作成した理由です。 `SummarizedExperiment`の詳細は、[RNA解析とBioconductorの導入](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps)ワークショップの最後で詳しく説明されています。
+リマインダーとして、`SummarizedExperiment`クラスの構造を表す図を見てみましょう：
 
 <img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list." width="80%" style="display: block; margin: auto;" />
 
-It is designed to hold any type of quantitative 'omics data (`assays`) along with linked sample annotations (`colData`) and feature annotations with (`rowRanges`) or without (`rowData`) chromosome, start and stop positions. Once these three tables are (correctly!) linked, subsetting either samples and/or features will correctly subset the `assay`, `colData` and `rowRanges`. Additionally, most Bioconductor packages are built around the same core data infrastructure so they will recognize and be able to manipulate `SummarizedExperiment` objects. Two of the most popular RNA-seq statistical analysis packages have their own extended S4 classes similar to a `SummarizedExperiment` with the additional slots for statistical results: [DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)'s `DESeqDataSet` and [edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)'s `DGEList`. No matter which one you end up using for statistical analysis, you can start by putting your data in a `SummarizedExperiment`.
+これは、任意の種類の定量的なオミクスデータ（`assays`）と、それにリンクされたサンプル注釈（`colData`）、および（遺伝子）特徴注釈（`rowRanges`）または染色体、開始および終了位置を持たない（`rowData`）形式で保持されるように設計されています。 これらの3つのテーブルが（正しく）リンクされると、サンプルや特徴の部分集合が`assay`、`colData`、`rowRanges`の正しい部分集合に変わります。 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャに基づいて構築されているため、`SummarizedExperiment`オブジェクトを認識し、操作することができます。 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャの周りに構築されているため、`SummarizedExperiment`オブジェクトを認識し、操作できるようになります。 最も人気のある2つのRNA-seq統計分析パッケージは、統計結果用に追加のスロットがある`SummarizedExperiment`に類似した独自の拡張S4クラスを持っています：[DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)の`DESeqDataSet`および[edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)の`DGEList`です。 統計分析に使用するものが何であれ、データを`SummarizedExperiment`に入れることから始めることができます。
 
-## Assemble SummarizedExperiment
+## SummarizedExperimentを組み立てる
 
-We will create a `SummarizedExperiment` from these objects:
+これらのオブジェクトから`SummarizedExperiment`を作成します。
 
-- The `count` object will be saved in `assays` slot
-- The `coldata` object with sample information will be stored in `colData` slot (_**sample metadata**_)
-- The `rowranges` object describing the genes will be stored in `rowRanges` slot (_**features metadata**_)
+- `count`オブジェクトは`assays`スロットに保存されます。
+- サンプル情報を持つ`coldata`オブジェクトは、`colData`スロットに保存されます（_**サンプルメタデータ**_）
+- 遺伝子を記述する`rowranges`オブジェクトは、`rowRanges`スロットに保存されます（_**特徴メタデータ**_）
 
-Before we put them together, you ABSOLUTELY MUST MAKE SURE THE SAMPLES AND GENES ARE IN THE SAME ORDER! Even though we saw that `count` and `coldata` had the same number of samples and `count` and `rowranges` had the same number of genes, we never explicitly checked to see if they were in the same order. One quick way to check:
+それらを組み合わせる前に、サンプルと遺伝子が同じ順序であることを絶対に確認する必要があります！ `count`と`coldata`が同じ数のサンプルを持っていること、また`count`と`rowranges`が同じ数の遺伝子を持っていることはわかりましたが、同じ順序になっているかどうかを明示的に確認することはしていませんでした。 確認する簡単な方法：
 
 
 ``` r
@@ -182,14 +178,12 @@ all.equal(rownames(counts), rownames(rowranges)) # genes
 ```
 
 ``` r
-# If the first is not TRUE, you can match up the samples/columns in
-# counts with the samples/rows in coldata like this (which is fine
-# to run even if the first was TRUE):
+# 最初がTRUEでない場合は、このようにしてカウントのサンプル/列をコレクトします（これは最初がTRUEでも実行しても構いません）：
 
 tempindex <- match(colnames(counts), rownames(coldata))
 coldata <- coldata[tempindex, ]
 
-# Check again:
+# 再確認します:
 all.equal(colnames(counts), rownames(coldata)) 
 ```
 
@@ -199,9 +193,8 @@ all.equal(colnames(counts), rownames(coldata))
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-If the features (i.e., genes) in the assay (e.g., `counts`) and the gene
-annotation table (e.g., `rowranges`) are different, how can we fix them?
-Write the codes.
+アッセイ（例：`counts`）および遺伝子注釈テーブル（例：`rowranges`）内の特徴（すなわち遺伝子）が異なる場合、これらをどのように修正できますか？
+コードを記述してください。
 
 :::::::::::::::::::::::::::::::::::::::
 
@@ -217,12 +210,11 @@ all.equal(rownames(counts), rownames(rowranges))
 
 :::::::::::::::::::::::::::::::::::
 
-Once we have verified that samples and genes are in the same order, we can
-then create our `SummarizedExperiment` object.
+サンプルと遺伝子が同じ順序になっていることを確認したら、`SummarizedExperiment`オブジェクトを作成します。
 
 
 ``` r
-# One final check:
+# 最後の確認:
 stopifnot(rownames(rowranges) == rownames(counts), # features
           rownames(coldata) == colnames(counts)) # samples
 
@@ -233,12 +225,11 @@ se <- SummarizedExperiment(
 )
 ```
 
-Because matching the genes and samples is so important, the `SummarizedExperiment()` constructor does some internal check to make sure they contain the same number of
-genes/samples and the sample/row names match. If not, you will get some error messages:
+遺伝子とサンプルが一致していることが非常に重要であるため、`SummarizedExperiment()`コンストラクタは内部で一致する遺伝子/サンプル数とサンプル/行名が一致することをチェックします。 そうでない場合、いくつかのエラーメッセージが表示されます：
 
 
 ``` r
-# wrong number of samples:
+# サンプル数の誤り:
 
 bad1 <- SummarizedExperiment(
     assays = list(counts = as.matrix(counts)),
@@ -254,7 +245,7 @@ Error in validObject(.Object): invalid class "SummarizedExperiment" object:
 
 
 ``` r
-# same number of genes but in different order:
+# 同じ数の遺伝子ですが異なる順序:
 
 bad2 <- SummarizedExperiment(
   assays = list(counts = as.matrix(counts)),
@@ -269,11 +260,11 @@ Error in SummarizedExperiment(assays = list(counts = as.matrix(counts)), : the r
   construct
 ```
 
-A brief recap of how to access the various data slots in a `SummarizedExperiment` and how to make some manipulations:
+`SummarizedExperiment`のさまざまなデータスロットにアクセスする方法と、いくつかの操作を行う方法の簡単な概要：
 
 
 ``` r
-# Access the counts
+# カウントにアクセス
 head(assay(se))
 ```
 
@@ -317,9 +308,9 @@ dim(assay(se))
 ```
 
 ``` r
-# The above works now because we only have one assay, "counts"
-# But if there were more than one assay, we would have to specify
-# which one like so:
+# 上記は、私たちが今持っているのが1つのアッセイ、"counts"のために機能しています。
+# しかし、アッセイが複数ある場合は、指定する必要があります。
+# 例えば、
 
 head(assay(se, "counts"))
 ```
@@ -356,7 +347,7 @@ Sox17               273        197        310        246
 ```
 
 ``` r
-# Access the sample annotations
+# サンプル注釈にアクセス
 colData(se)
 ```
 
@@ -399,7 +390,7 @@ dim(colData(se))
 ```
 
 ``` r
-# Access the gene annotations
+# 遺伝子注釈にアクセス
 head(rowData(se))
 ```
 
@@ -424,7 +415,7 @@ dim(rowData(se))
 ```
 
 ``` r
-# Make better sample IDs that show sex, time and mouse ID:
+# 性別、時間、マウスIDを表示するためのより良いサンプルIDを作成します：
 
 se$Label <- paste(se$sex, se$time, se$mouse, sep = "_")
 se$Label
@@ -442,7 +433,7 @@ se$Label
 ``` r
 colnames(se) <- se$Label
 
-# Our samples are not in order based on sex and time
+# サンプルは性別と時間に基づいて並んでいません。
 se$Group <- paste(se$sex, se$time, sep = "_")
 se$Group
 ```
@@ -456,8 +447,7 @@ se$Group
 ```
 
 ``` r
-# change this to factor data with the levels in order 
-# that we want, then rearrange the se object:
+# これを順序を保持するファクターデータに変更し、seオブジェクトを再配置します：
 
 se$Group <- factor(se$Group, levels = c("Female_Day0","Male_Day0", 
                                         "Female_Day4","Male_Day4",
@@ -510,20 +500,17 @@ Male_Day8_24          24   Male_Day8_24 Male_Day8
 ```
 
 ``` r
-# Finally, also factor the Label column to keep in order in plots:
+# 最後に、プロット内での順序を維持するためにLabel列もファクタにします:
 
 se$Label <- factor(se$Label, levels = se$Label)
 ```
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-1. How many samples are there for each level of the `Infection` variable?
-2. Create 2 objects named `se_infected` and `se_noninfected` containing
-  a subset of `se` with only infected and non-infected samples, respectively.
-  Then, calculate the mean expression levels of the first 500 genes for each
-  object, and use the `summary()` function to explore the distribution
-  of expression levels for infected and non-infected samples based on these genes.
-3. How many samples represent female mice infected with Influenza A on day 8?
+1. `Infection`変数の各レベルに対して、サンプルは何個ですか？
+2. `se_infected`と`se_noninfected`という名前の2つのオブジェクトを作成し、それぞれに感染サンプルと非感染サンプルのみを含む`se`のサブセットを含めます。
+  その後、最初の500遺伝子の各オブジェクトの平均発現レベルを計算し、`summary()`関数を使用してこれらの遺伝子に基づく感染と非感染サンプルの発現レベルの分布を調べます。
+3. インフルエンザAに感染した雌のマウスのサンプルは何個ありますか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -577,28 +564,28 @@ ncol(se[, se$sex == "Female" & se$infection == "InfluenzaA" & se$time == "Day8"]
 
 :::::::::::::::::::::::::::::::::::
 
-## Save SummarizedExperiment
+## SummarizedExperimentを保存する
 
-This was a bit of code and time to create our `SummarizedExperiment` object. We will need to keep using it throughout the workshop, so it can be useful to save it as an actual single file on our computer to read it back in to R's memory if we have to shut down RStudio. To save an R-specific file we can use the `saveRDS()` function and later read it back into R using the `readRDS()` function.
+これが、私たちの`SummarizedExperiment`オブジェクトを作成するための少しのコードと時間でした。 ワークショップ全体で使用し続ける必要があるため、Rのメモリに戻すためにコンピュータ上の実際の単一ファイルとして保存することが有用です。 Rに特有のファイルを保存するには、`saveRDS()`関数を使用し、後で`readRDS()`関数を使用して再び読み込むことができます。
 
 
 ``` r
 saveRDS(se, "data/GSE96870_se.rds")
-rm(se) # remove the object!
+rm(se) # オブジェクトを削除！
 se <- readRDS("data/GSE96870_se.rds")
 ```
 
-## Data provenance and reproducibility
+## データの由来と再現性
 
-We have now created an external .rds file that represents our RNA-Seq data in a format that can be read into R and used by various packages for our analyses. But we should still keep a record of the codes that created the .rds file from the 3 files we downloaded from the internet. But what is the provenance of those files - i.e, where did they come from and how were they made? The original counts and gene information were deposited in the GEO public database, accession number [GSE96870](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE96870). But these counts were generated by running alignment/quantification programs on the also-deposited fastq files that hold the sequence base calls and quality scores, which in turn were generated by a specific sequencing machine using some library preparation method on RNA extracted from samples collected in a particular experiment. Whew!
+これで、RNA-SeqデータをRにインポートしてさまざまなパッケージによる分析で使用可能な形式の外部.rdsファイルを作成しました。 ただし、インターネットからダウンロードした3つのファイルから.rdsファイルを作成するために使用したコードの記録を保持する必要があります。 ファイルの由来はどうなっていますか？ つまり、それらはどこから来ており、どのように作成されたのですか？ 元々のカウントおよび遺伝子情報は、GEO公開データベースに預けられました。アクセッション番号は[GSE96870](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE96870)です。 ただし、これらのカウントは、配列ベースコールや品質スコアを保持するファストqファイルで配列合わせ/定量化プログラムを実行することによって生成されたものであり、これらは特定のライブラリ調製法を使用して抽出されたRNAから収集したサンプルで生成されたものです。 ふぅ！
 
-If you conducted the original experiment ideally you would have the complete record of where and how the data were generated. But you might use publicly-available data sets so the best you can do is to keep track of what original files you got from where and what manipulations you have done to them. Using R codes to keep track of everything is an excellent way to be able to reproduce the entire analysis from the original input files. The exact results you get can differ depending on the R version, add-on package versions and even what operating system you use, so make sure to keep track of all this information as well by running `sessionInfo()` and recording the output (see example at end of lesson).
+元の実験を実施した場合、理想的にはデータが生成された場所と方法の完全な記録を持つべきです。 しかし、公開データセットを利用している場合、最善の方法は、どの元のファイルがどこから来たか、そしてそれに対して行ってきた操作の記録を保持することです。 Rコードを使用してすべてを追跡することは、元の入力ファイルから全体の分析を再現可能にする素晴らしい方法です。 得られる正確な結果は、Rのバージョン、アドオンパッケージのバージョン、さらには使用しているオペレーティングシステムによって異なる可能性があるため、`sessionInfo()`を使用してすべての情報を追跡し、出力を記録するようにしてください（レッスンの最後に例を参照）。
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: How to subset to mRNA genes
+## チャレンジ: mRNA遺伝子をサブセットにする方法
 
-Before, we conceptually discussed subsetting to only the mRNA genes. Now that we have our `SummarizedExperiment` object, it becomes much easier to write the codes to subset `se` to a new object called `se_mRNA` that contains only the genes/rows where the `rowData(se)$gbkey` is equal to mRNA. Write the codes and then check you correctly got the 21,198 mRNA genes:
+以前は、mRNA遺伝子に対するサブセットを理論的に論じました。 現在、`SummarizedExperiment`オブジェクトを持っているため、`se`を新しいオブジェクト`se_mRNA`にサブセットするためのコードを書くことがはるかに簡単になります。このオブジェクトには、`rowData(se)$gbkey`がmRNAである遺伝子/行のみを含むものです。 コードを書くと、21,198のmRNA遺伝子を正しく取得したかを確認してください。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -614,38 +601,28 @@ dim(se_mRNA)
 [1] 21198    22
 ```
 
-:::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::::::
 
-## Gene Annotations
+## 遺伝子注釈
 
-Depending on who generates your count data, you might not have a nice file of
-additional gene annotations. There may only be the count row names, which
-could be gene symbols or ENTREZIDs or another database's ID. Characteristics
-of gene annotations differ based on their annotation strategies and information
-sources. For example, RefSeq human gene models (i.e., Entrez from NCBI) are
-well supported and broadly used in various studies. The UCSC Known Genes
-dataset is based on protein data from Swiss-Prot/TrEMBL (UniProt) and the
-associated mRNA data from GenBank, and serves as a foundation for the UCSC
-Genome Browser. Ensembl genes contain both automated genome annotation and
-manual curation.
+カウントデータを生成する人によっては、追加の遺伝子注釈の適切なファイルがないかもしれません。 遺伝子シンボルやENTREZID、あるいは他のデータベースのIDのみが存在するかもしれません。 遺伝子注釈の特性は、その注釈戦略と情報源によって異なります。 たとえば、RefSeqヒト遺伝子モデル（つまり、NCBIのEntrez）は、さまざまな研究でよくサポートされ、広く使用されています。 UCSC Known Genes データセットは、Swiss-Prot/TrEMBL (UniProt) のタンパク質データと、GenBankからの関連するmRNAデータに基づいており、UCSC Genome Browserの基盤として機能します。 Ensemblの遺伝子は、自動生成されたゲノムアノテーションと手動キュレーションの両方を含んでいます。
 
-You can find more information in Bioconductor [Annotation Workshop](https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html)
-material.
+Bioconductorでの詳細情報は、[Annotation Workshop](https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html)の資料で見つけることができます。
 
-Bioconductor has many packages and functions that can help you to get additional annotation information for your genes. The available resources are covered in more detail in [Episode 7 Gene set enrichment analysis](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources).
+Bioconductorには、遺伝子の追加注釈情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セット濃縮解析](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
 
-Here, we will introduce one of the gene ID mapping functions, `mapIds`:
+ここでは、遺伝子IDマッピング関数の1つである`mapIds`を紹介します：
 
 ```
 mapIds(annopkg, keys, column, keytype, ..., multiVals)
 ```
 
-Where
+どこで
 
-- _annopkg_ is the annotation package
-- _keys_ are the IDs that we **know**
-- _column_ is the value we **want**
-- _keytype_ is the type of key used
+- _annopkg_は、注釈パッケージです
+- _keys_は、私たちが**知っている**IDです
+- _column_は、私たちが**望む**値です
+- _keytype_は、使用するキーのタイプです
 
 
 ``` r
@@ -661,10 +638,8 @@ mapIds(org.Mm.eg.db, keys = "497097", column = "SYMBOL", keytype = "ENTREZID")
 "Xkr4" 
 ```
 
-Different from the `select()` function, `mapIds()` function handles 1:many
-mapping between keys and columns through an additional argument, `multiVals`.
-The below example demonstrate this functionality using the `hgu95av2.db`
-package, an Affymetrix Human Genome U95 Set annotation data.
+`select()`関数とは異なり、`mapIds()`関数は、追加の引数`multiVals`を通じてキーと列の間の1:多のマッピングを処理します。
+以下の例では、`hgu95av2.db`パッケージを使用してこの機能を示します。AffymetrixヒトゲノムU95セット注釈データ。
 
 
 ``` r
@@ -684,9 +659,7 @@ mapIds(hgu95av2.db, keys = keys, column = "ALIAS", keytype = "ENTREZID")
 ```
 
 ``` r
-# When there is 1:many mapping, the default behavior was 
-# to output the first match. This can be changed to a function,
-# which we defined above to give us the last match:
+# 1:多のマッピングがある場合、デフォルトの動作は最初の一致を出力することでした。これは、上で定義した関数を使用して最後の一致を取得するように変更できます：
 
 mapIds(hgu95av2.db, keys = keys, column = "ALIAS", keytype = "ENTREZID", multiVals = last)
 ```
@@ -701,7 +674,7 @@ mapIds(hgu95av2.db, keys = keys, column = "ALIAS", keytype = "ENTREZID", multiVa
 ```
 
 ``` r
-# Or we can get back all the many mappings:
+# または、すべての多くのマッピングを取得することができます：
 
 mapIds(hgu95av2.db, keys = keys, column = "ALIAS", keytype = "ENTREZID", multiVals = "list")
 ```
@@ -732,7 +705,7 @@ $`10001`
 [1] "ARC33"     "NY-REN-28" "MED6"     
 ```
 
-## Session info
+## セッション情報
 
 
 ``` r
@@ -788,6 +761,6 @@ loaded via a namespace (and not attached):
 
 ::: keypoints
 
-- Depending on the gene expression quantification tool used, there are different ways (often distributed in Bioconductor packages) to read the output into a `SummarizedExperiment` or `DGEList` object for further processing in R.
-- Stable gene identifiers such as Ensembl or Entrez IDs should preferably be used as the main identifiers throughout an RNA-seq analysis, with gene symbols added for easier interpretation.
+- 使用される遺伝子発現定量ツールによって、出力を`SummarizedExperiment`または`DGEList`オブジェクトに読み込む方法が異なります（多くはBioconductorパッケージで配布されています）。
+- EnsemblやEntrez IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な識別子として使用されるべきで、解釈を容易にするために遺伝子シンボルを追加する必要があります。
   :::
