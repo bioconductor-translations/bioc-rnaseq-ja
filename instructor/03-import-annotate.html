@@ -282,7 +282,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Rに量的データをインポートして注釈を付ける</h1>
-        <p> Last updated on 2025-07-24 |
+        <p> Last updated on 2025-07-25 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/03-import-annotate.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -296,16 +296,31 @@
 
         
 
-<p>::::::::::::::::::::::::::::::::::::::: objectives</p>
-<ul><li>量的データをSummarizedExperimentオブジェクトにインポートする方法を学びます。</li>
-<li>オブジェクトに追加の遺伝子注釈を追加する方法を学びます。
-::::::::::::::::::::::::::::::::::::::::::::::::::</li>
-</ul><p>:::::::::::::::::::::::::::::::::::::::: questions</p>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
 <ul><li>量的遺伝子発現データをRで下流の統計分析に適したオブジェクトにインポートするにはどうすればよいですか？</li>
 <li>通常使用される遺伝子識別子の種類は何ですか？
-それらのマッピングはどのように行われますか？
-::::::::::::::::::::::::::::::::::::::::::::::::::</li>
-</ul><section><h2 class="section-heading" id="パッケージを読み込む">パッケージを読み込む<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%82%92%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%82%80"></a></h2>
+それらのマッピングはどのように行われますか？</li>
+</ul></div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul><li>量的データをSummarizedExperimentオブジェクトにインポートする方法を学びます。</li>
+<li>オブジェクトに追加の遺伝子注釈を追加する方法を学びます。</li>
+</ul></div>
+</div>
+</div>
+</div>
+</div>
+<section><h2 class="section-heading" id="パッケージを読み込む">パッケージを読み込む<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%82%92%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%82%80"></a></h2>
 <hr class="half-width"><p>このエピソードでは、アドオンRパッケージの関数をいくつか使用します。
 それらを使用するためには、<code>library</code>から読み込む必要があります。</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -1196,7 +1211,7 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] Matrix_1.7-3            bit_4.6.0               jsonlite_2.0.0
- [4] compiler_4.5.1          BiocManager_1.30.26     renv_1.1.4
+ [4] compiler_4.5.1          BiocManager_1.30.26     renv_1.1.5
  [7] crayon_1.5.3            blob_1.2.4              Biostrings_2.76.0
 [10] png_0.1-8               fastmap_1.2.0           yaml_2.3.10
 [13] lattice_0.22-7          R6_2.6.1                XVector_0.48.0
@@ -1267,8 +1282,8 @@ IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な�
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/03-import-annotate.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/03-import-annotate.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-07-24",
-  "datePublished": "2025-07-24"
+  "dateModified": "2025-07-25",
+  "datePublished": "2025-07-25"
 }
 
   </script><script>
