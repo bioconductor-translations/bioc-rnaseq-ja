@@ -182,11 +182,11 @@
 
     <div id="flush-collapsecurrent" class="accordion-collapse collapse show" aria-labelledby="flush-headingcurrent" data-bs-parent="#accordionFlushcurrent">
       <div class="accordion-body">
-        <ul><li><a href="#load-packages">Load packages</a></li>
-<li><a href="#remove-unexpressed-genes">Remove unexpressed genes</a></li>
-<li><a href="#library-size-differences">Library size differences</a></li>
-<li><a href="#transform-data">Transform data</a></li>
-<li><a href="#heatmaps-and-clustering">Heatmaps and clustering</a></li>
+        <ul><li><a href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF">パッケージの読み込み</a></li>
+<li><a href="#%E7%99%BA%E7%8F%BE%E3%81%97%E3%81%A6%E3%81%84%E3%81%AA%E3%81%84%E9%81%BA%E4%BC%9D%E5%AD%90%E3%81%AE%E9%99%A4%E5%8E%BB">発現していない遺伝子の除去</a></li>
+<li><a href="#%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%82%B5%E3%82%A4%E3%82%BA%E3%81%AE%E5%B7%AE%E7%95%B0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">ライブラリサイズの差異について</a></li>
+<li><a href="#%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E5%89%8D%E5%87%A6%E7%90%86">データの前処理</a></li>
+<li><a href="#%E3%83%92%E3%83%BC%E3%83%88%E3%83%9E%E3%83%83%E3%83%97%E3%81%A8%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E8%A7%A3%E6%9E%90">ヒートマップとクラスタリング解析</a></li>
 <li><a href="#pca">PCA</a></li>
 <li><a href="#interactive-exploratory-data-analysis">Interactive exploratory data analysis</a></li>
 <li><a href="#session-info">Session info</a></li>
@@ -283,7 +283,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Exploratory analysis and quality control</h1>
-        <p> Last updated on 2025-07-24 |
+        <p> Last updated on 2025-08-17 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/04-exploratory-qc.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -302,11 +302,9 @@
 <div class="card-body">
 <div class="inner">
 <h3 class="card-title">Questions</h3>
-<ul><li>Why is exploratory analysis an essential part of an RNA-seq
-analysis?</li>
-<li>How should one preprocess the raw count matrix for exploratory
-analysis?</li>
-<li>Are two dimensions sufficient to represent your data?</li>
+<ul><li>RNA-seq解析において、探索的解析がなぜ重要なステップなのでしょうか？</li>
+<li>探索的解析を行う際、生のカウント行列をどのように前処理すべきですか？</li>
+<li>データを表現するために2次元で十分なのでしょうか？</li>
 </ul></div>
 </div>
 </div>
@@ -314,19 +312,16 @@ analysis?</li>
 <div class="card-body">
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
-<ul><li>Learn how to explore the gene expression matrix and perform common
-quality control steps.</li>
-<li>Learn how to set up an interactive application for exploratory
-analysis.</li>
+<ul><li>遺伝子発現マトリックスの解析方法と、一般的な品質管理手順を習得します。</li>
+<li>探索的解析用のインタラクティブなアプリケーション環境の構築方法を学びます。</li>
 </ul></div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="load-packages">Load packages<a class="anchor" aria-label="anchor" href="#load-packages"></a></h2>
-<hr class="half-width"><p>Assuming you just started RStudio again, load some packages we will
-use in this lesson along with the <code>SummarizedExperiment</code>
-object we created in the last lesson.</p>
+<section><h2 class="section-heading" id="パッケージの読み込み">パッケージの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a></h2>
+<hr class="half-width"><p>RStudioを再起動した直後の状態を想定して、このレッスンで使用するパッケージと、前回のレッスンで作成した
+<code>SummarizedExperiment</code> オブジェクトを読み込みます。</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -348,22 +343,12 @@ object we created in the last lesson.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu">readRDS</span><span class="op">(</span><span class="st">"data/GSE96870_se.rds"</span><span class="op">)</span></span></code></pre>
 </div>
-</section><section><h2 class="section-heading" id="remove-unexpressed-genes">Remove unexpressed genes<a class="anchor" aria-label="anchor" href="#remove-unexpressed-genes"></a></h2>
-<hr class="half-width"><p>Exploratory analysis is crucial for quality control and to get to
-know our data. It can help us detect quality problems, sample swaps and
-contamination, as well as give us a sense of the most salient patterns
-present in the data. In this episode, we will learn about two common
-ways of performing exploratory analysis for RNA-seq data; namely
-clustering and principal component analysis (PCA). These tools are in no
-way limited to (or developed for) analysis of RNA-seq data. However,
-there are certain characteristics of count assays that need to be taken
-into account when they are applied to this type of data. First of all,
-not all mouse genes in the genome will be expressed in our Cerebellum
-samples. There are many different threshold you could use to say whether
-a gene’s expression was detectable or not; here we are going to use a
-very minimal one that if a gene does not have more than 5 counts total
-across all samples, there is simply not enough data to be able to do
-anything with it anyway.</p>
+</section><section><h2 class="section-heading" id="発現していない遺伝子の除去">発現していない遺伝子の除去<a class="anchor" aria-label="anchor" href="#%E7%99%BA%E7%8F%BE%E3%81%97%E3%81%A6%E3%81%84%E3%81%AA%E3%81%84%E9%81%BA%E4%BC%9D%E5%AD%90%E3%81%AE%E9%99%A4%E5%8E%BB"></a></h2>
+<hr class="half-width"><p>探索的解析は、データの品質管理と理解において非常に重要なプロセスです。
+これにより、データ品質の問題、サンプルの取り違え、コンタミネーションなどを検出できるほか、データ中に存在する顕著なパターンを把握することも可能になります。
+本エピソードでは、RNA-seqデータに対する探索的解析の代表的な手法であるクラスタリングと主成分分析（PCA）の2つについて解説します。
+これらのツールはRNA-seqデータの解析に限定されたものではなく、他の種類のデータ解析にも応用可能です。
+ただし、カウントベースのアッセイにはこの種のデータに適用する際に考慮すべき特有の特徴があります。まず第一に、ゲノム上のすべてのマウス遺伝子が小脳サンプルで発現しているわけではありません。遺伝子の発現が検出可能かどうかを判断するための閾値は複数存在しますが、ここでは非常に厳格な基準を採用します。具体的には、全サンプルを通じて遺伝子の総カウント数が5未満の場合、そもそもデータ量が不足しており、有効な解析を行うことができないものとします。</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -388,22 +373,18 @@ anything with it anyway.</p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 27430</code></pre>
 </div>
-<div id="challenge-what-kind-of-genes-survived-this-filtering" class="callout discussion">
+<div id="課題このフィルタリングを通過した遺伝子にはどのような特徴があるのか" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
 <span class="callout-header">Discussion</span>
-<div id="challenge-what-kind-of-genes-survived-this-filtering" class="callout-inner">
-<h3 class="callout-title">Challenge: What kind of genes survived this
-filtering?</h3>
+<div id="課題このフィルタリングを通過した遺伝子にはどのような特徴があるのか" class="callout-inner">
+<h3 class="callout-title">課題：このフィルタリングを通過した遺伝子にはどのような特徴があるのか？</h3>
 <div class="callout-content">
-<p>Last episode we discussed subsetting down to only mRNA genes. Here we
-subsetted based on a minimal expression level.</p>
-<ol style="list-style-type: decimal"><li>How many of each type of gene survived the filtering?</li>
-<li>Compare the number of genes that survived filtering using different
-thresholds.</li>
-<li>What are pros and cons of more aggressive filtering? What are
-important considerations?</li>
+<p>前回のエピソードでは、mRNA遺伝子のみに絞り込むサブセット処理について議論しました。今回はさらに、最低限の発現レベルを基準にサブセット処理を行いました。</p>
+<ol style="list-style-type: decimal"><li>各種類の遺伝子のうち、フィルタリングを通過した遺伝子の数はそれぞれどれくらいでしょうか？</li>
+<li>異なる閾値を用いてフィルタリングを通過した遺伝子数を比較してください。</li>
+<li>より厳格なフィルタリングを行う場合の利点と欠点は何でしょうか？また、考慮すべき重要な点にはどのようなものがあるでしょうか？</li>
 </ol></div>
 </div>
 </div>
@@ -468,16 +449,9 @@ meaningful.</li>
 <ul><li>Is a gene expressed in both groups?</li>
 <li>How many samples of each group express a gene?
 :::::::::::::::::::::::::::::::::::</li>
-</ul></section><section><h2 class="section-heading" id="library-size-differences">Library size differences<a class="anchor" aria-label="anchor" href="#library-size-differences"></a></h2>
-<hr class="half-width"><p>Differences in the total number of reads assigned to genes between
-samples typically occur for technical reasons. In practice, it means
-that we can not simply compare a gene’s raw read count directly between
-samples and conclude that a sample with a higher read count also
-expresses the gene more strongly - the higher count may be caused by an
-overall higher number of reads in that sample. In the rest of this
-section, we will use the term <em>library size</em> to refer to the
-total number of reads assigned to genes for a sample. First we should
-compare the library sizes of all samples.</p>
+</ul></section><section><h2 class="section-heading" id="ライブラリサイズの差異について">ライブラリサイズの差異について<a class="anchor" aria-label="anchor" href="#%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%82%B5%E3%82%A4%E3%82%BA%E3%81%AE%E5%B7%AE%E7%95%B0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"></a></h2>
+<hr class="half-width"><p>サンプル間で遺伝子に割り当てられた総リード数に差異が生じる場合、これは主に技術的な要因によるものです。実際には、単に遺伝子の生のリードカウントをサンプル間で直接比較し、リード数が多いサンプルほどその遺伝子の発現量が多いと結論づけることはできません。高いリードカウントは、そのサンプルにおける総リード数が全体的に多いことに起因している可能性があるためです。
+本節の残りの部分では、「ライブラリサイズ」という用語を、サンプルごとに遺伝子に割り当てられた総リード数を指すものとして使用します。まずすべてのサンプルのライブラリサイズを比較する必要があります。</p>
 <div class="codewrapper sourceCode" id="cb15">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -497,32 +471,15 @@ compare the library sizes of all samples.</p>
 <span>         <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Sample"</span>, y <span class="op">=</span> <span class="st">"Total count in millions"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>         <span class="fu">theme</span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-lib-size-1.png" alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We need to adjust for the differences in library size between
-samples, to avoid drawing incorrect conclusions. The way this is
-typically done for RNA-seq data can be described as a two-step
-procedure. First, we estimate <em>size factors</em> - sample-specific
-correction factors such that if the raw counts were to be divided by
-these factors, the resulting values would be more comparable across
-samples. Next, these size factors are incorporated into the statistical
-analysis of the data. It is important to pay close attention to how this
-is done in practice for a given analysis method. Sometimes the division
-of the counts by the size factors needs to be done explicitly by the
-analyst. Other times (as we will see for the differential expression
-analysis) it is important that they are provided separately to the
-analysis tool, which will then use them appropriately in the statistical
-model.</p>
-<p>With <code>DESeq2</code>, size factors are calculated using the
-<code>estimateSizeFactors()</code> function. The size factors estimated
-by this function combines an adjustment for differences in library sizes
-with an adjustment for differences in the RNA composition of the
-samples. The latter is important due to the compositional nature of
-RNA-seq data. There is a fixed number of reads to distribute between the
-genes, and if a single (or a few) very highly expressed gene consume a
-large part of the reads, all other genes will consequently receive very
-low counts. We now switch our <code>SummarizedExperiment</code> object
-over to a <code>DESeqDataSet</code> as it has the internal structure to
-store these size factors. We also need to tell it our main experiment
-design, which is sex and time:</p>
+<figure><img src="fig/04-exploratory-qc-rendered-lib-size-1.png" alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>サンプル間のライブラリサイズの差異を適切に補正しなければ、誤った結論を導く危険性があります。RNA-seqデータにおいてこの処理を行う標準的な方法は、2段階の手順で説明できます。
+まず、サンプルごとに固有の補正係数である「サイズ因子」を推定します。これらの因子を用いて生のカウント値を除算すれば、サンプル間でより比較可能な値が得られるようになります。
+次に、これらのサイズ因子をデータの統計解析プロセスに組み込みます。
+重要なのは、特定の解析手法においてこの処理がどのように実装されているかを詳細に確認することです。
+場合によっては、アナリスト自身がカウント値をサイズ因子で明示的に除算する必要があることもあります。
+また別のケースでは（差異発現解析で後述するように）、これらを解析ツールに別途提供することが重要です。ツールはこれらの因子を適切に統計モデルに適用します。</p>
+<p><code>DESeq2</code>では、<code>estimateSizeFactors()</code>関数を用いてサイズ因子を計算します。
+この関数で推定されるサイズ因子は、ライブラリサイズの差異補正と、サンプル間のRNA組成の差異補正を組み合わせたものです。
+後者は特に重要です。RNA-seqデータは組成的な性質を持つため、遺伝子間で分配されるリード数には一定の上限があります。もし特定の遺伝子（あるいは少数の非常に高発現遺伝子）がリードの大部分を占有すると、他のすべての遺伝子は必然的に非常に低いカウント値しか得られなくなります。ここで私たちは、内部構造としてこれらのサイズ因子を格納できる<code>DESeqDataSet</code>オブジェクトに<code>SummarizedExperiment</code>オブジェクトを変換します。また、主要な実験デザイン（性別と時間）を指定する必要もあります。</p>
 <div class="codewrapper sourceCode" id="cb16">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -551,25 +508,19 @@ design formula are characters, converting to factors</code></pre>
 <span>    <span class="fu">geom_point</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Library size"</span>, y <span class="op">=</span> <span class="st">"Size factor"</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="transform-data">Transform data<a class="anchor" aria-label="anchor" href="#transform-data"></a></h2>
-<hr class="half-width"><p>There is a rich literature on methods for exploratory analysis. Most
-of these work best in situations where the variance of the input data
-(here, each gene) is relatively independent of the average value. For
-read count data such as RNA-seq, this is not the case. In fact, the
-variance increases with the average read count.</p>
+<figure><img src="fig/04-exploratory-qc-rendered-est-size-factors-1.png" alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="データの前処理">データの前処理<a class="anchor" aria-label="anchor" href="#%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E5%89%8D%E5%87%A6%E7%90%86"></a></h2>
+<hr class="half-width"><p>探索的解析のための手法に関する研究文献は数多く存在します。
+これらの手法の多くは、入力データ（ここでは各遺伝子）の分散が平均値から比較的独立している場合に最も効果的に機能します。
+RNA-seqのようなリードカウントデータの場合、この前提は成立しません。
+実際には、分散は平均リードカウントの増加に伴って増大する傾向があります。</p>
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>There are two ways around this: either we develop methods
-specifically adapted to count data, or we adapt (transform) the count
-data so that the existing methods are applicable. Both ways have been
-explored; however, at the moment the second approach is arguably more
-widely applied in practice. We can transform our data using DESeq2’s
-variance stabilizing transformation and then verify that it has removed
-the correlation between average read count and variance.</p>
+<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-raw-1.png" alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>この問題に対処する方法は2つあります：1つ目は、カウントデータに特化した分析手法を開発する方法、2つ目は既存の手法を適用できるようにカウントデータを変換する方法です。
+どちらの方法も研究されてきましたが、現時点では後者のアプローチの方が実際に広く採用されています。具体的には、DESeq2の分散安定化変換を用いてデータを変換した後、平均リードカウントと分散の相関関係が適切に除去されていることを確認できます。</p>
 <div class="codewrapper sourceCode" id="cb20">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -577,15 +528,11 @@ the correlation between average read count and variance.</p>
 <code class="sourceCode R"><span><span class="va">vsd</span> <span class="op">&lt;-</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu">vst</span><span class="op">(</span><span class="va">dds</span>, blind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">vsd</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a></h2>
-<hr class="half-width"><p>There are many ways to cluster samples based on their similarity of
-expression patterns. One simple way is to calculate Euclidean distances
-between all pairs of samples (longer distance = more different) and then
-display the results with both a branching dendrogram and a heatmap to
-visualize the distances in color. From this, we infer that the Day 8
-samples are more similar to each other than the rest of the samples,
-although Day 4 and Day 0 do not separate distinctly. Instead, males and
-females reliably separate.</p>
+<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="ヒートマップとクラスタリング解析">ヒートマップとクラスタリング解析<a class="anchor" aria-label="anchor" href="#%E3%83%92%E3%83%BC%E3%83%88%E3%83%9E%E3%83%83%E3%83%97%E3%81%A8%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E8%A7%A3%E6%9E%90"></a></h2>
+<hr class="half-width"><p>発現パターンの類似性に基づいてサンプルをクラスタリングする方法は複数存在します。最も単純な手法の一つは、すべてのサンプルペア間のユークリッド距離を計算することです（距離が長いほど類似性が低いことを示します）。その後、分岐型デンドログラムとヒートマップの両方を用いて結果を可視化し、距離を色で表現します。この解析から、Day
+8のサンプルは他のサンプル群と比較して互いにより類似していることが明らかになりました。ただし、Day
+4とDay
+0のサンプルは明確には分離していません。代わりに、雄個体と雌個体は確実に分離することが確認されました。</p>
 <div class="codewrapper sourceCode" id="cb21">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -872,7 +819,7 @@ loaded via a namespace (and not attached):
 [46] miniUI_0.1.2            lattice_0.22-7          tibble_3.3.0
 [49] shiny_1.11.0            withr_3.0.2             evaluate_1.0.4
 [52] circlize_0.4.16         pillar_1.10.2           affyio_1.78.0
-[55] BiocManager_1.30.26     renv_1.1.4              DT_0.33
+[55] BiocManager_1.30.26     renv_1.1.5              DT_0.33
 [58] foreach_1.5.2           shinyjs_2.1.0           scales_1.4.0
 [61] xtable_1.8-4            glue_1.8.0              tools_4.5.1
 [64] colourpicker_1.3.0      locfit_1.5-9.12         colorspace_2.1-1
@@ -956,8 +903,8 @@ work directly on the raw counts.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/04-exploratory-qc.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/04-exploratory-qc.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-07-24",
-  "datePublished": "2025-08-12"
+  "dateModified": "2025-08-17",
+  "datePublished": "2025-08-17"
 }
 
   </script><script>
