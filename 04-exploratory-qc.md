@@ -90,7 +90,6 @@ nrow(se)
 
 1.
 
-
 ``` r
 table(rowData(se)$gbkey)
 ```
@@ -104,7 +103,6 @@ table(rowData(se)$gbkey)
 ```
 
 2.
-
 
 ``` r
 nrow(se)  # represents the number of genes using 5 as filtering threshold
@@ -131,19 +129,17 @@ length(which(rowSums(assay(se, "counts")) > 20))
 ```
 
 3.
-
 Cons: Risk of removing interesting information
-Pros:
-
-- Not or lowly expressed genes are unlikely to be biological meaningful.
-- Reduces number of statistical tests (multiple testing).
-- More reliable estimation of mean-variance relationship
-
+Pros: 
+ - Not or lowly expressed genes are unlikely to be biological meaningful.
+ - Reduces number of statistical tests (multiple testing).
+ - More reliable estimation of mean-variance relationship
+ 
 Potential considerations:
+ - Is a gene expressed in both groups?
+ - How many samples of each group express a gene?
 
-- Is a gene expressed in both groups?
-- How many samples of each group express a gene?
-  :::::::::::::::::::::::::::::::::::
+:::::::::::::::::::::::::::::::::::
 
 ## ライブラリサイズの差異について
 
