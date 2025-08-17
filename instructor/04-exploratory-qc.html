@@ -187,8 +187,8 @@
 <li><a href="#%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%82%B5%E3%82%A4%E3%82%BA%E3%81%AE%E5%B7%AE%E7%95%B0%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">ライブラリサイズの差異について</a></li>
 <li><a href="#%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E5%89%8D%E5%87%A6%E7%90%86">データの前処理</a></li>
 <li><a href="#%E3%83%92%E3%83%BC%E3%83%88%E3%83%9E%E3%83%83%E3%83%97%E3%81%A8%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E8%A7%A3%E6%9E%90">ヒートマップとクラスタリング解析</a></li>
-<li><a href="#pca">PCA</a></li>
-<li><a href="#interactive-exploratory-data-analysis">Interactive exploratory data analysis</a></li>
+<li><a href="#%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90pca">主成分分析（PCA）</a></li>
+<li><a href="#%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%A9%E3%82%AF%E3%83%86%E3%82%A3%E3%83%96%E3%81%AA%E6%8E%A2%E7%B4%A2%E7%9A%84%E3%83%87%E3%83%BC%E3%82%BF%E8%A7%A3%E6%9E%90">インタラクティブな探索的データ解析</a></li>
 <li><a href="#session-info">Session info</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
@@ -447,13 +447,12 @@
 </h3>
 <pre class="output" tabindex="0"><code>[1] 23860</code></pre>
 </div>
-<ol start="3" style="list-style-type: decimal"><li>Cons: Risk of removing interesting information Pros:</li>
-</ol><ul><li>Not or lowly expressed genes are unlikely to be biological
-meaningful.</li>
-<li>Reduces number of statistical tests (multiple testing).</li>
-<li>More reliable estimation of mean-variance relationship</li>
-</ul><p>Potential considerations: - Is a gene expressed in both groups? - How
-many samples of each group express a gene?</p>
+<ol start="3" style="list-style-type: decimal"><li>Cons: 興味深い情報を削除するリスク Pros:</li>
+</ol><ul><li>発現量が低いまたは検出限界以下の遺伝子は、生物学的に有意な結果をもたらす可能性が低いと考えられます。</li>
+<li>統計的検定の回数を削減できます（多重検定の問題を軽減）。</li>
+<li>平均値と分散の関係をより信頼性の高い方法で推定できます。</li>
+</ul><p>考慮すべき事項: - 両群において当該遺伝子は発現していますか？ -
+各群で当該遺伝子を発現しているサンプル数はいくつですか？</p>
 </div>
 </div>
 </div>
@@ -561,24 +560,15 @@ RNA-seqのようなリードカウントデータの場合、この前提は成�
 <span>                   time <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Day0 <span class="op">=</span> <span class="st">"yellow"</span>, Day4 <span class="op">=</span> <span class="st">"forestgreen"</span>, Day8 <span class="op">=</span> <span class="st">"purple"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="pca">PCA<a class="anchor" aria-label="anchor" href="#pca"></a></h2>
-<hr class="half-width"><p>Principal component analysis is a dimensionality reduction method,
-which projects the samples into a lower-dimensional space. This
-lower-dimensional representation can be used for visualization, or as
-the input for other analysis methods. The principal components are
-defined in such a way that they are orthogonal, and that the projection
-of the samples into the space they span contains as much variance as
-possible. It is an <em>unsupervised</em> method in the sense that no
-external information about the samples (e.g., the treatment condition)
-is taken into account. In the plot below we represent the samples in a
-two-dimensional principal component space. For each of the two
-dimensions, we indicate the fraction of the total variance that is
-represented by that component. By definition, the first principal
-component will always represent more of the variance than the subsequent
-ones. The fraction of explained variance is a measure of how much of the
-‘signal’ in the data that is retained when we project the samples from
-the original, high-dimensional space to the low-dimensional space for
-visualization.</p>
+<figure><img src="../fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="主成分分析pca">主成分分析（PCA）<a class="anchor" aria-label="anchor" href="#%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90pca"></a></h2>
+<hr class="half-width"><p>主成分分析は次元削減手法の一つであり、サンプルデータを低次元空間に投影する手法である。
+この低次元表現は、データの可視化や、さらなる分析手法の入力データとして利用することができる。
+主成分は、互いに直交するように定義され、それらが張る空間へのサンプル投影が可能な限り多くの分散情報を保持するように設計されている。
+この手法は教師なし学習の一種であり、サンプルに関する外部情報（例えば処理条件など）は一切考慮されない。
+以下の図では、サンプルを2次元の主成分空間に投影して表現している。
+各次元について、当該成分が説明する全分散の割合を示している。
+定義上、第1主成分は常に後続する主成分よりも多くの分散を説明することになる。
+説明分散率とは、元の高次元空間から低次元空間にデータを投影して可視化する際に、データ中の「信号」成分のうちどの程度が保持されているかを示す指標である。</p>
 <div class="codewrapper sourceCode" id="cb22">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -604,22 +594,17 @@ visualization.</p>
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Male <span class="op">=</span> <span class="st">"blue"</span>, Female <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/04-exploratory-qc-rendered-pca-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by sex and shaped according to the experimental day. The main separation along PC1 is between male and female samples. The main separation along PC2 is between samples from day 8 and samples from days 0 and 4." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
+<figure><img src="../fig/04-exploratory-qc-rendered-pca-1.png" alt="Scatterplot of samples projected onto the first two principal components, colored by sex and shaped according to the experimental day. The main separation along PC1 is between male and female samples. The main separation along PC2 is between samples from day 8 and samples from days 0 and 4." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="課題隣の人と以下の点について話し合ってください" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
 <span class="callout-header">Discussion</span>
-<div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout-inner">
-<h3 class="callout-title">Challenge: Discuss the following points with
-your neighbour</h3>
+<div id="課題隣の人と以下の点について話し合ってください" class="callout-inner">
+<h3 class="callout-title">課題：隣の人と以下の点について話し合ってください</h3>
 <div class="callout-content">
-<ol style="list-style-type: decimal"><li><p>Assume you are mainly interested in expression changes associated
-with the time after infection (Reminder Day0 -&gt; before infection).
-What do you need to consider in downstream analysis?</p></li>
-<li><p>Consider an experimental design where you have multiple samples
-from the same donor. You are still interested in differences by time and
-observe the following PCA plot. What does this PCA plot
-suggest?</p></li>
+<ol style="list-style-type: decimal"><li><p>主に感染後の時間経過に伴う発現変化（Reminder Day0時点 -&gt;
+感染前）に関心がある場合、下流解析で考慮すべき点は何でしょうか？</p></li>
+<li><p>同一ドナーから複数のサンプルを取得した実験デザインを考えてみましょう。あなたは引き続き時間差による差異に関心があり、以下のPCAプロットを観察しました。このPCAプロットからどのような示唆が得られるでしょうか？</p></li>
 </ol><div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -635,37 +620,32 @@ suggest?</p></li>
 </button>
 <div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
-<ol style="list-style-type: decimal"><li><p>The major signal in this data (37% variance) is associated with
-sex. As we are not interested in sex-specific changes over time, we need
-to adjust for this in downstream analysis (see <a href="05-differential-expression.html">next episodes</a>) and keep it in
-mind for further exploratory downstream analysis. A possible way to do
-so is to remove genes on sex chromosomes.</p></li>
+<ol style="list-style-type: decimal"><li><p>このデータにおける主要なシグナル（分散の37%）は性別と関連しています。私たちは時間経過に伴う性特異的な変化には関心がないため、下流解析ではこの影響を調整する必要があります（<a href="05-differential-expression.html">次のエピソード</a>参照）。また、今後の探索的下流解析においてもこの要因を考慮に入れておく必要があります。この影響を補正する方法として、性染色体上に位置する遺伝子を除去することが考えられます。</p></li>
 <li>
 </li>
-</ol><ul><li>A strong donor effect, that needs to be accounted for.</li>
-<li>What does PC1 (37% variance) represent? Looks like 2 donor
-groups?</li>
-<li>No association of PC1 and PC2 with time –&gt; no or weak
-transcriptional effect of time --&gt; Check association with higher PCs
-(e.g., PC3,PC4, ..)</li>
+</ol><ul><li>考慮すべき強いドナー効果が認められます。</li>
+<li>PC1（分散の37%）は何を表しているのでしょうか？
+これは2つのドナーグループを示しているように思われます。</li>
+<li>PC1とPC2には時間との関連性が認められません →
+時間による転写レベルの影響は存在しないか、あるいは弱いと考えられます
+--&gt;
+より高次の主成分（例：PC3、PC4、…）との関連性を確認してください</li>
 </ul></div>
 </div>
 </div>
 </div>
-<div id="challenge-plot-the-pca-colored-by-library-sizes." class="callout discussion">
+<div id="課題-ライブラリサイズに応じて色分けしたpcaプロットを作成してください" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
 <span class="callout-header">Discussion</span>
-<div id="challenge-plot-the-pca-colored-by-library-sizes." class="callout-inner">
-<h3 class="callout-title">Challenge: Plot the PCA colored by library
-sizes.</h3>
+<div id="課題-ライブラリサイズに応じて色分けしたpcaプロットを作成してください" class="callout-inner">
+<h3 class="callout-title">課題:
+ライブラリサイズに応じて色分けしたPCAプロットを作成してください</h3>
 <div class="callout-content">
-<p>Compare before and after variance stabilizing transformation.</p>
-<p><em>Hint: The <code>DESeq2::plotPCA</code> expect an object of the
-class <code>DESeqTransform</code> as input. You can transform a
-<code>SummarizedExperiment</code> object using
-<code>plotPCA(DESeqTransform(se))</code></em></p>
+<p>分散安定化変換前後の結果を比較してください。</p>
+<p><em>ヒント:
+<code>DESeq2::plotPCA</code>関数は入力として<code>DESeqTransform</code>クラスのオブジェクトを期待します。<code>SummarizedExperiment</code>オブジェクトを変換するには、<code>plotPCA(DESeqTransform(se))</code>と記述します</em></p>
 </div>
 </div>
 </div>
@@ -730,12 +710,8 @@ class <code>DESeqTransform</code> as input. You can transform a
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="interactive-exploratory-data-analysis">Interactive exploratory data analysis<a class="anchor" aria-label="anchor" href="#interactive-exploratory-data-analysis"></a></h2>
-<hr class="half-width"><p>Often it is useful to look at QC plots in an interactive way to
-directly explore different experimental factors or get insides from
-someone without coding experience. Useful tools for interactive
-exploratory data analysis for RNA-seq are <a href="https://bioconductor.org/packages/release/bioc/html/Glimma.html" class="external-link">Glimma</a>
-and <a href="https://bioconductor.org/packages/release/bioc/html/iSEE.html" class="external-link">iSEE</a></p>
+</section><section><h2 class="section-heading" id="インタラクティブな探索的データ解析">インタラクティブな探索的データ解析<a class="anchor" aria-label="anchor" href="#%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%A9%E3%82%AF%E3%83%86%E3%82%A3%E3%83%96%E3%81%AA%E6%8E%A2%E7%B4%A2%E7%9A%84%E3%83%87%E3%83%BC%E3%82%BF%E8%A7%A3%E6%9E%90"></a></h2>
+<hr class="half-width"><p>実験要因を詳細に調査したり、コーディング経験のない関係者から知見を得たりする場合、QCプロットをインタラクティブに操作しながら分析することが非常に有効です。RNA-seqデータの探索的データ分析に有用なツールとして、<a href="https://bioconductor.org/packages/release/bioc/html/Glimma.html" class="external-link">Glimma</a>と<a href="https://bioconductor.org/packages/release/bioc/html/iSEE.html" class="external-link">iSEE</a>が挙げられます。</p>
 <div id="challenge-interactively-explore-our-data-using-isee" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
@@ -848,13 +824,8 @@ loaded via a namespace (and not attached):
 <span class="callout-header">Key Points</span>
 <div class="callout-inner">
 <div class="callout-content">
-<ul><li>Exploratory analysis is essential for quality control and to detect
-potential problems with a data set.</li>
-<li>Different classes of exploratory analysis methods expect differently
-preprocessed data. The most commonly used methods expect counts to be
-normalized and log-transformed (or similar- more
-sensitive/sophisticated), to be closer to homoskedastic. Other methods
-work directly on the raw counts.</li>
+<ul><li>探索的分析は、データセットの品質管理と潜在的な問題の検出において不可欠なプロセスです。</li>
+<li>探索的分析手法には様々な種類があり、それぞれ異なる前処理済みデータを必要とします。最も一般的に用いられる手法では、カウント値の正規化と対数変換（あるいは同等のより感度の高い/高度な処理）が行われ、データの均方分散性に近い状態が求められます。一方、他の手法では生のカウント値をそのまま処理対象とします。</li>
 </ul></div>
 </div>
 </div>
