@@ -129,15 +129,15 @@ length(which(rowSums(assay(se, "counts")) > 20))
 ```
 
 3.
-Cons: Risk of removing interesting information
+Cons: 興味深い情報を削除するリスク
 Pros: 
- - Not or lowly expressed genes are unlikely to be biological meaningful.
- - Reduces number of statistical tests (multiple testing).
- - More reliable estimation of mean-variance relationship
+ - 発現量が低いまたは検出限界以下の遺伝子は、生物学的に有意な結果をもたらす可能性が低いと考えられます。
+ - 統計的検定の回数を削減できます（多重検定の問題を軽減）。
+ - 平均値と分散の関係をより信頼性の高い方法で推定できます。
  
-Potential considerations:
- - Is a gene expressed in both groups?
- - How many samples of each group express a gene?
+考慮すべき事項:
+ - 両群において当該遺伝子は発現していますか？
+ - 各群で当該遺伝子を発現しているサンプル数はいくつですか？
 
 :::::::::::::::::::::::::::::::::::
 
@@ -252,16 +252,16 @@ ComplexHeatmap::Heatmap(
 
 <img src="fig/04-exploratory-qc-rendered-heatmap-1.png" alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex." style="display: block; margin: auto;" />
 
-## PCA
+## 主成分分析（PCA）
 
-Principal component analysis is a dimensionality reduction method, which projects the samples into a lower-dimensional space.
-This lower-dimensional representation can be used for visualization, or as the input for other analysis methods.
-The principal components are defined in such a way that they are orthogonal, and that the projection of the samples into the space they span contains as much variance as possible.
-It is an _unsupervised_ method in the sense that no external information about the samples (e.g., the treatment condition) is taken into account.
-In the plot below we represent the samples in a two-dimensional principal component space.
-For each of the two dimensions, we indicate the fraction of the total variance that is represented by that component.
-By definition, the first principal component will always represent more of the variance than the subsequent ones.
-The fraction of explained variance is a measure of how much of the 'signal' in the data that is retained when we project the samples from the original, high-dimensional space to the low-dimensional space for visualization.
+主成分分析は次元削減手法の一つであり、サンプルデータを低次元空間に投影する手法である。
+この低次元表現は、データの可視化や、さらなる分析手法の入力データとして利用することができる。
+主成分は、互いに直交するように定義され、それらが張る空間へのサンプル投影が可能な限り多くの分散情報を保持するように設計されている。
+この手法は教師なし学習の一種であり、サンプルに関する外部情報（例えば処理条件など）は一切考慮されない。
+以下の図では、サンプルを2次元の主成分空間に投影して表現している。
+各次元について、当該成分が説明する全分散の割合を示している。
+定義上、第1主成分は常に後続する主成分よりも多くの分散を説明することになる。
+説明分散率とは、元の高次元空間から低次元空間にデータを投影して可視化する際に、データ中の「信号」成分のうちどの程度が保持されているかを示す指標である。
 
 
 ``` r
@@ -288,11 +288,11 @@ ggplot(pcaData, aes(x = PC1, y = PC2)) +
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Discuss the following points with your neighbour
+## 課題：隣の人と以下の点について話し合ってください
 
-1. Assume you are mainly interested in expression changes associated with the time after infection (Reminder Day0 -> before infection). What do you need to consider in downstream analysis?
+1. 主に感染後の時間経過に伴う発現変化（Reminder Day0時点 -> 感染前）に関心がある場合、下流解析で考慮すべき点は何でしょうか？
 
-2. Consider an experimental design where you have multiple samples from the same donor. You are still interested in differences by time and observe the following PCA plot. What does this PCA plot suggest?
+2. 同一ドナーから複数のサンプルを取得した実験デザインを考えてみましょう。あなたは引き続き時間差による差異に関心があり、以下のPCAプロットを観察しました。このPCAプロットからどのような示唆が得られるでしょうか？
 
 
 ``` output
@@ -305,24 +305,24 @@ using ntop=500 top features by variance
 
 ::::::::::::::::::::::::::::::::::: solution
 
-1. The major signal in this data (37% variance) is associated with sex. As we are not interested in sex-specific changes over time, we need to adjust for this in downstream analysis (see [next episodes](../episodes/05-differential-expression.Rmd)) and keep it in mind for further exploratory downstream analysis. A possible way to do so is to remove genes on sex chromosomes.
+1. このデータにおける主要なシグナル（分散の37%）は性別と関連しています。私たちは時間経過に伴う性特異的な変化には関心がないため、下流解析ではこの影響を調整する必要があります（[次のエピソード](../episodes/05-differential-expression.Rmd)参照）。また、今後の探索的下流解析においてもこの要因を考慮に入れておく必要があります。この影響を補正する方法として、性染色体上に位置する遺伝子を除去することが考えられます。
 
 2.
 
-- A strong donor effect, that needs to be accounted for.
-- What does PC1 (37% variance) represent? Looks like 2 donor groups?
-- No association of PC1 and PC2 with time --> no or weak transcriptional effect of time
-  \--> Check association with higher PCs (e.g., PC3,PC4, ..)
+- 考慮すべき強いドナー効果が認められます。
+- PC1（分散の37%）は何を表しているのでしょうか？ これは2つのドナーグループを示しているように思われます。
+- PC1とPC2には時間との関連性が認められません → 時間による転写レベルの影響は存在しないか、あるいは弱いと考えられます
+  \--> より高次の主成分（例：PC3、PC4、...）との関連性を確認してください
 
 :::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: Plot the PCA colored by library sizes.
+## 課題: ライブラリサイズに応じて色分けしたPCAプロットを作成してください
 
-Compare before and after variance stabilizing transformation.
+分散安定化変換前後の結果を比較してください。
 
-_Hint: The `DESeq2::plotPCA` expect an object of the class `DESeqTransform` as input. You can transform a `SummarizedExperiment` object using `plotPCA(DESeqTransform(se))`_
+_ヒント: `DESeq2::plotPCA`関数は入力として`DESeqTransform`クラスのオブジェクトを期待します。`SummarizedExperiment`オブジェクトを変換するには、`plotPCA(DESeqTransform(se))`と記述します_
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -376,10 +376,9 @@ ggplot(pcaDataCts, aes(x = PC1, y = PC2)) +
 
 :::::::::::::::::::::::::::::::::::
 
-## Interactive exploratory data analysis
+## インタラクティブな探索的データ解析
 
-Often it is useful to look at QC plots in an interactive way to directly explore different experimental factors or get insides from someone without coding experience.
-Useful tools for interactive exploratory data analysis for RNA-seq are [Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html) and [iSEE](https://bioconductor.org/packages/release/bioc/html/iSEE.html)
+実験要因を詳細に調査したり、コーディング経験のない関係者から知見を得たりする場合、QCプロットをインタラクティブに操作しながら分析することが非常に有効です。RNA-seqデータの探索的データ分析に有用なツールとして、[Glimma](https://bioconductor.org/packages/release/bioc/html/Glimma.html)と[iSEE](https://bioconductor.org/packages/release/bioc/html/iSEE.html)が挙げられます。
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
@@ -480,8 +479,8 @@ loaded via a namespace (and not attached):
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
-- Exploratory analysis is essential for quality control and to detect potential problems with a data set.
-- Different classes of exploratory analysis methods expect differently preprocessed data. The most commonly used methods expect counts to be normalized and log-transformed (or similar- more sensitive/sophisticated), to be closer to homoskedastic. Other methods work directly on the raw counts.
+- 探索的分析は、データセットの品質管理と潜在的な問題の検出において不可欠なプロセスです。
+- 探索的分析手法には様々な種類があり、それぞれ異なる前処理済みデータを必要とします。最も一般的に用いられる手法では、カウント値の正規化と対数変換（あるいは同等のより感度の高い/高度な処理）が行われ、データの均方分散性に近い状態が求められます。一方、他の手法では生のカウント値をそのまま処理対象とします。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
