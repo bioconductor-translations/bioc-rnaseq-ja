@@ -1,6 +1,6 @@
 ---
 source: Rmd
-title: Exploratory analysis and quality control
+title: 探索的解析と品質管理
 teaching: 120
 exercises: 60
 editor_options:
