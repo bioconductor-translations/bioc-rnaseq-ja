@@ -13,22 +13,22 @@ source("download_data.R")
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Learn how to explore the gene expression matrix and perform common quality control steps.
-- Learn how to set up an interactive application for exploratory analysis.
+- 遺伝子発現マトリックスの解析方法と、一般的な品質管理手順を習得します。
+- 探索的解析用のインタラクティブなアプリケーション環境の構築方法を学びます。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- Why is exploratory analysis an essential part of an RNA-seq analysis?
-- How should one preprocess the raw count matrix for exploratory analysis?
-- Are two dimensions sufficient to represent your data?
+- RNA-seq解析において、探索的解析がなぜ重要なステップなのでしょうか？
+- 探索的解析を行う際、生のカウント行列をどのように前処理すべきですか？
+- データを表現するために2次元で十分なのでしょうか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Load packages
+## パッケージの読み込み
 
-Assuming you just started RStudio again, load some packages we will use in this lesson along with the `SummarizedExperiment` object we created in the last lesson.
+RStudioを再起動した直後の状態を想定して、このレッスンで使用するパッケージと、前回のレッスンで作成した `SummarizedExperiment` オブジェクトを読み込みます。
 
 ```{r load-pkg}
 suppressPackageStartupMessages({
@@ -47,13 +47,13 @@ suppressPackageStartupMessages({
 se <- readRDS("data/GSE96870_se.rds")
 ```
 
-## Remove unexpressed genes
+## 発現していない遺伝子の除去
 
-Exploratory analysis is crucial for quality control and to get to know our data.
-It can help us detect quality problems, sample swaps and contamination, as well as give us a sense of the most salient patterns present in the data.
-In this episode, we will learn about two common ways of performing exploratory analysis for RNA-seq data; namely clustering and principal component analysis (PCA).
-These tools are in no way limited to (or developed for) analysis of RNA-seq data.
-However, there are certain characteristics of count assays that need to be taken into account when they are applied to this type of data. First of all, not all mouse genes in the genome will be expressed in our Cerebellum samples. There are many different threshold you could use to say whether a gene's expression was detectable or not; here we are going to use a very minimal one that if a gene does not have more than 5 counts total across all samples, there is simply not enough data to be able to do anything with it anyway.
+探索的解析は、データの品質管理と理解において非常に重要なプロセスです。
+これにより、データ品質の問題、サンプルの取り違え、コンタミネーションなどを検出できるほか、データ中に存在する顕著なパターンを把握することも可能になります。
+本エピソードでは、RNA-seqデータに対する探索的解析の代表的な手法であるクラスタリングと主成分分析（PCA）の2つについて解説します。
+これらのツールはRNA-seqデータの解析に限定されたものではなく、他の種類のデータ解析にも応用可能です。
+ただし、カウントベースのアッセイにはこの種のデータに適用する際に考慮すべき特有の特徴があります。まず第一に、ゲノム上のすべてのマウス遺伝子が小脳サンプルで発現しているわけではありません。遺伝子の発現が検出可能かどうかを判断するための閾値は複数存在しますが、ここでは非常に厳格な基準を採用します。具体的には、全サンプルを通じて遺伝子の総カウント数が5未満の場合、そもそもデータ量が不足しており、有効な解析を行うことができないものとします。
 
 ```{r filter-lowexpr}
 nrow(se)
@@ -65,13 +65,13 @@ nrow(se)
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge: What kind of genes survived this filtering?
+## 課題：このフィルタリングを通過した遺伝子にはどのような特徴があるのか？
 
-Last episode we discussed subsetting down to only mRNA genes. Here we subsetted based on a minimal expression level.
+前回のエピソードでは、mRNA遺伝子のみに絞り込むサブセット処理について議論しました。今回はさらに、最低限の発現レベルを基準にサブセット処理を行いました。
 
-1. How many of each type of gene survived the filtering?
-2. Compare the number of genes that survived filtering using different thresholds.
-3. What are pros and cons of more aggressive filtering? What are important considerations?
+1. 各種類の遺伝子のうち、フィルタリングを通過した遺伝子の数はそれぞれどれくらいでしょうか？
+2. 異なる閾値を用いてフィルタリングを通過した遺伝子数を比較してください。
+3. より厳格なフィルタリングを行う場合の利点と欠点は何でしょうか？また、考慮すべき重要な点にはどのようなものがあるでしょうか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -106,10 +106,10 @@ Potential considerations:
 - How many samples of each group express a gene?
   :::::::::::::::::::::::::::::::::::
 
-## Library size differences
+## ライブラリサイズの差異について
 
-Differences in the total number of reads assigned to genes between samples typically occur for technical reasons. In practice, it means that we can not simply compare a gene's raw read count directly between samples and conclude that a sample with a higher read count also expresses the gene more strongly - the higher count may be caused by an overall higher number of reads in that sample.
-In the rest of this section, we will use the term _library size_ to refer to the total number of reads assigned to genes for a sample. First we should compare the library sizes of all samples.
+サンプル間で遺伝子に割り当てられた総リード数に差異が生じる場合、これは主に技術的な要因によるものです。実際には、単に遺伝子の生のリードカウントをサンプル間で直接比較し、リード数が多いサンプルほどその遺伝子の発現量が多いと結論づけることはできません。高いリードカウントは、そのサンプルにおける総リード数が全体的に多いことに起因している可能性があるためです。
+本節の残りの部分では、「ライブラリサイズ」という用語を、サンプルごとに遺伝子に割り当てられた総リード数を指すものとして使用します。まずすべてのサンプルのライブラリサイズを比較する必要があります。
 
 ```{r lib-size, fig.alt="Barplot with total count on the y-axis and sample name on the x-axis, with bars colored by the group annotation. The total count varies between approximately 32 and 43 million."}
 # Add in the sum of all counts
@@ -129,17 +129,16 @@ colData(se) |>
 
 ```
 
-We need to adjust for the differences in library size between samples, to avoid drawing incorrect conclusions. The way this is typically done for RNA-seq data can be described as a two-step procedure.
-First, we estimate _size factors_ - sample-specific correction factors such that if the raw counts were to be divided by these factors, the resulting values would be more comparable across samples.
-Next, these size factors are incorporated into the statistical analysis of the data.
-It is important to pay close attention to how this is done in practice for a given analysis method.
-Sometimes the division of the counts by the size factors needs to be done explicitly by the analyst.
-Other times (as we will see for the differential expression analysis) it is important that they are provided separately to the analysis tool, which will then use them appropriately in the statistical model.
+サンプル間のライブラリサイズの差異を適切に補正しなければ、誤った結論を導く危険性があります。RNA-seqデータにおいてこの処理を行う標準的な方法は、2段階の手順で説明できます。
+まず、サンプルごとに固有の補正係数である「サイズ因子」を推定します。これらの因子を用いて生のカウント値を除算すれば、サンプル間でより比較可能な値が得られるようになります。
+次に、これらのサイズ因子をデータの統計解析プロセスに組み込みます。
+重要なのは、特定の解析手法においてこの処理がどのように実装されているかを詳細に確認することです。
+場合によっては、アナリスト自身がカウント値をサイズ因子で明示的に除算する必要があることもあります。
+また別のケースでは（差異発現解析で後述するように）、これらを解析ツールに別途提供することが重要です。ツールはこれらの因子を適切に統計モデルに適用します。
 
-With `DESeq2`, size factors are calculated using the `estimateSizeFactors()` function.
-The size factors estimated by this function combines an adjustment for differences in library sizes with an adjustment for differences in the RNA composition of the samples.
-The latter is important due to the compositional nature of RNA-seq data.
-There is a fixed number of reads to distribute between the genes, and if a single (or a few) very highly expressed gene consume a large part of the reads, all other genes will consequently receive very low counts. We now switch our `SummarizedExperiment` object over to a `DESeqDataSet` as it has the internal structure to store these size factors. We also need to tell it our main experiment design, which is sex and time:
+`DESeq2`では、`estimateSizeFactors()`関数を用いてサイズ因子を計算します。
+この関数で推定されるサイズ因子は、ライブラリサイズの差異補正と、サンプル間のRNA組成の差異補正を組み合わせたものです。
+後者は特に重要です。RNA-seqデータは組成的な性質を持つため、遺伝子間で分配されるリード数には一定の上限があります。もし特定の遺伝子（あるいは少数の非常に高発現遺伝子）がリードの大部分を占有すると、他のすべての遺伝子は必然的に非常に低いカウント値しか得られなくなります。ここで私たちは、内部構造としてこれらのサイズ因子を格納できる`DESeqDataSet`オブジェクトに`SummarizedExperiment`オブジェクトを変換します。また、主要な実験デザイン（性別と時間）を指定する必要もあります。
 
 ```{r est-size-factors, fig.alt="Scatterplot with library size on the x-axis and size factor on the y-axis, showing a high correlation between the two variables."}
 
@@ -157,28 +156,28 @@ ggplot(data.frame(libSize = colSums(assay(dds)),
     labs(x = "Library size", y = "Size factor")
 ```
 
-## Transform data
+## データの前処理
 
-There is a rich literature on methods for exploratory analysis.
-Most of these work best in situations where the variance of the input data (here, each gene) is relatively independent of the average value.
-For read count data such as RNA-seq, this is not the case.
-In fact, the variance increases with the average read count.
+探索的解析のための手法に関する研究文献は数多く存在します。
+これらの手法の多くは、入力データ（ここでは各遺伝子）の分散が平均値から比較的独立している場合に最も効果的に機能します。
+RNA-seqのようなリードカウントデータの場合、この前提は成立しません。
+実際には、分散は平均リードカウントの増加に伴って増大する傾向があります。
 
 ```{r mean-sd-plot-raw, fig.alt="Hexagonal heatmap with the mean count on the x-axis and the standard deviation of the count on the y-axis, showing a generally increasing standard deviation with increasing mean. The density of points is highest for low count values."}
 meanSdPlot(assay(dds), ranks = FALSE)
 ```
 
-There are two ways around this: either we develop methods specifically adapted to count data, or we adapt (transform) the count data so that the existing methods are applicable.
-Both ways have been explored; however, at the moment the second approach is arguably more widely applied in practice. We can transform our data using DESeq2's variance stabilizing transformation and then verify that it has removed the correlation between average read count and variance.
+この問題に対処する方法は2つあります：1つ目は、カウントデータに特化した分析手法を開発する方法、2つ目は既存の手法を適用できるようにカウントデータを変換する方法です。
+どちらの方法も研究されてきましたが、現時点では後者のアプローチの方が実際に広く採用されています。具体的には、DESeq2の分散安定化変換を用いてデータを変換した後、平均リードカウントと分散の相関関係が適切に除去されていることを確認できます。
 
 ```{r mean-sd-plot-vst, fig.alt="Hexagonal heatmap with the mean variance-stabilized values on the x-axis and the standard deviation of these on the y-axis. The trend is generally flat, with no clear association between the mean and standard deviation."}
 vsd <- DESeq2::vst(dds, blind = TRUE)
 meanSdPlot(assay(vsd), ranks = FALSE)
 ```
 
-## Heatmaps and clustering
+## ヒートマップとクラスタリング解析
 
-There are many ways to cluster samples based on their similarity of expression patterns. One simple way is to calculate Euclidean distances between all pairs of samples (longer distance = more different) and then display the results with both a branching dendrogram and a heatmap to visualize the distances in color. From this, we infer that the Day 8 samples are more similar to each other than the rest of the samples, although Day 4 and Day 0 do not separate distinctly. Instead, males and females reliably separate.
+発現パターンの類似性に基づいてサンプルをクラスタリングする方法は複数存在します。最も単純な手法の一つは、すべてのサンプルペア間のユークリッド距離を計算することです（距離が長いほど類似性が低いことを示します）。その後、分岐型デンドログラムとヒートマップの両方を用いて結果を可視化し、距離を色で表現します。この解析から、Day 8のサンプルは他のサンプル群と比較して互いにより類似していることが明らかになりました。ただし、Day 4とDay 0のサンプルは明確には分離していません。代わりに、雄個体と雌個体は確実に分離することが確認されました。
 
 ```{r heatmap, fig.alt="Heatmap of Euclidean distances between all pairs of samples, with hierarchical cluster dendrogram for both rows and columns. Samples from day 8 cluster separately from samples from days 0 and 4. Within days 0 and 4, the main clustering is instead by sex."}
 dst <- dist(t(assay(vsd)))
