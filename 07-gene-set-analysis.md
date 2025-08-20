@@ -1,9 +1,10 @@
 ---
 source: Rmd
-title: Gene set enrichment analysis
+title: 遺伝子セットエンリッチメント解析
 teaching: 60
 exercises: 45
 ---
+
 
 
 
@@ -17,54 +18,33 @@ body h3 {
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Learn the method of gene set enrichment analysis.
-- Learn how to obtain gene sets from various resources in R.
-- Learn how to perform gene set enrichment analysis and how to visualize
-  enrichment results.
+- 遺伝子セットエンリッチメント解析の手法について学びます。
+- R環境で様々なリソースから遺伝子セットを取得する方法について習得します。
+- 遺伝子セットエンリッチメント解析の実施方法と、解析結果の可視化方法について学びます。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- What is the aim of performing gene set enrichment analysis?
-- What is the method of over-representation analysis?
-- What are the commonly-used gene set databases?
+- 遺伝子セットエンリッチメント解析を実施する目的は何ですか？
+- over-representation analysis の手法にはどのようなものがありますか？
+- 一般的に使用されている遺伝子セットデータベースにはどのようなものがありますか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-After we have obtained a list of differentially expressed (DE) genes, the next
-question naturally to ask is what biological functions these DE genes may
-affect. Gene set enrichment analysis (GSEA) evaluates the associations of a
-list of DE genes to a collection of pre-defined gene sets, where each gene set
-has a specific biological meaning. Once DE genes are significantly enriched in
-a gene set, the conclusion is made that the corresponding biological meaning
-(e.g. a biological process or a pathway) is significantly affected.
 
-The definition of a gene set is very flexible and the construction of gene
-sets is straightforward. In most cases, gene sets are from public databases
-where huge efforts from scientific curators have already been made to
-carefully categorize genes into gene sets with clear biological meanings.
-Nevertheless, gene sets can also be self-defined from individual studies, such
-as a set of genes in a network module from a co-expression network analysis,
-or a set of genes that are up-regulated in a certain disease.
+発現変動遺伝子（DE遺伝子）のリストを取得した後、次に当然生じる疑問は、これらのDE遺伝子がどのような生物学的機能に影響を与える可能性があるかということです。遺伝子セットエンリッチメント解析（GSEA）では、事前に定義された遺伝子セット群に対して、DE遺伝子リストとの関連性を評価します。各遺伝子セットは特定の生物学的意味を持っています。DE遺伝子が特定の遺伝子セットに有意に濃縮されている場合、対応する生物学的意味（例えば生物学的プロセスやパスウェイなど）が有意に影響を受けるという結論が導かれます。
 
-There are a huge amount of methods available for GSEA analysis. In this
-episode, we will learn the simplest but the mostly used one: the
-over-representation analysis (ORA). ORA is directly applied to the list of DE
-genes and it evaluates the association of the DE genes and the gene set by the
-numbers of genes in different categories.
+遺伝子セットの定義は非常に柔軟であり、その構築方法も簡潔です。多くの場合、遺伝子セットは公共データベースから取得され、科学的なキュレーターによって遺伝子を明確な生物学的意味を持つグループに慎重に分類するための多大な労力が既に費やされています。ただし、遺伝子セットは個々の研究から独自に定義することも可能です。例えば、共発現ネットワーク解析におけるネットワークモジュールを構成する遺伝子群や、特定の疾患において発現が上昇する遺伝子群などがこれに該当します。
 
-Please note, ORA is a universal method that it can not only be applied to the
-DE gene list, but also any type of gene list of interest to look for their
-statistically associated biological meanings.
+GSEA（Gene Set Enrichment Analysis）には数多くの分析手法が存在します。このエピソードでは、最もシンプルでかつ最も広く用いられている手法である「過剰表現解析（Over-Representation Analysis: ORA）」について解説します。ORAは差異発現遺伝子リストに直接適用可能な手法で、異なるカテゴリーにおける遺伝子数に基づいて、差異発現遺伝子と遺伝子セットとの関連性を評価します。
 
-In this episode, we will start with a tiny example to illustrate the
-statistical method of ORA. Next we will go through several commonly-used gene
-set databases and how to access them in R. Then, we will learn how to perform
-ORA analysis with the Bioconductor package **clusterProfiler**. And in the
-end, we will learn several visualization methods on the GSEA results.
+ORA（Over-Representation Analysis）は汎用性の高い手法であり、DE遺伝子リストだけでなく、研究対象とする任意の遺伝子リストに対しても適用可能です。これにより、それらの遺伝子群が統計的に有意に関連する生物学的意義を明らかにすることができます。
 
-Following is a list of packages that will be used in this episode:
+本エピソードでは、ORA（Over-Representation Analysis）という統計手法を説明するための簡単な事例から始めます。続いて、生物学分野で広く利用されている複数の遺伝子セットデータベースを紹介し、R環境でのアクセス方法について解説します。その後、Bioconductorパッケージである**clusterProfiler**を用いたORA解析の実施方法を学びます。最後に、GSEA（Gene Set Enrichment Analysis）の結果を可視化するためのいくつかの手法を習得します。
+
+本エピソードで使用するパッケージの一覧は以下の通りです：
+
 
 
 ``` r
@@ -83,17 +63,12 @@ library(simplifyEnrichment)
 
 
 
-## The statistical method
+## 統計的手法について
 
-To demonstrate the ORA analysis, we use a list of DE genes from a comparison
-between genders. The following code performs **DESeq2** analysis which you
-should have already learnt in the previous episode. In the end, we have a list
-of DE genes filtered by FDR < 0.05, and save it in the object `sexDEgenes`.
+ORA解析の具体例を示すため、性別間比較によって得られた発現変動遺伝子リストを使用します。以下のコードでは、前エピソードで既に学習済みの**DESeq2**解析を実行します。最終的に、FDR値が0.05未満にフィルタリングされた発現変動遺伝子リストを取得し、これをオブジェクト`sexDEgenes`として保存します。
 
-The file `data/GSE96870_se.rds` contains a `RangedSummarizedExperiment` that contains RNA-Seq counts that were downloaded in [Episode 2](../episodes/02-setup.Rmd) and constructed in [Episode 3](../episodes/03-import-annotate.Rmd) (minimal codes for downloading and constructing in the script
-[`download_data.R`](https://github.com/carpentries-incubator/bioc-rnaseq/blob/main/episodes/download_data.R).
-In the following code, there are also comments that explain every step of the
-analysis.
+ファイル `data/GSE96870_se.rds` には、[エピソード2](../episodes/02-setup.Rmd) でダウンロードし、[エピソード3](../episodes/03-import-annotate.Rmd) で構築した RNA-Seq カウントデータを含む `RangedSummarizedExperiment` オブジェクトが格納されています（ダウンロードおよび構築のための最小限のコードは、スクリプト [`download_data.R`](https://github.com/carpentries-incubator/bioc-rnaseq/blob/main/episodes/download_data.R) に記載されています）。
+以下のコードには、分析の各ステップを説明するコメントも記載されています。
 
 
 ``` r
@@ -118,8 +93,7 @@ sexDE <- as.data.frame(subset(resSex, padj < 0.05))
 sexDEgenes <- rownames(sexDE)
 ```
 
-Let's check the number of DE genes and how they look like. It seems the number
-of DE genes is very small, but it is OK for this example.
+DEGの数とその分布状況を確認してみましょう。DEGの数は一見非常に少ないように見えますが、今回の例ではこれが正常な状態です。
 
 
 ``` r
@@ -138,15 +112,9 @@ head(sexDEgenes)
 [1] "Lgr6"   "Myoc"   "Fibcd1" "Kcna4"  "Ctxn2"  "S100a9"
 ```
 
-Next we construct a gene set which contains genes on sex chromosomes (let's
-call it the "_XY gene set_"). Recall the `RangedSummarizedExperiment` object
-also includes genomic locations of genes, thus we can simply obtain sex genes
-by filtering the chromosome names.
+次に、性染色体上に位置する遺伝子を含む遺伝子セットを作成します（以下「_XY遺伝子セット_」と呼びます）。`RangedSummarizedExperiment`オブジェクトには遺伝子のゲノム位置情報も含まれているため、染色体名でフィルタリングするだけで性染色体上の遺伝子を簡単に取得できます。
 
-In the following code, `geneGR` is a `GRanges` object on which `seqnames()` is
-applied to extract chromosome names. `seqnames()` returns a special data
-format and we need to explicitly convert it to a normal vector by
-`as.vector()`.
+以下のコードでは、`geneGR`は`GRanges`オブジェクトであり、`seqnames()`関数を適用して染色体名を抽出しています。`seqnames()`関数は特殊なデータ形式を返すため、`as.vector()`関数で明示的に通常のベクトル形式に変換する必要があります。
 
 
 ``` r
@@ -168,21 +136,13 @@ length(XYGeneSet)
 [1] 1134
 ```
 
-The format of a single gene set is very straightforward, which is simply a
-vector. The ORA analysis is applied on the DE gene vector and gene set vector.
+単一の遺伝子セットの形式は非常に単純で、単にベクトルとして表現されます。
+このORA解析では、発現変動遺伝子ベクトルと遺伝子セットベクトルに対して解析が行われます。
 
-Before we move on, one thing worth to mention is that ORA deals with two gene
-vectors. To correctly map between them, gene ID types must be consistent in
-the two vectors. In this tiny example, since both DE genes and the _XY gene
-set_ are from the same object `se`, they are ensured to be in the same gene ID
-types (the gene symbol). But in general, DE genes and gene sets are from two
-different sources (e.g. DE genes are from researcher's experiment and gene
-sets are from public databases), it is very possible that gene IDs are not
-consistent in the two. Later in this episode, we will learn how to perform
-gene ID conversion in the ORA analysis.
+先に進む前に、一つ重要な注意点を挙げておきます。ORA解析では2つの遺伝子ベクトルを扱います。これらのベクトル間で正しく対応付けを行うためには、両ベクトルの遺伝子IDタイプが一致している必要があります。この簡単な例では、DE遺伝子と_XY遺伝子セットの両方が同じオブジェクト`se`から取得されているため、同じ遺伝子IDタイプ（遺伝子シンボル）であることが保証されています。しかし実際には、DE遺伝子と遺伝子セットは通常異なるソースから取得されます（例えばDE遺伝子は研究者の実験データから、遺伝子セットは公開データベースから取得される場合が多いです）。このため、遺伝子IDタイプが一致していないケースが頻繁に発生します。このエピソードの後半では、ORA解析における遺伝子ID変換の方法について詳しく説明します。
 
-Since the DE genes and the gene set can be mathematically thought of as two sets,
-a natural way is to first visualize them with a Venn diagram.
+DE遺伝子と遺伝子セットは数学的に2つの集合として扱えるため、
+自然なアプローチとして、まずベン図を用いて可視化する方法が有効です。
 
 
 ``` r
@@ -194,25 +154,13 @@ title(paste0("|universe| = ", length(totalGenes)))
 
 <img src="fig/07-gene-set-analysis-rendered-venn-diagram-1.png" style="display: block; margin: auto;" />
 
-In the Venn diagram, we can observe that around 1.1% (13/1134) of genes in the
-_XY gene set_ are DE. Compared to the global fraction of DE genes (54/21198 =
-0.25%), it seems there is a strong relations between DE genes and the gene
-set. We can also compare the fraction of DE genes that belong to the gene set
-(13/54 = 24.1%) and the global fraction of _XY gene set_ in the genome
-(1134/21198 = 5.3%). On the other hand, it is quite expected because the two
-events are actually biologically relevant where one is from a comparison
-between genders and the other is the set of gender-related genes.
+ベン図の分析結果から、_XY遺伝子セット_に含まれる遺伝子の約1.1%（13/1134）が発現変動遺伝子（DE遺伝子）であることがわかります。全遺伝子における発現変動遺伝子の割合（54/21198 = 0.25%）と比較すると、発現変動遺伝子とこの遺伝子セットとの間には強い関連性が存在することが示唆されます。さらに、遺伝子セットに属する発現変動遺伝子の割合（13/54 = 24.1%）と、ゲノム全体における_XY遺伝子セット_の割合（1134/21198 = 5.3%）を比較することも可能です。なお、この結果は生物学的に極めて妥当なものです。なぜなら、一方は性別間の比較に基づくデータであり、他方は性別に関連する遺伝子群の集合体という、いずれも生物学的に重要な事象を扱っているからです。
 
-Then, how to statistically measure the enrichment or over-representation? Let's
-go to the next section.
+では、遺伝子セットの濃縮度や過剰表現を統計的に測定するにはどうすればよいでしょうか？次のセクションに進みましょう。
 
-### Fisher's exact test
+### Fisher's 正確確率検定
 
-To statistically measure the enrichment, the relationship of DE genes and the
-gene set is normally formatted into the following 2x2 contingency table, where
-in the table are the numbers of genes in different categories. $n_{+1}$ is the
-size of the _XY gene set_ (i.e. the number of member genes), $n_{1+}$ is the
-number of DE genes, $n$ is the number of total genes.
+エンリッチメント効果を統計的に評価するため、発現変動遺伝子群と遺伝子セットの関連性は、通常以下の2×2分割表に整理されます。この表では、各カテゴリーに属する遺伝子数が示されます。$n_{+1}$は対象遺伝子セット（XY遺伝子セット）のサイズ（すなわち構成遺伝子数）を、$n_{1+}$は発現変動遺伝子の数を、$n$は全遺伝子数をそれぞれ表します。
 
 <center>
 |            | In the gene set | Not in the gene set | Total
@@ -222,8 +170,7 @@ number of DE genes, $n$ is the number of total genes.
 | **Total**  |     $n_{+1}$    |    $n_{+2}$         | $n$
 </center>
 
-These numbers can be obtained as in the following code^[Genes must be unique in each vector.]. Note we replace `+` with `0` in the
-R variable names.
+これらの数値は以下のコードで取得できます^[各ベクトル内の遺伝子は一意である必要があります]。なお、R変数名中の`+`は`0`に置き換えられている点にご注意ください。
 
 
 ``` r
@@ -233,7 +180,7 @@ n_10 <- length(sexDEgenes)
 n_11 <- length(intersect(sexDEgenes, XYGeneSet))
 ```
 
-Other values can be obtained by:
+その他の値は以下の方法で取得できます：
 
 
 ``` r
@@ -244,7 +191,7 @@ n_02 <- n    - n_01
 n_22 <- n_02 - n_12
 ```
 
-All the values are:
+すべての値は以下の通りです：
 
 
 ``` r
@@ -259,7 +206,8 @@ matrix(c(n_11, n_12, n_10, n_21, n_22, n_20, n_01, n_02, n),
 [3,] 1134 20064 21198
 ```
 
-And we fill these numbers into the 2x2 contingency table:
+これらの数値を2×2分割表に入力します：
+
 
 <center>
 |            | In the gene set | Not in the gene set | Total
@@ -269,12 +217,8 @@ And we fill these numbers into the 2x2 contingency table:
 | **Total**  |     1134    |    20064         | 21198
 </center>
 
-Fisher's exact test can be used to test the associations of the two marginal
-attributes, i.e. is there a dependency of a gene to be a DE gene and to be in
-the _XY gene set_? In R, we can use the function `fisher.test()` to perform
-the test. The input is the top-left 2x2 sub-matrix. We specify `alternative =
-"greater"` in the function because we are only interested in
-over-representation.
+
+フィッシャーの正確確率検定は、2つの周辺属性間の関連性を検定する際に使用できます。具体的には、遺伝子が発現変動遺伝子であるかどうかと、特定の遺伝子セット（例：_XY遺伝子セット_）に含まれるかどうかの間に依存関係が存在するかどうかを検証します。R言語では、この検定を実行するために`fisher.test()`関数を使用します。入力データとしては、左上の2×2サブマトリックスを指定します。関数の引数で`alternative = "greater"`と指定しているのは、過剰表現の有無のみに関心があるためです。
 
 
 ``` r
@@ -296,11 +240,9 @@ odds ratio
   5.662486 
 ```
 
-In the output, we can see the _p_-value is very small (`3.906e-06`), then we
-can conclude DE genes have a very strong enrichment in the _XY gene set_.
+出力結果から、_p値_が非常に小さい値（`3.906e-06`）であることが確認できます。したがって、DE遺伝子が_XY遺伝子セット_に極めて強く濃縮されていると結論付けることができます。
 
-Results of the Fisher's Exact test can be saved into an object `t`, which is a
-simple list, and the _p_-value can be obtained by `t$p.value`.
+Fisherの正確確率検定の結果は、オブジェクト`t`として保存できます。このオブジェクトは単純なリスト形式であり、_p値_は`t$p.value`で取得可能です。
 
 
 ``` r
@@ -313,35 +255,31 @@ t$p.value
 [1] 3.9059e-06
 ```
 
-Odds ratio from the Fisher's exact test is defined as follows:
+フィッシャーの正確確率検定によるオッズ比は以下のように定義されます：
 
-$$
+$$ 
 \mathrm{Odds\_ratio} = \frac{n_{11}/n_{21}}{n_{12}/n_{22}} = \frac{n_{11}/n_{12}}{n_{21}/n_{22}} = \frac{n_{11} * n_{22}}{n_{12} * n_{21}}
 $$
 
-If there is no association between DE genes and the gene set, odds ratio is
-expected to be 1. And it is larger than 1 if there is an over-representation
-of DE genes on the gene set.
+発現変動遺伝子と遺伝子セットとの間に関連性がない場合、オッズ比は1になることが期待されます。一方、遺伝子セットにおいて発現変動遺伝子が過剰に存在している場合には、この値が1を上回ることになります。
+
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
-### Further reading
+### 関連資料
 
-The 2x2 contingency table can be transposed and it does not affect the Fisher's
-exact test. E.g. let's put whether genes are in the gene sets on rows,
-and put whether genes are DE on columns.
+2×2分割表は転置可能であり、この操作はフィッシャーの正確確率検定の結果に影響を与えません。例えば、遺伝子が特定の遺伝子セットに含まれるかどうかを行に、遺伝子が発現変動しているかどうかを列に配置するといった方法が考えられます。
 
 <center>
 
-|                         | DE       | Not DE   | Total    |
-| ----------------------- | -------- | -------- | -------- |
-| **In the gene set**     | 13 | 1121 | 1134 |
-| **Not in the gene set** | 41 | 20023 | 20064 |
-| **Total**               | 54 | 21144 | 21198    |
-
+|                         |    DE       | Not DE    | Total
+| ----------------------- | ----------- | ----------| -------
+| **In the gene set**     |  13   |  1121 | 1134
+| **Not in the gene set** |  41   |  20023 | 20064
+| **Total**               |  54   |  21144 | 21198
 </center>
 
-And the corresponding `fisher.test()` is:
+対応する `fisher.test()` の結果は次のとおりです：
 
 
 ``` r
@@ -400,6 +338,7 @@ $$P = \frac{\binom{n_{1+}}{n_{11}} \binom{n_{2+}}{n_{21}}}{\binom{n}{n_{+1}}} = 
 
 where in the denominator is the number of ways of picking $n_{+1}$ genes
 without distinguishing whether they are DE or not.
+
 
 If $n$ (number of total genes), $n_{1+}$ (number of DE genes) and $n_{+1}$
 (size of gene set) are all fixed values, the number of DE genes that are
@@ -481,6 +420,7 @@ because in Fisher's exact test, hypergeometric distribution is the exact distrib
 Let's test the runtime of the two functions:
 
 
+
 ``` r
 library(microbenchmark)
 microbenchmark(
@@ -493,8 +433,8 @@ microbenchmark(
 ``` output
 Unit: microseconds
    expr     min      lq      mean   median       uq     max neval
- fisher 255.757 262.535 279.25770 268.5305 285.4370 588.407   100
-  hyper   1.573   1.783   2.86303   2.1790   3.4015  16.691   100
+ fisher 248.864 253.858 264.45468 257.1850 270.5150 490.576   100
+  hyper   1.543   1.743   2.71625   2.2395   3.2365  17.322   100
 ```
 
 It is very astonishing that `phyper()` is hundreds of times faster than
@@ -502,17 +442,19 @@ It is very astonishing that `phyper()` is hundreds of times faster than
 calculations besides calculating the _p_-value. So if you want to implement ORA
 analysis by yourself, always consider to use `phyper()`^[Also note `phyper()` can be vectorized.].
 
+
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ### Further reading
 
 Current tools also use Binomial distribution or chi-square test for ORA
-analysis. These two are just approximations. Please refer to Rivals et al.,
+analysis. These two are just approximations. Please refer to [Rivals et al.,
 Enrichment or depletion of a GO category within a class of genes: which test?
-Bioinformatics 2007 which gives
+Bioinformatics 2007](https://doi.org/10.1093/bioinformatics/btl633) which gives
 an overview of statistical methods used in ORA analysis.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 ## Gene set resources
 
@@ -610,6 +552,7 @@ data.frame(gene_set = rep(names(lt), times = sapply(lt, length)),
 Or genes be in the first column:
 
 
+
 ``` output
      gene   gene_set
 1  gene_1 gene_set_1
@@ -624,17 +567,20 @@ Or genes be in the first column:
 10 gene_7 gene_set_3
 ```
 
+
 Not very often, gene sets are represented as a matrix where one dimension
 corresponds to gene sets and the other dimension corresponds to genes. The
 values in the matix are binary where a value of 1 represents the gene is a
 member of the corresponding gene sets. In some methods, 1 is replaced by
 $w_{ij}$ to weight the effect of the genes in the gene set.
 
+
 ```
 #            gene_1 gene_2 gene_3 gene_4
 # gene_set_1      1      1      0      0
 # gene_set_2      1      0      1      1
 ```
+
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
@@ -697,10 +643,13 @@ $gene_set_3
 
 :::::::::::::::::::::::::::::::::::::::
 
+
+
 Next, let's go through gene sets from several major databases: the GO, KEGG
 and MSigDB databases.
 
-### Gene Ontology gene sets
+
+### Gene Ontology gene sets 
 
 Gene Ontology (GO) is the standard source for gene set enrichment analysis. GO
 contains three namespaces of biological process (BP), cellular components (CC)
@@ -711,17 +660,17 @@ Bioconductor release, there are the following organism packages:
 
 <center>
 
-| Package                                                        | Organism    | Package                                                           | Organism            |
-| -------------------------------------------------------------- | ----------- | ----------------------------------------------------------------- | ------------------- |
-| org.Hs.eg.db   | Human       | org.Mm.eg.db      | Mouse               |
-| org.Rn.eg.db   | Rat         | org.Dm.eg.db      | Fly                 |
-| org.At.tair.db | Arabidopsis | org.Dr.eg.db      | Zebrafish           |
-| org.Sc.sgd.db  | Yeast       | org.Ce.eg.db      | Worm                |
-| org.Bt.eg.db   | Bovine      | org.Gg.eg.db      | Chicken             |
-| org.Ss.eg.db   | Pig         | org.Mmu.eg.db     | Rhesus              |
-| org.Cf.eg.db   | Canine      | org.EcK12.eg.db   | E coli strain K12   |
-| org.Xl.eg.db   | Xenopus     | org.Pt.eg.db      | Chimp               |
-| org.Ag.eg.db   | Anopheles   | org.EcSakai.eg.db | E coli strain Sakai |
+|    Package    |   Organism   |   Package         | Organism
+| ------------- | ------------ | ----------------- | -----
+| org.Hs.eg.db  |  Human       | org.Mm.eg.db      | Mouse
+| org.Rn.eg.db  |  Rat         | org.Dm.eg.db      | Fly
+| org.At.tair.db|  Arabidopsis | org.Dr.eg.db      | Zebrafish
+| org.Sc.sgd.db |  Yeast       | org.Ce.eg.db      | Worm
+| org.Bt.eg.db  |  Bovine      | org.Gg.eg.db      | Chicken
+| org.Ss.eg.db  |  Pig         | org.Mmu.eg.db     | Rhesus
+| org.Cf.eg.db  |  Canine      | org.EcK12.eg.db   | E coli strain K12
+| org.Xl.eg.db  |  Xenopus     | org.Pt.eg.db      | Chimp
+| org.Ag.eg.db  |  Anopheles   | org.EcSakai.eg.db | E coli strain Sakai
 
 </center>
 
@@ -824,7 +773,9 @@ In most cases, because `OrgDb` is a standard Bioconductor data structure, most
 tools can automatically construct GO gene sets internally. There is no need
 for users to touch such low-level processings.
 
+
 :::::::::::::::::::::::::::::::::::::::::  callout
+
 
 ### Further reading
 
@@ -835,6 +786,7 @@ mapping between GO terms and genes. Readers can check the documentation of
 `org.Hs.egGO2ALLEGS`. Additional information on GO terms such as GO names and
 long descriptions are available in the package **GO.db**.
 
+
 Bioconductor has already provided a large number of organism packages.
 However, if the organism you are working on is not supported there, you may
 consider to look for it with the **AnnotationHub** package, which additionally
@@ -842,6 +794,7 @@ provide `OrgDb` objects for approximately 2000 organisms. The `OrgDb`
 object can be directly used in the ORA analysis introduced in the next section.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 ### KEGG gene sets
 
@@ -873,6 +826,7 @@ hsa:126 path:hsa00010
 We can directly read the text output with `read.table()`. Wrapping the URL
 with the function `url()`, you can pretend to directly read data from the
 remote web server.
+
 
 
 ``` r
@@ -930,13 +884,15 @@ head(keggNames)
 ```
 
 In both commands, we obtained data for human where the corresponding KEGG code
-is `"hsa"`. The code for other organisms can be found from the KEGG
-website (e.g. `"mmu"` for mouse), or via
+is `"hsa"`. The code for other organisms can be found from the [KEGG
+website](https://www.genome.jp/kegg/) (e.g. `"mmu"` for mouse), or via
 https://rest.kegg.jp/list/organism.
 
+
 Keep in mind, KEGG pathways are only free for academic users. If you use it
-for commercial purposes, please contact the KEGG team to get a
-licence.
+for commercial purposes, [please contact the KEGG team to get a
+licence](https://www.kegg.jp/kegg/legal.html).
+
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
@@ -949,26 +905,26 @@ essentially, they all obtain KEGG data with the REST API.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+
 ### MSigDB gene sets
 
 [Molecular signature database](https://www.gsea-msigdb.org/gsea/msigdb/)
 (MSigDB) is a manually curated gene set database. Initially, it was proposed
-as a supplementary dataset for the original GSEA
-paper. Later it has been separated
+as a supplementary dataset for [the original GSEA
+paper](https://www.nature.com/articles/ng1180). Later it has been separated
 out and developed independently. In the first version in 2005, there were only
 two gene sets collections and in total 843 gene sets. Now in the newest version
 of MSigDB (v2023.1.Hs), it has grown into nine gene sets collections, covering
-
 > 30K gene sets. It provides gene sets on a variety of topics.
 
 MSigDB categorizes gene sets into nine collections where each collection
 focuses on a specific topic. For some collections, they are additionally split
 into sub-collections. There are several ways to obtain gene sets from MSigDB.
-One convenient way is to use the **msigdb** package. Another option is to use
-the **msigdbr** CRAN package, which supports organisms other than human and
+One convenient way is to use the **msigdb** package. Another option is to use 
+the **msigdbr** CRAN package, which supports organisms other than human and 
 mouse by mapping to orthologs.
 
-**msigdb** provides mouse and human gene sets, defined using either gene
+**msigdb** provides mouse and human gene sets, defined using either gene 
 symbols or Entrez IDs. Let's get the mouse collection.
 
 
@@ -981,10 +937,10 @@ library(GSEABase)
 MSigDBGeneSets <- getMsigdb(org = "mm", id = "SYM", version = "7.4")
 ```
 
-The `msigdb` object above is a `GeneSetCollection`, storing all gene sets
-from MSigDB. The `GeneSetCollection` object class is defined in the `GSEABase`
-package, and it is a linear data structure similar to a base list object, but
-with additional metadata such as the type of gene identifier or provenance
+The `msigdb` object above is a `GeneSetCollection`, storing all gene sets 
+from MSigDB. The `GeneSetCollection` object class is defined in the `GSEABase` 
+package, and it is a linear data structure similar to a base list object, but 
+with additional metadata such as the type of gene identifier or provenance 
 information about the gene sets.
 
 
@@ -1009,7 +965,7 @@ length(MSigDBGeneSets)
 [1] 44688
 ```
 
-Each signature is stored in a `GeneSet` object, also defined in the `GSEABase`
+Each signature is stored in a `GeneSet` object, also defined in the `GSEABase` 
 package.
 
 
@@ -1050,7 +1006,7 @@ geneIds(gs)
 [25] "Slc22a27" "Slc22a29" "Slc22a28" "Slc22a22"
 ```
 
-We can also subset the collection. First, let's list the available collections
+We can also subset the collection. First, let's list the available collections 
 and subcollections.
 
 
@@ -1090,8 +1046,8 @@ GeneSetCollection
     collectionType: BroadCollection (1 total)
 ```
 
-If you only want to use a sub-category, specify both the `collection` and
-`subcollection` arguments to `subsetCollection`.
+If you only want to use a sub-category, specify both the `collection` and 
+`subcollection` arguments to `subsetCollection`. 
 
 ## ORA with clusterProfiler
 
@@ -1167,7 +1123,7 @@ resTimeGO = enrichGO(gene = timeDEgenes,
 ```
 
 ``` output
---> Expected input gene ID: 20054,20174,20877,22164,382985,232314
+--> Expected input gene ID: 68017,50931,30946,76781,21958,70556
 ```
 
 ``` output
@@ -1245,7 +1201,7 @@ In the output data frame, there are the following columns:
 - `geneID`: A list of DE genes in the gene set.
 - `Count`: Number of DE genes in the gene set.
 
-You may have found the total number of DE genes changes. There are
+You may have found the total number of DE genes changes. There are 
 1134 in `timeDEgenes`, but only 983 DE genes are included in
 the enrichment result table (in the `GeneRatio` column). The main reason is by default DE genes not
 annotated to any GO gene set are filtered out. This relates to the "universe"
@@ -1323,6 +1279,7 @@ GO:0060326    41
 GO:0071674    32
 ```
 
+
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ## Perform GO enrichment on other organisms
@@ -1335,6 +1292,8 @@ perform ORA analysis on any organism as long as there is a corresponding
 - For other organisms, the `OrgDb` object can be found with the **AnnotationHub** package.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 
 ### KEGG pathway enrichment
 
@@ -1379,6 +1338,7 @@ to set `pvalueCutoff` and `qvalueCutoff` both to 1 and convert the result to a
 data frame.
 
 
+
 ``` r
 resTimeKEGG = enrichKEGG(gene = EntrezIDs, 
                          organism = "mmu",
@@ -1411,19 +1371,19 @@ mmu00592                               alpha-Linolenic acid metabolism
 mmu04913                                       Ovarian steroidogenesis
 mmu04061 Viral protein interaction with cytokine and cytokine receptor
          GeneRatio  BgRatio RichFactor FoldEnrichment   zScore       pvalue
-mmu00590    16/456 89/10563  0.1797753       4.164400 6.367580 1.077074e-06
-mmu00591    12/456 55/10563  0.2181818       5.054067 6.402603 2.927526e-06
-mmu00565    11/456 48/10563  0.2291667       5.308525 6.354611 4.564725e-06
-mmu00592     8/456 25/10563  0.3200000       7.412632 6.818229 6.409913e-06
-mmu04913    12/456 65/10563  0.1846154       4.276518 5.628081 1.814940e-05
-mmu04061    14/456 95/10563  0.1473684       3.413712 5.019492 5.280890e-05
+mmu00590    16/456 89/10567  0.1797753       4.165977 6.369483 1.071769e-06
+mmu00591    12/456 55/10567  0.2181818       5.055981 6.404353 2.916153e-06
+mmu00565    11/456 49/10567  0.2244898       5.202157 6.261010 5.640144e-06
+mmu00592     8/456 25/10567  0.3200000       7.415439 6.819861 6.392124e-06
+mmu04913    12/456 65/10567  0.1846154       4.278138 5.629742 1.808160e-05
+mmu04061    14/456 95/10567  0.1473684       3.415005 5.021178 5.259449e-05
              p.adjust       qvalue
-mmu00590 0.0003392783 0.0002766380
-mmu00591 0.0004610853 0.0003759560
-mmu00565 0.0004792961 0.0003908045
-mmu00592 0.0005047807 0.0004115839
-mmu04913 0.0011434120 0.0009323059
-mmu04061 0.0027724672 0.0022605915
+mmu00590 0.0003376072 0.0002752754
+mmu00591 0.0004592941 0.0003744954
+mmu00565 0.0005033797 0.0004104416
+mmu00592 0.0005033797 0.0004104416
+mmu04913 0.0011391410 0.0009288234
+mmu04061 0.0027612106 0.0022514131
                                                                                                        geneID
 mmu00590 18783/19215/211429/329502/78390/19223/67103/242546/13118/18781/18784/11689/232889/15446/237625/11687
 mmu00591                        18783/211429/329502/78390/242546/18781/18784/13113/622127/232889/237625/11687
@@ -1440,6 +1400,7 @@ mmu04913    12
 mmu04061    14
 ```
 
+
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ## Perform KEGG pathway enrichment on other organisms
@@ -1451,13 +1412,14 @@ Extending ORA to other organisms is rather simple.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+
 ### MSigDB enrichment
 
 For MSigDB gene sets, there is no pre-defined enrichment function. We need to
 directly use the low-level enrichment function `enricher()` which accepts
 self-defined gene sets. The gene sets should be in a format of a two-column
 data frame of genes and gene sets (or a class that can be converted to a data
-frame). Let's use the hallmark collection (`hm`) that we generated above.
+frame). Let's use the hallmark collection (`hm`) that we generated above. 
 
 
 ``` r
@@ -1536,6 +1498,7 @@ HALLMARK_INTERFERON_ALPHA_RESPONSE    21
 HALLMARK_IL2_STAT5_SIGNALING          30
 ```
 
+
 :::::::::::::::::::::::::::::::::::::::::  callout
 
 ### Further reading
@@ -1605,6 +1568,7 @@ HALLMARK_APICAL_SURFACE                 84   21198 6.640741e-01 8.973974e-01
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
+
 ### Choose a proper universe
 
 Finally, it is time to talk about the "universe" of ORA analysis which is
@@ -1612,14 +1576,15 @@ normally ignored in many analyses. In current tools, there are mainly
 following different universe settings:
 
 1. Using all genes in the genome, this also includes non-protein coding genes.
-  For human, the size of universe is 60k ~ 70k.
+   For human, the size of universe is 60k ~ 70k.
 2. Using all protein-coding genes. For human, the size of universe is ~ 20k.
 3. In the era of microarray, total genes that are measured on the chip is
-  taken as the universe. For RNASeq, since reads are aligned to all genes, we
-  can set a cutoff and only use those "expressed" genes as the universe.
+   taken as the universe. For RNASeq, since reads are aligned to all genes, we
+   can set a cutoff and only use those "expressed" genes as the universe.
 4. Using all genes in a gene sets collection. Then the size of the universe
-  depends on the size of the gene sets collection. For example GO gene sets
-  collection is much larger than the KEGG pathway gene sets collection.
+   depends on the size of the gene sets collection. For example GO gene sets
+   collection is much larger than the KEGG pathway gene sets collection.
+
 
 If the universe is set, DE genes as well as genes in the gene sets are first
 intersected to the universe. However, in general the universe affects three
@@ -1633,6 +1598,7 @@ genes or non-gene-set genes.
 | **Not DE** |     $n_{21}$    |    $\color{red}{n_{22}}$         | $\color{red}{n_{2+}}$
 | **Total**  |     $n_{+1}$    |    $\color{red}{n_{+2}}$         | $\color{red}{n}$
 </center>
+
 
 In the contingency table, we are testing the dependency of whether genes being
 DE and whether genes being in the gene set. In the model, each gene has a
@@ -1649,13 +1615,17 @@ $n_{20}$, makes the observation $n_{11}$ getting further away from the null
 distribution, eventually generates a smaller _p_-value. For the similar
 reason, small universes tend to generate large _p_-values.
 
+
 In `enrichGO()`/`enrichKEGG()`/`enricher()`, universe genes can be set via the
 `universe` argument. By default the universe is the total genes in the gene
 sets collection. When a self-defined universe is provided, this might be
-different from what you may think, the universe is .
+different from what you may think, the universe is [_the intersection of
+user-provided universe and total genes in the gene set
+collection_](https://github.com/YuLab-SMU/DOSE/blob/93a4b981c0251e5c6eb1f2413f4a02b8e6d06ff5/R/enricher_internal.R#L65C43-L65C51).
 Thus the universe setting in **clusterProfiler** is very conservative.
 
 Check the more discusstions at https://twitter.com/mdziemann/status/1626407797939384320.
+
 
 We can do a simple experiment on the small MSigDB hallmark gene sets. We use
 the `ora()` function which we have implemented in previous "Further reading"
@@ -1829,7 +1799,7 @@ statistically.] in it.
 We can measure the enrichment in two other ways. First, the log2 fold
 enrichment, defined as:
 
-$$\log_2(\mathrm{Fold\_enrichment}) = \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} = \frac{n_{11}n}{n_{10}n_{01}}$$
+$$ \log_2(\mathrm{Fold\_enrichment}) = \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} = \frac{n_{11}n}{n_{10}n_{01}} $$
 
 which is the log2 of the ratio of _DE% in the gene set_ and _DE% in the
 universe_ or the log2 of the ratio of _gene\_set% in the DE genes_ and
@@ -1842,11 +1812,11 @@ resTimeGOTable$log2_Enrichment = log( (n_11/n_10)/(n_01/n) )
 
 Second, it is also common to use _z_-score which is
 
-$$z = \frac{n_{11} - \mu}{\sigma}$$
+$$ z = \frac{n_{11} - \mu}{\sigma} $$
 
-where $\mu$ and $\sigma$ are the mean and standard deviation of the
+where $\mu$ and $\sigma$ are [the mean and standard deviation of the
 hypergeometric
-distribution. They
+distribution](https://en.wikipedia.org/wiki/Hypergeometric_distribution). They
 can be calculated as:
 
 
@@ -1858,6 +1828,7 @@ n_20 = n - n_10
 hyper_var = n_01*n_10/n * n_20*n_02/n/(n-1)
 resTimeGOTable$zScore = (n_11 - hyper_mean)/sqrt(hyper_var)
 ```
+
 
 We will use log2 fold change as the primary variable to map to bar heights and
 `DE_Ratio` as the secondary variable to map to colors. This can be done
@@ -1930,6 +1901,7 @@ reach a small _p_-value with a small DE_ratio and a small log2 fold
 enrichment, while a small gene set needs to have a large DE ratio to be
 significant.
 
+
 It is also common that we perform ORA analysis on up-regulated genes and
 down-regulated separately. And we want to combine the significant gene sets from
 the two ORA analysis in one plot. In the following code, we first generate
@@ -1997,6 +1969,7 @@ ggplot(rbind(resTimeGOupTable[1:5, ],
 
 <img src="fig/07-gene-set-analysis-rendered-plot-up-down-1.png" style="display: block; margin: auto;" />
 
+
 Specifically for GO enrichment, it is often that GO enrichment returns a long
 list of significant GO terms (e.g. several hundreds). This makes it difficult
 to summarize the common functions from the long list. The last package we will
@@ -2030,12 +2003,14 @@ the cutoff are set as 1 (DE gene) and others are set as 0 (non-DE gene). This
 binary transformation over-simplifies the problem and a lot of information are
 lost. There is second class of gene set enrichment analysis methods which
 takes the continuous gene-level score as input and weights the importance of a
-gene in the gene set. Please refer to Subramanian et. al. Gene set enrichment
+gene in the gene set. Please refer to [Subramanian et. al. Gene set enrichment
 analysis: A knowledge-based approach for interpreting genome-wide expression
-profiles, PNAS 2005 for
+profiles, PNAS 2005](https://www.pnas.org/doi/10.1073/pnas.0506580102) for
 more information.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
@@ -2044,6 +2019,8 @@ more information.
 - In R, it is easy to obtain gene sets from a large number of sources.
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
 
 <script>
 $(function() {
