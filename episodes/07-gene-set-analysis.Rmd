@@ -1,6 +1,6 @@
 ---
 source: Rmd
-title: Gene set enrichment analysis
+title: 遺伝子セットエンリッチメント解析
 teaching: 60
 exercises: 45
 ---
@@ -29,55 +29,32 @@ body h3 {
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Learn the method of gene set enrichment analysis.
-- Learn how to obtain gene sets from various resources in R.
-- Learn how to perform gene set enrichment analysis and how to visualize
-  enrichment results.
+- 遺伝子セットエンリッチメント解析の手法について学びます。
+- R環境で様々なリソースから遺伝子セットを取得する方法について習得します。
+- 遺伝子セットエンリッチメント解析の実施方法と、解析結果の可視化方法について学びます。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- What is the aim of performing gene set enrichment analysis?
-- What is the method of over-representation analysis?
-- What are the commonly-used gene set databases?
+- 遺伝子セットエンリッチメント解析を実施する目的は何ですか？
+- over-representation analysis の手法にはどのようなものがありますか？
+- 一般的に使用されている遺伝子セットデータベースにはどのようなものがありますか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-After we have obtained a list of differentially expressed (DE) genes, the next
-question naturally to ask is what biological functions these DE genes may
-affect. Gene set enrichment analysis (GSEA) evaluates the associations of a
-list of DE genes to a collection of pre-defined gene sets, where each gene set
-has a specific biological meaning. Once DE genes are significantly enriched in
-a gene set, the conclusion is made that the corresponding biological meaning
-(e.g. a biological process or a pathway) is significantly affected.
+発現変動遺伝子（DE遺伝子）のリストを取得した後、次に当然生じる疑問は、これらのDE遺伝子がどのような生物学的機能に影響を与える可能性があるかということです。遺伝子セットエンリッチメント解析（GSEA）では、事前に定義された遺伝子セット群に対して、DE遺伝子リストとの関連性を評価します。各遺伝子セットは特定の生物学的意味を持っています。DE遺伝子が特定の遺伝子セットに有意に濃縮されている場合、対応する生物学的意味（例えば生物学的プロセスやパスウェイなど）が有意に影響を受けるという結論が導かれます。
 
-The definition of a gene set is very flexible and the construction of gene
-sets is straightforward. In most cases, gene sets are from public databases
-where huge efforts from scientific curators have already been made to
-carefully categorize genes into gene sets with clear biological meanings.
-Nevertheless, gene sets can also be self-defined from individual studies, such
-as a set of genes in a network module from a co-expression network analysis,
-or a set of genes that are up-regulated in a certain disease.
+遺伝子セットの定義は非常に柔軟であり、その構築方法も簡潔です。多くの場合、遺伝子セットは公共データベースから取得され、科学的なキュレーターによって遺伝子を明確な生物学的意味を持つグループに慎重に分類するための多大な労力が既に費やされています。ただし、遺伝子セットは個々の研究から独自に定義することも可能です。例えば、共発現ネットワーク解析におけるネットワークモジュールを構成する遺伝子群や、特定の疾患において発現が上昇する遺伝子群などがこれに該当します。
 
-There are a huge amount of methods available for GSEA analysis. In this
-episode, we will learn the simplest but the mostly used one: the
-over-representation analysis (ORA). ORA is directly applied to the list of DE
-genes and it evaluates the association of the DE genes and the gene set by the
-numbers of genes in different categories.
+GSEA（Gene Set Enrichment Analysis）には数多くの分析手法が存在します。このエピソードでは、最もシンプルでかつ最も広く用いられている手法である「過剰表現解析（Over-Representation Analysis: ORA）」について解説します。ORAは差異発現遺伝子リストに直接適用可能な手法で、異なるカテゴリーにおける遺伝子数に基づいて、差異発現遺伝子と遺伝子セットとの関連性を評価します。
 
-Please note, ORA is a universal method that it can not only be applied to the
-DE gene list, but also any type of gene list of interest to look for their
-statistically associated biological meanings.
+ORA（Over-Representation Analysis）は汎用性の高い手法であり、DE遺伝子リストだけでなく、研究対象とする任意の遺伝子リストに対しても適用可能です。これにより、それらの遺伝子群が統計的に有意に関連する生物学的意義を明らかにすることができます。
 
-In this episode, we will start with a tiny example to illustrate the
-statistical method of ORA. Next we will go through several commonly-used gene
-set databases and how to access them in R. Then, we will learn how to perform
-ORA analysis with the Bioconductor package **clusterProfiler**. And in the
-end, we will learn several visualization methods on the GSEA results.
+本エピソードでは、ORA（Over-Representation Analysis）という統計手法を説明するための簡単な事例から始めます。続いて、生物学分野で広く利用されている複数の遺伝子セットデータベースを紹介し、R環境でのアクセス方法について解説します。その後、Bioconductorパッケージである**clusterProfiler**を用いたORA解析の実施方法を学びます。最後に、GSEA（Gene Set Enrichment Analysis）の結果を可視化するためのいくつかの手法を習得します。
 
-Following is a list of packages that will be used in this episode:
+本エピソードで使用するパッケージの一覧は以下の通りです：
 
 
 ```{r load-pkg, eval = FALSE}
