@@ -85,17 +85,12 @@ library(ggplot2)
 # simplifyEnrichment cannot be installed in sandpaper ci
 ```
 
-## The statistical method
+## 統計的手法について
 
-To demonstrate the ORA analysis, we use a list of DE genes from a comparison
-between genders. The following code performs **DESeq2** analysis which you
-should have already learnt in the previous episode. In the end, we have a list
-of DE genes filtered by FDR < 0.05, and save it in the object `sexDEgenes`.
+ORA解析の具体例を示すため、性別間比較によって得られた発現変動遺伝子リストを使用します。以下のコードでは、前エピソードで既に学習済みの**DESeq2**解析を実行します。最終的に、FDR値が0.05未満にフィルタリングされた発現変動遺伝子リストを取得し、これをオブジェクト`sexDEgenes`として保存します。
 
-The file `data/GSE96870_se.rds` contains a `RangedSummarizedExperiment` that contains RNA-Seq counts that were downloaded in [Episode 2](../episodes/02-setup.Rmd) and constructed in [Episode 3](../episodes/03-import-annotate.Rmd) (minimal codes for downloading and constructing in the script
-[`download_data.R`](https://github.com/carpentries-incubator/bioc-rnaseq/blob/main/episodes/download_data.R).
-In the following code, there are also comments that explain every step of the
-analysis.
+ファイル `data/GSE96870_se.rds` には、[エピソード2](../episodes/02-setup.Rmd) でダウンロードし、[エピソード3](../episodes/03-import-annotate.Rmd) で構築した RNA-Seq カウントデータを含む `RangedSummarizedExperiment` オブジェクトが格納されています（ダウンロードおよび構築のための最小限のコードは、スクリプト [`download_data.R`](https://github.com/carpentries-incubator/bioc-rnaseq/blob/main/episodes/download_data.R) に記載されています）。
+以下のコードには、分析の各ステップを説明するコメントも記載されています。
 
 ```{r read-data, warning = FALSE}
 
@@ -120,23 +115,16 @@ sexDE <- as.data.frame(subset(resSex, padj < 0.05))
 sexDEgenes <- rownames(sexDE)
 ```
 
-Let's check the number of DE genes and how they look like. It seems the number
-of DE genes is very small, but it is OK for this example.
+DEGの数とその分布状況を確認してみましょう。DEGの数は一見非常に少ないように見えますが、今回の例ではこれが正常な状態です。
 
 ```{r check-de}
 length(sexDEgenes)
 head(sexDEgenes)
 ```
 
-Next we construct a gene set which contains genes on sex chromosomes (let's
-call it the "_XY gene set_"). Recall the `RangedSummarizedExperiment` object
-also includes genomic locations of genes, thus we can simply obtain sex genes
-by filtering the chromosome names.
+次に、性染色体上に位置する遺伝子を含む遺伝子セットを作成します（以下「_XY遺伝子セット_」と呼びます）。`RangedSummarizedExperiment`オブジェクトには遺伝子のゲノム位置情報も含まれているため、染色体名でフィルタリングするだけで性染色体上の遺伝子を簡単に取得できます。
 
-In the following code, `geneGR` is a `GRanges` object on which `seqnames()` is
-applied to extract chromosome names. `seqnames()` returns a special data
-format and we need to explicitly convert it to a normal vector by
-`as.vector()`.
+以下のコードでは、`geneGR`は`GRanges`オブジェクトであり、`seqnames()`関数を適用して染色体名を抽出しています。`seqnames()`関数は特殊なデータ形式を返すため、`as.vector()`関数で明示的に通常のベクトル形式に変換する必要があります。
 
 ```{r xy-genes}
 geneGR <- rowRanges(se)
@@ -146,22 +134,13 @@ head(XYGeneSet)
 length(XYGeneSet)
 ```
 
-The format of a single gene set is very straightforward, which is simply a
-vector. The ORA analysis is applied on the DE gene vector and gene set vector.
+単一の遺伝子セットの形式は非常に単純で、単にベクトルとして表現されます。
+このORA解析では、発現変動遺伝子ベクトルと遺伝子セットベクトルに対して解析が行われます。
 
-Before we move on, one thing worth to mention is that ORA deals with two gene
-vectors. To correctly map between them, gene ID types must be consistent in
-the two vectors. In this tiny example, since both DE genes and the _XY gene
-set_ are from the same object `se`, they are ensured to be in the same gene ID
-types (the gene symbol). But in general, DE genes and gene sets are from two
-different sources (e.g. DE genes are from researcher's experiment and gene
-sets are from public databases), it is very possible that gene IDs are not
-consistent in the two. Later in this episode, we will learn how to perform
-gene ID conversion in the ORA analysis.
+先に進む前に、一つ重要な注意点を挙げておきます。ORA解析では2つの遺伝子ベクトルを扱います。これらのベクトル間で正しく対応付けを行うためには、両ベクトルの遺伝子IDタイプが一致している必要があります。この簡単な例では、DE遺伝子と_XY遺伝子セットの両方が同じオブジェクト`se`から取得されているため、同じ遺伝子IDタイプ（遺伝子シンボル）であることが保証されています。しかし実際には、DE遺伝子と遺伝子セットは通常異なるソースから取得されます（例えばDE遺伝子は研究者の実験データから、遺伝子セットは公開データベースから取得される場合が多いです）。このため、遺伝子IDタイプが一致していないケースが頻繁に発生します。このエピソードの後半では、ORA解析における遺伝子ID変換の方法について詳しく説明します。
 
-
-Since the DE genes and the gene set can be mathematically thought of as two sets,
-a natural way is to first visualize them with a Venn diagram.
+DE遺伝子と遺伝子セットは数学的に2つの集合として扱えるため、
+自然なアプローチとして、まずベン図を用いて可視化する方法が有効です。
 
 ```{r venn-diagram, fig.width = 5*2, fig.height = 5*2, dpi = 72*2}
 library(gplots)
@@ -170,25 +149,13 @@ plot(venn(list("sexDEgenes"  = sexDEgenes,
 title(paste0("|universe| = ", length(totalGenes)))
 ```
 
-In the Venn diagram, we can observe that around 1.1% (13/1134) of genes in the
-_XY gene set_ are DE. Compared to the global fraction of DE genes (54/21198 =
-0.25%), it seems there is a strong relations between DE genes and the gene
-set. We can also compare the fraction of DE genes that belong to the gene set
-(13/54 = 24.1%) and the global fraction of _XY gene set_ in the genome
-(1134/21198 = 5.3%). On the other hand, it is quite expected because the two
-events are actually biologically relevant where one is from a comparison
-between genders and the other is the set of gender-related genes.
+ベン図の分析結果から、_XY遺伝子セット_に含まれる遺伝子の約1.1%（13/1134）が発現変動遺伝子（DE遺伝子）であることがわかります。全遺伝子における発現変動遺伝子の割合（54/21198 = 0.25%）と比較すると、発現変動遺伝子とこの遺伝子セットとの間には強い関連性が存在することが示唆されます。さらに、遺伝子セットに属する発現変動遺伝子の割合（13/54 = 24.1%）と、ゲノム全体における_XY遺伝子セット_の割合（1134/21198 = 5.3%）を比較することも可能です。なお、この結果は生物学的に極めて妥当なものです。なぜなら、一方は性別間の比較に基づくデータであり、他方は性別に関連する遺伝子群の集合体という、いずれも生物学的に重要な事象を扱っているからです。
 
-Then, how to statistically measure the enrichment or over-representation? Let's
-go to the next section.
+では、遺伝子セットの濃縮度や過剰表現を統計的に測定するにはどうすればよいでしょうか？次のセクションに進みましょう。
 
-### Fisher's exact test
+### Fisher's 正確確率検定
 
-To statistically measure the enrichment, the relationship of DE genes and the
-gene set is normally formatted into the following 2x2 contingency table, where
-in the table are the numbers of genes in different categories. $n_{+1}$ is the
-size of the _XY gene set_ (i.e. the number of member genes), $n_{1+}$ is the
-number of DE genes, $n$ is the number of total genes.
+エンリッチメント効果を統計的に評価するため、発現変動遺伝子群と遺伝子セットの関連性は、通常以下の2×2分割表に整理されます。この表では、各カテゴリーに属する遺伝子数が示されます。$n_{+1}$は対象遺伝子セット（XY遺伝子セット）のサイズ（すなわち構成遺伝子数）を、$n_{1+}$は発現変動遺伝子の数を、$n$は全遺伝子数をそれぞれ表します。
 
 <center>
 |            | In the gene set | Not in the gene set | Total
@@ -198,8 +165,7 @@ number of DE genes, $n$ is the number of total genes.
 | **Total**  |     $n_{+1}$    |    $n_{+2}$         | $n$
 </center>
 
-These numbers can be obtained as in the following code^[Genes must be unique in each vector.]. Note we replace `+` with `0` in the
-R variable names.
+これらの数値は以下のコードで取得できます^[各ベクトル内の遺伝子は一意である必要があります]。なお、R変数名中の`+`は`0`に置き換えられている点にご注意ください。
 
 ```{r fisher-1}
 n    <- nrow(se)
@@ -208,7 +174,7 @@ n_10 <- length(sexDEgenes)
 n_11 <- length(intersect(sexDEgenes, XYGeneSet))
 ```
 
-Other values can be obtained by:
+その他の値は以下の方法で取得できます：
 
 ```{r fisher-2}
 n_12 <- n_10 - n_11
@@ -218,14 +184,14 @@ n_02 <- n    - n_01
 n_22 <- n_02 - n_12
 ```
 
-All the values are:
+すべての値は以下の通りです：
 
 ```{r fisher-3}
 matrix(c(n_11, n_12, n_10, n_21, n_22, n_20, n_01, n_02, n),
     nrow = 3, byrow = TRUE)
 ```
 
-And we fill these numbers into the 2x2 contingency table:
+これらの数値を2×2分割表に入力します：
 
 
 <center>
@@ -237,23 +203,16 @@ And we fill these numbers into the 2x2 contingency table:
 </center>
 
 
-Fisher's exact test can be used to test the associations of the two marginal
-attributes, i.e. is there a dependency of a gene to be a DE gene and to be in
-the _XY gene set_? In R, we can use the function `fisher.test()` to perform
-the test. The input is the top-left 2x2 sub-matrix. We specify `alternative =
-"greater"` in the function because we are only interested in
-over-representation.
+フィッシャーの正確確率検定は、2つの周辺属性間の関連性を検定する際に使用できます。具体的には、遺伝子が発現変動遺伝子であるかどうかと、特定の遺伝子セット（例：_XY遺伝子セット_）に含まれるかどうかの間に依存関係が存在するかどうかを検証します。R言語では、この検定を実行するために`fisher.test()`関数を使用します。入力データとしては、左上の2×2サブマトリックスを指定します。関数の引数で`alternative = "greater"`と指定しているのは、過剰表現の有無のみに関心があるためです。
 
 ```{r fisher-test}
 fisher.test(matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE),
     alternative = "greater")
 ```
 
-In the output, we can see the _p_-value is very small (`3.906e-06`), then we
-can conclude DE genes have a very strong enrichment in the _XY gene set_.
+出力結果から、_p値_が非常に小さい値（`3.906e-06`）であることが確認できます。したがって、DE遺伝子が_XY遺伝子セット_に極めて強く濃縮されていると結論付けることができます。
 
-Results of the Fisher's Exact test can be saved into an object `t`, which is a
-simple list, and the _p_-value can be obtained by `t$p.value`.
+Fisherの正確確率検定の結果は、オブジェクト`t`として保存できます。このオブジェクトは単純なリスト形式であり、_p値_は`t$p.value`で取得可能です。
 
 ```{r fisher-test-save}
 t <- fisher.test(matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE),
@@ -261,24 +220,20 @@ t <- fisher.test(matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE),
 t$p.value
 ```
 
-Odds ratio from the Fisher's exact test is defined as follows:
+フィッシャーの正確確率検定によるオッズ比は以下のように定義されます：
 
 $$ 
 \mathrm{Odds\_ratio} = \frac{n_{11}/n_{21}}{n_{12}/n_{22}} = \frac{n_{11}/n_{12}}{n_{21}/n_{22}} = \frac{n_{11} * n_{22}}{n_{12} * n_{21}}
 $$
 
-If there is no association between DE genes and the gene set, odds ratio is
-expected to be 1. And it is larger than 1 if there is an over-representation
-of DE genes on the gene set.
+発現変動遺伝子と遺伝子セットとの間に関連性がない場合、オッズ比は1になることが期待されます。一方、遺伝子セットにおいて発現変動遺伝子が過剰に存在している場合には、この値が1を上回ることになります。
 
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
-### Further reading
+### 関連資料
 
-The 2x2 contingency table can be transposed and it does not affect the Fisher's
-exact test. E.g. let's put whether genes are in the gene sets on rows,
-and put whether genes are DE on columns.
+2×2分割表は転置可能であり、この操作はフィッシャーの正確確率検定の結果に影響を与えません。例えば、遺伝子が特定の遺伝子セットに含まれるかどうかを行に、遺伝子が発現変動しているかどうかを列に配置するといった方法が考えられます。
 
 <center>
 
@@ -289,7 +244,7 @@ and put whether genes are DE on columns.
 | **Total**               |  `r n_10`   |  `r n_20` | `r n`
 </center>
 
-And the corresponding `fisher.test()` is:
+対応する `fisher.test()` の結果は次のとおりです：
 
 ```{r fisher-test-transposed}
 fisher.test(matrix(c(13, 1121, 41, 20023), nrow = 2, byrow = TRUE),
