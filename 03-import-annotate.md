@@ -611,7 +611,7 @@ dim(se_mRNA)
 
 Bioconductorでの詳細情報は、[Annotation Workshop](https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html)の資料で見つけることができます。
 
-Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セット濃縮解析](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
+Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セットエンリッチメント解析](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
 
 ここでは、遺伝子IDマッピング関数の1つである`mapIds`を紹介します：
 
