@@ -340,8 +340,7 @@
 <h3 id="05-differential-expression-headingInstructor1">
 <a href="05-differential-expression.html#headingInstructor1">Instructor Note</a><a class="anchor" aria-label="anchor" href="#05-differential-expression-headingInstructor1"></a>
 </h3>
-<p>The function to generate a <code>DESeqDataSet</code> needs to be
-adapted depending on the input type, e.g,</p>
+<p><code>DESeqDataSet</code>を生成する関数は、入力データの種類に応じて適切に調整する必要があります。例えば：</p>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -358,14 +357,12 @@ adapted depending on the input type, e.g,</p>
 <br><h3 id="05-differential-expression-headingInstructor2">
 <a href="05-differential-expression.html#headingInstructor2">Instructor Note</a><a class="anchor" aria-label="anchor" href="#05-differential-expression-headingInstructor2"></a>
 </h3>
-<p><em>DESeq2</em> uses the <strong>“Relative Log Expression”
-(RLE)</strong> method to calculate sample-wise <em>size factors</em>
-tĥat account for read depth and library composition. <em>edgeR</em> uses
-the <strong>“Trimmed Mean of M-Values” (TMM)</strong> method to account
-for library size differences and compositional effects. <em>edgeR</em>’s
-<em>normalization factors</em> and <em>DESeq2</em>’s <em>size
-factors</em> yield similar results, but are not equivalent theoretical
-parameters.</p>
+<p><em>DESeq2</em> では、<strong>「相対対数発現量」（RLE：Relative Log
+Expression）</strong>法を用いて、リード深度とライブラリ構成を考慮したサンプルごとの<strong>サイズ因子</strong>を算出します。
+一方、<em>edgeR</em> では<strong>「トリミング平均M値」（TMM：Trimmed
+Mean of
+M-Values）</strong>法を採用し、ライブラリサイズの差異や組成的影響を補正します。
+_edgeR_の<strong>正規化係数</strong>と_DESeq2_の<strong>サイズ因子</strong>は類似した結果をもたらしますが、これらは理論的に同等のパラメータではありません。</p>
 <hr>
 <br><h3 id="05-differential-expression-headingInstructor3">
 <a href="05-differential-expression.html#headingInstructor3">Instructor Note</a><a class="anchor" aria-label="anchor" href="#05-differential-expression-headingInstructor3"></a>

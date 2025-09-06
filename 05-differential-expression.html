@@ -191,10 +191,10 @@
 
     <div id="flush-collapsecurrent" class="accordion-collapse collapse show" aria-labelledby="flush-headingcurrent" data-bs-parent="#accordionFlushcurrent">
       <div class="accordion-body">
-        <ul><li><a href="#differential-expression-inference">Differential expression inference</a></li>
-<li><a href="#the-deseqdataset">The DESeqDataSet</a></li>
-<li><a href="#normalization">Normalization</a></li>
-<li><a href="#statistical-modeling">Statistical modeling</a></li>
+        <ul><li><a href="#differential-expression-%E3%81%AE%E6%8E%A8%E5%AE%9A">Differential expression の推定</a></li>
+<li><a href="#deseqdataset%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88">DESeqDataSetオブジェクト</a></li>
+<li><a href="#%E6%AD%A3%E8%A6%8F%E5%8C%96%E5%87%A6%E7%90%86">正規化処理</a></li>
+<li><a href="#%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0">統計モデリング</a></li>
 <li><a href="#explore-results-for-specific-contrasts">Explore results for specific contrasts</a></li>
 <li><a href="#independent-filtering-and-log-fold-shrinkage">Independent Filtering and log-fold shrinkage</a></li>
 <li><a href="#visualize-selected-set-of-genes">Visualize selected set of genes</a></li>
@@ -283,7 +283,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Differential expression analysis</h1>
-        <p> Last updated on 2025-07-24 |
+        <p> Last updated on 2025-09-06 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/05-differential-expression.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -302,9 +302,9 @@
 <div class="card-body">
 <div class="inner">
 <h3 class="card-title">Questions</h3>
-<ul><li>What are the steps performed in a typical differential expression
-analysis?</li>
-<li>How does one interpret the output of DESeq2?</li>
+<ul><li>典型的な Differential expression
+解析で実施される主な手順は何ですか？</li>
+<li>DESeq2の出力結果をどのように解釈すればよいですか？</li>
 </ul></div>
 </div>
 </div>
@@ -312,50 +312,25 @@ analysis?</li>
 <div class="card-body">
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
-<ul><li>Explain the steps involved in a differential expression
-analysis.</li>
-<li>Explain how to perform these steps in R, using DESeq2.</li>
+<ul><li>Differential expression
+解析における主要な手順について説明してください。</li>
+<li>DESeq2パッケージを使用してR環境でこれらの手順を実行する方法を説明してください。</li>
 </ul></div>
 </div>
 </div>
 </div>
 </div>
-<section><h2 class="section-heading" id="differential-expression-inference">Differential expression inference<a class="anchor" aria-label="anchor" href="#differential-expression-inference"></a></h2>
-<hr class="half-width"><p>A major goal of RNA-seq data analysis is the quantification and
-statistical inference of systematic changes between experimental groups
-or conditions (e.g., treatment vs. control, timepoints, tissues). This
-is typically performed by identifying genes with differential expression
-pattern using between- and within-condition variability and thus
-requires biological replicates (multiple sample of the same condition).
-Multiple software packages exist to perform differential expression
-analysis. Comparative studies have shown some concordance of
-differentially expressed (DE) genes, but also variability between tools
-with no tool consistently outperforming all others (see <a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91" class="external-link">Soneson
-and Delorenzi, 2013</a>). In the following we will explain and conduct
-differential expression analysis using the <a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html" class="external-link">DESeq2</a>
-software package. The <a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" class="external-link">edgeR</a>
-package implements similar methods following the same main assumptions
-about count data. Both packages show a general good and stable
-performance with comparable results.</p>
-</section><section><h2 class="section-heading" id="the-deseqdataset">The DESeqDataSet<a class="anchor" aria-label="anchor" href="#the-deseqdataset"></a></h2>
-<hr class="half-width"><p>To run <code>DESeq2</code> we need to represent our count data as
-object of the <code>DESeqDataSet</code> class. The
-<code>DESeqDataSet</code> is an extension of the
-<code>SummarizedExperiment</code> class (see section <a href="03-import-annotate.html">Importing and annotating quantified data
-into R</a> ) that stores a <em>design formula</em> in addition to the
-count assay(s) and feature (here gene) and sample metadata. The
-<em>design formula</em> expresses the variables which will be used in
-modeling. These are typically the variable of interest (group variable)
-and other variables you want to account for (e.g., batch effect
-variables). A detailed explanation of <em>design formulas</em> and
-related <em>design matrices</em> will follow in the section about <a href="06-extra-design.html">extra exploration of design matrices</a>.
-Objects of the <code>DESeqDataSet</code> class can be build from <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">count
-matrices</a>, <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperiment
-objects</a>, <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">transcript
-abundance files</a> or <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseq
-count files</a>.</p>
+<section><h2 class="section-heading" id="differential-expression-の推定">Differential expression の推定<a class="anchor" aria-label="anchor" href="#differential-expression-%E3%81%AE%E6%8E%A8%E5%AE%9A"></a></h2>
+<hr class="half-width"><p>RNA-seqデータ解析における主要な目的の一つは、実験群間または条件間（例：処理群と対照群、時間点、組織など）における系統的な変化を定量化し、統計的に推論することです。これは通常、条件間変動と条件内変動を用いて発現変動パターンを示す遺伝子を同定することで行われ、生物学的複製サンプル（同一条件下での複数サンプル）が必要となります。
+発現変動解析を実施するためのソフトウェアパッケージは複数存在します。比較研究によれば、発現変動遺伝子（DE遺伝子）に関してはある程度の一致が見られるものの、ツール間にはばらつきがあり、どのツールも他のすべてのツールを一貫して上回る性能を示すことはないことが報告されています（<a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91" class="external-link">Soneson
+and Delorenzi, 2013</a>参照）。 以下では、<a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html" class="external-link">DESeq2</a>
+ソフトウェアパッケージを使用した発現変動解析の実施方法を説明し、実際に解析を行います。<a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" class="external-link">edgeR</a>パッケージも同様の手法を実装しており、カウントデータに関する主要な仮定を共有しています。両パッケージとも一般的に良好な安定性を示し、同等の結果が得られます。</p>
+</section><section><h2 class="section-heading" id="deseqdatasetオブジェクト">DESeqDataSetオブジェクト<a class="anchor" aria-label="anchor" href="#deseqdataset%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88"></a></h2>
+<hr class="half-width"><p><code>DESeq2</code>を実行するには、カウントデータを<code>DESeqDataSet</code>クラスのオブジェクトとして表現する必要があります。
+<code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_デザイン式_を保持します。
+_デザイン式_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_デザイン式_および関連する_デザイン行列_に関する詳細な説明は、<a href="06-extra-design.html">デザイン行列の詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
 <div class="section level3">
-<h3 id="load-packages">Load packages<a class="anchor" aria-label="anchor" href="#load-packages"></a></h3>
+<h3 id="パッケージの読み込み">パッケージの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a></h3>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -372,15 +347,11 @@ count files</a>.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="load-data">Load data<a class="anchor" aria-label="anchor" href="#load-data"></a></h3>
-<p>Let’s load in our <code>SummarizedExperiment</code> object again. In
-the last episode for quality control exploration, we removed ~35% genes
-that had 5 or fewer counts because they had too little information in
-them. For DESeq2 statistical analysis, we do not technically have to
-remove these genes because by default it will do some independent
-filtering, but it can reduce the memory size of the
-<code>DESeqDataSet</code> object resulting in faster computation. Plus,
-we do not want these genes cluttering up some of the visualizations.</p>
+<h3 id="データの読み込み">データの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a></h3>
+<p>前回の品質管理分析で使用した <code>SummarizedExperiment</code>
+オブジェクトを再度読み込みます。品質管理の探索的分析では、カウント数が5未満の遺伝子約35%を削除しました。これらの遺伝子は情報量が不足していたためです。DESeq2の統計解析においては、デフォルトで独立したフィルタリングが行われるため、これらの遺伝子を厳密に削除する必要はありません。ただし、これにより
+<code>DESeqDataSet</code>
+オブジェクトのメモリ使用量が減少し、計算速度が向上する可能性があります。さらに、これらの遺伝子が可視化結果を乱雑にするのを防ぐことができます。</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -390,14 +361,12 @@ we do not want these genes cluttering up some of the visualizations.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="create-deseqdataset">Create DESeqDataSet<a class="anchor" aria-label="anchor" href="#create-deseqdataset"></a></h3>
-<p>The design matrix we will use in this example is
-<code>~ sex + time</code>. This will allow us test the difference
-between males and females (averaged over time point) and the difference
-between day 0, 4 and 8 (averaged over males and females). If we wanted
-to test other comparisons (e.g., Female.Day8 vs. Female.Day0 and also
-Male.Day8 vs. Male.Day0) we could use a different design matrix to more
-easily extract those pairwise comparisons.</p>
+<h3 id="deseqdatasetの作成">DESeqDataSetの作成<a class="anchor" aria-label="anchor" href="#deseqdataset%E3%81%AE%E4%BD%9C%E6%88%90"></a></h3>
+<p>本例で使用するデザイン行列は <code>~ sex + time</code>
+とします。これにより、以下の比較が可能になります： -
+雄と雌の平均値の差（時間ポイントを平均化） - day
+0、4、8の平均値の差（雄と雌を平均化）
+他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるデザイン行列を使用することで、これらのペアワイズ比較をより容易に抽出できます。</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -413,19 +382,15 @@ design formula are characters, converting to factors</code></pre>
 </div>
 
 </div>
-</section><section><h2 class="section-heading" id="normalization">Normalization<a class="anchor" aria-label="anchor" href="#normalization"></a></h2>
-<hr class="half-width"><p><code>DESeq2</code> and <code>edgeR</code> make the following
-assumptions:</p>
-<ul><li>most genes are not differentially expressed</li>
-<li>the probability of a read mapping to a specific gene is the same for
-all samples within the same group</li>
-</ul><p>As shown in the <a href="04-exploratory-qc.html">previous section</a>
-on exploratory data analysis the total counts of a sample (even from the
-same condition) depends on the library size (total number of reads
-sequenced). To compare the variability of counts from a specific gene
-between and within groups we first need to account for library sizes and
-compositional effects. Recall the <code>estimateSizeFactors()</code>
-function from the previous section:</p>
+</section><section><h2 class="section-heading" id="正規化処理">正規化処理<a class="anchor" aria-label="anchor" href="#%E6%AD%A3%E8%A6%8F%E5%8C%96%E5%87%A6%E7%90%86"></a></h2>
+<hr class="half-width"><p><code>DESeq2</code> と <code>edgeR</code>
+は以下の前提条件に基づいています：</p>
+<ul><li>ほとんどの遺伝子は発現量に有意な差がない</li>
+<li>特定の遺伝子にリードがマッピングされる確率は、同一グループ内のすべてのサンプルにおいて同一である</li>
+</ul><p><a href="04-exploratory-qc.html">前節</a>
+の探索的データ分析で示したように、サンプルの総リード数（同一条件下で取得されたものであっても）はライブラリサイズ（シーケンシングされた総リード数）に依存します。グループ間およびグループ内で特定の遺伝子のカウント変動を比較するためには、まずライブラリサイズと組成効果を考慮する必要があります。
+前節で説明した <code>estimateSizeFactors()</code>
+関数を思い出してください：</p>
 <div class="codewrapper sourceCode" id="cb6">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -433,27 +398,23 @@ function from the previous section:</p>
 <code class="sourceCode R"><span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu">estimateSizeFactors</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span></code></pre>
 </div>
 
-</section><section><h2 class="section-heading" id="statistical-modeling">Statistical modeling<a class="anchor" aria-label="anchor" href="#statistical-modeling"></a></h2>
-<hr class="half-width"><p><code>DESeq2</code> and <code>edgeR</code> model RNA-seq counts as
-<strong>negative binomial</strong> distribution to account for a limited
-number of replicates per group, a mean-variance dependency (see <a href="04-exploratory-qc.html">exploratory data analysis</a>) and a
-skewed count distribution.</p>
+</section><section><h2 class="section-heading" id="統計モデリング">統計モデリング<a class="anchor" aria-label="anchor" href="#%E7%B5%B1%E8%A8%88%E3%83%A2%E3%83%87%E3%83%AA%E3%83%B3%E3%82%B0"></a></h2>
+<hr class="half-width"><p><code>DESeq2</code> と <code>edgeR</code>
+は、RNA-seqデータのカウント値を <strong>負の二項分布</strong>
+としてモデル化します。これは、グループあたりのサンプル数が少ない場合、平均値と分散の相関関係（<a href="04-exploratory-qc.html">探索的データ解析</a>参照）、およびカウント分布の偏りを考慮するためです。</p>
 <div class="section level3">
-<h3 id="dispersion">Dispersion<a class="anchor" aria-label="anchor" href="#dispersion"></a></h3>
-<p>The within-group variance of the counts for a gene following a
-negative binomial distribution with mean <span class="math inline">\(\mu\)</span> can be modeled as:</p>
+<h3 id="分散パラメータ">分散パラメータ<a class="anchor" aria-label="anchor" href="#%E5%88%86%E6%95%A3%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF"></a></h3>
+<p>負の二項分布に従う遺伝子のカウント値におけるグループ内分散は、平均
+<span class="math inline">\(\mu\)</span>
+に対して以下のようにモデル化できます：</p>
 <p><span class="math inline">\(var = \mu + \theta \mu^2\)</span></p>
-<p><span class="math inline">\(\theta\)</span> represents the
-gene-specific <strong>dispersion</strong>, a measure of variability or
-spread in the data. As a second step, we need to estimate gene-wise
-dispersions to get the expected within-group variance and test for group
-differences. Good dispersion estimates are challenging with a few
-samples per group only. Thus, information from genes with similar
-expression pattern are “borrowed”. Gene-wise dispersion estimates are
-<em>shrinked</em> towards center values of the observed distribution of
-dispersions. With <code>DESeq2</code> we can get dispersion estimates
-using the <code>estimateDispersions()</code> function. We can visualize
-the effect of <em>shrinkage</em> using <code>plotDispEsts()</code>:</p>
+<p>ここで <span class="math inline">\(\theta\)</span> は遺伝子固有の
+<strong>分散パラメータ</strong>
+を表し、データのばらつき度合いを示す指標です。第二段階として、各遺伝子の分散パラメータを推定することで、グループ内の期待分散値を算出し、グループ間の差異を検定します。サンプル数が限られている場合、適切な分散推定値は得にくいため、類似した発現パターンを示す遺伝子間の情報が活用されます。各遺伝子の分散推定値は、観測された分散分布の中央値方向に「縮小」（shrinked）されます。<code>DESeq2</code>
+では、<code>estimateDispersions()</code>
+関数を使用して分散推定値を取得できます。 <code>plotDispEsts()</code>
+関数を用いることで、この <strong>縮小効果</strong>
+の影響を視覚的に確認することが可能です：</p>
 <div class="codewrapper sourceCode" id="cb7">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1008,7 +969,7 @@ beneficial.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/05-differential-expression.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/05-differential-expression.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-07-24",
+  "dateModified": "2025-09-06",
   "datePublished": "2025-09-06"
 }
 
