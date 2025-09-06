@@ -1,5 +1,5 @@
 ---
-title: "Rに量的データをインポートして注釈を付ける"
+title: "Rに量的データをインポートしてアノテーションを付ける"
 source: Rmd
 teaching: 80
 output:
@@ -22,7 +22,7 @@ source("download_data.R")
 ::::::::::::::::::::::::::::::::::::::: objectives
 
 - 量的データをSummarizedExperimentオブジェクトにインポートする方法を学びます。
-- オブジェクトに追加の遺伝子注釈を追加する方法を学びます。
+- オブジェクトに追加の遺伝子アノテーションを追加する方法を学びます。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -50,7 +50,7 @@ suppressPackageStartupMessages({
 
 ## データを読み込む
 
-前回のエピソードでは、Rを使用してインターネットから4つのファイルをダウンロードし、それらをコンピュータに保存しました。 しかし、これらのファイルはまだRに読み込まれていないため、作業することができません。 [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/)の元の実験デザインはかなり複雑でした。8週齢のオスとメスのC57BL/6マウスは、インフルエンザ感染前の0日目、感染後の4日目および8日目に収集されました。 各マウスからは、小脳と脊髄の組織がRNA-seq用に取り出されました。 元々は「性別 x 時間 x 組織」群御に4匹のマウスがいましたが、途中でいくつかが失われ、合計で45のサンプルに至りました。 このワークショップでは、分析を簡素化するために22の小脳サンプルのみを使用します。 発現の定量化は、STARを使用してマウスのゲノムにアライメントを行い、その後、遺伝子にマッピングされるリードの数を数えることを通じて行われました。 各遺伝子ごとのサンプルあたりのカウントに加えて、どのサンプルがどの性別/時間点/複製に属するかの情報も必要です。 遺伝子に関しては、注釈と呼ばれる追加の情報があると便利です。
+前回のエピソードでは、Rを使用してインターネットから4つのファイルをダウンロードし、それらをコンピュータに保存しました。 しかし、これらのファイルはまだRに読み込まれていないため、作業することができません。 [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/)の元の実験デザインはかなり複雑でした。8週齢のオスとメスのC57BL/6マウスは、インフルエンザ感染前の0日目、感染後の4日目および8日目に収集されました。 各マウスからは、小脳と脊髄の組織がRNA-seq用に取り出されました。 元々は「性別 x 時間 x 組織」群御に4匹のマウスがいましたが、途中でいくつかが失われ、合計で45のサンプルに至りました。 このワークショップでは、分析を簡素化するために22の小脳サンプルのみを使用します。 発現の定量化は、STARを使用してマウスのゲノムにアライメントを行い、その後、遺伝子にマッピングされるリードの数を数えることを通じて行われました。 各遺伝子ごとのサンプルあたりのカウントに加えて、どのサンプルがどの性別/時間点/複製に属するかの情報も必要です。 遺伝子に関しては、アノテーションと呼ばれる追加の情報があると便利です。
 前回ダウンロードしたデータファイルを読み込み、探索し始めましょう：
 
 ### カウント
@@ -64,9 +64,9 @@ dim(counts)
 
 遺伝子は行に、サンプルは列に含まれています。したがって、41,786の遺伝子と22のサンプルのカウントがあります。 `View()`コマンドはウェブサイト用にコメントアウトされていますが、実行するとRStudioでデータを確認したり、特定の列でテーブルを並べ替えたりできます。 ただし、ビューワは`counts`オブジェクト内部のデータを変更できないため、見るだけで、永久に並べ替えたり編集したりすることはできません。 終了したら、タブのXを使ってビューワを閉じます。 行名は遺伝子シンボルであり、列名はGEOのサンプルIDであるようです。これは、私たちがどのサンプルが何かを教えてくれないため、あまり有益ではありません。
 
-### サンプルの注釈
+### サンプルのアノテーション
 
-次に、サンプルの注釈を読み込みます。 カウント行列の列にはサンプルが含まれているため、オブジェクトに`coldata`という名前を付けます：
+次に、サンプルのアノテーションを読み込みます。 カウント行列の列にはサンプルが含まれているため、オブジェクトに`coldata`という名前を付けます：
 
 ```{r read-sample-data, purl=TRUE}
 coldata <- read.csv("data/GSE96870_coldata_cerebellum.csv",
@@ -77,9 +77,9 @@ dim(coldata)
 
 今、サンプルが行にあり、GEOサンプルIDが行名として付いています。そして、私たちには10列の情報があります。 このワークショップで最も便利な列は、`geo_accession`（再度、GEOサンプルID）、`sex`、および`time`です。
 
-### 遺伝子の注釈
+### 遺伝子のアノテーション
 
-カウントには遺伝子シンボルしかありませんが、それは短くて人間の脳にとってはある程度認識可能ですが、実際に測定された遺伝子の正確な同定子としてはあまり利便性がありません。 そのため、著者によって提供された追加の遺伝子注釈が必要です。 `count`および`coldata`ファイルはカンマ区切り値（.csv）形式でしたが、遺伝子注釈ファイルにはそれが使用できません。なぜなら、説明には、カンマを含む可能性があるため、.csvファイルを正しく読み込むのを妨げるからです。 その代わりに、遺伝子注釈ファイルはタブ区切り値（.tsv）形式です。 同様に、説明には単一引用符`'`（例：5'）が含まれる可能性があり、Rはデフォルトでこれを文字列として扱うためです。 そのため、データがタブ区切りであることを指定するために、より一般的な関数`read.delim()`に追加の引数を使用する必要があります（`sep = "\t"`）で、引用符は使用しない（`quote = ""`）。 さらに、最初の行に列名が含まれていることを指定するためにその他の引数を追加し（`header = TRUE`）、行名として指定される遺伝子シンボルは5列目（`row.names = 5`）であること、NCBIの種特異的遺伝子ID（すなわちENTREZID）は、数字のように見えるが文字列として読み込む（`colClasses`引数）必要があることを指定します。 使用可能な引数に関する詳細については、関数名の先頭にクエスチョンマークを入力することで確認できます。 (例：`?read.delim`)
+カウントには遺伝子シンボルしかありませんが、それは短くて人間の脳にとってはある程度認識可能ですが、実際に測定された遺伝子の正確な同定子としてはあまり利便性がありません。 そのため、著者によって提供された追加の遺伝子アノテーションが必要です。 `count`および`coldata`ファイルはカンマ区切り値（.csv）形式でしたが、遺伝子アノテーションファイルにはそれが使用できません。なぜなら、説明には、カンマを含む可能性があるため、.csvファイルを正しく読み込むのを妨げるからです。 その代わりに、遺伝子アノテーションファイルはタブ区切り値（.tsv）形式です。 同様に、説明には単一引用符`'`（例：5'）が含まれる可能性があり、Rはデフォルトでこれを文字列として扱うためです。 そのため、データがタブ区切りであることを指定するために、より一般的な関数`read.delim()`に追加の引数を使用する必要があります（`sep = "\t"`）で、引用符は使用しない（`quote = ""`）。 さらに、最初の行に列名が含まれていることを指定するためにその他の引数を追加し（`header = TRUE`）、行名として指定される遺伝子シンボルは5列目（`row.names = 5`）であること、NCBIの種特異的遺伝子ID（すなわちENTREZID）は、数字のように見えるが文字列として読み込む（`colClasses`引数）必要があることを指定します。 使用可能な引数に関する詳細については、関数名の先頭にクエスチョンマークを入力することで確認できます。 (例：`?read.delim`)
 
 ```{r read-gene-annots, purl=TRUE}
 rowranges <- read.delim("data/GSE96870_rowranges.tsv", 
@@ -116,14 +116,14 @@ table(rowranges$gbkey)
 
 :::::::::::::::::::::::::::::::::::
 
-関連情報を別のオブジェクトに保持することで、カウント、遺伝子の注釈、サンプルの注釈の間で不一致が発生する可能性があります。 これが、Bioconductorが`SummarizedExperiment`という特殊なS4クラスを作成した理由です。 `SummarizedExperiment`の詳細は、[RNA解析とBioconductorの導入](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps)ワークショップの最後で詳しく説明されています。
+関連情報を別のオブジェクトに保持することで、カウント、遺伝子のアノテーション、サンプルのアノテーションの間で不一致が発生する可能性があります。 これが、Bioconductorが`SummarizedExperiment`という特殊なS4クラスを作成した理由です。 `SummarizedExperiment`の詳細は、[RNA解析とBioconductorの導入](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps)ワークショップの最後で詳しく説明されています。
 リマインダーとして、`SummarizedExperiment`クラスの構造を表す図を見てみましょう：
 
 ```{r SE, echo=FALSE, out.width="80%", fig.alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list."}
 knitr::include_graphics("https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg")
 ```
 
-これは、任意の種類の定量的なオミクスデータ（`assays`）と、それにリンクされたサンプル注釈（`colData`）、および（遺伝子）特徴注釈（`rowRanges`）または染色体、開始および終了位置を持たない（`rowData`）形式で保持されるように設計されています。 これらの3つのテーブルが（正しく）リンクされると、サンプルや特徴の部分集合が`assay`、`colData`、`rowRanges`の正しい部分集合に変わります。 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャに基づいて構築されているため、`SummarizedExperiment`オブジェクトを認識し、操作することができます。 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャの周りに構築されているため、`SummarizedExperiment`オブジェクトを認識し、操作できるようになります。 最も人気のある2つのRNA-seq統計分析パッケージは、統計結果用に追加のスロットがある`SummarizedExperiment`に類似した独自の拡張S4クラスを持っています：[DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)の`DESeqDataSet`および[edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)の`DGEList`です。 統計分析に使用するものが何であれ、データを`SummarizedExperiment`に入れることから始めることができます。
+これは、任意の種類の定量的なオミクスデータ（`assays`）と、それにリンクされたサンプルアノテーション（`colData`）、および（遺伝子）特徴アノテーション（`rowRanges`）または染色体、開始および終了位置を持たない（`rowData`）形式で保持されるように設計されています。 これらの3つのテーブルが（正しく）リンクされると、サンプルや特徴の部分集合が`assay`、`colData`、`rowRanges`の正しい部分集合に変わります。 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャに基づいて構築されているため、`SummarizedExperiment`オブジェクトを認識し、操作することができます。 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャの周りに構築されているため、`SummarizedExperiment`オブジェクトを認識し、操作できるようになります。 最も人気のある2つのRNA-seq統計分析パッケージは、統計結果用に追加のスロットがある`SummarizedExperiment`に類似した独自の拡張S4クラスを持っています：[DESeq2](https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#the-deseqdataset)の`DESeqDataSet`および[edgeR](https://www.rdocumentation.org/packages/edgeR/versions/3.14.0/topics/DGEList-class)の`DGEList`です。 統計分析に使用するものが何であれ、データを`SummarizedExperiment`に入れることから始めることができます。
 
 ## SummarizedExperimentを組み立てる
 
@@ -151,7 +151,7 @@ all.equal(colnames(counts), rownames(coldata))
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-アッセイ（例：`counts`）および遺伝子注釈テーブル（例：`rowranges`）内の特徴（すなわち遺伝子）が異なる場合、これらをどのように修正できますか？
+アッセイ（例：`counts`）および遺伝子アノテーションテーブル（例：`rowranges`）内の特徴（すなわち遺伝子）が異なる場合、これらをどのように修正できますか？
 コードを記述してください。
 
 :::::::::::::::::::::::::::::::::::::::
@@ -216,11 +216,11 @@ dim(assay(se))
 
 head(assay(se, "counts"))
 
-# サンプル注釈にアクセス
+# サンプルアノテーションにアクセス
 colData(se)
 dim(colData(se))
 
-# 遺伝子注釈にアクセス
+# 遺伝子アノテーションにアクセス
 head(rowData(se))
 dim(rowData(se))
 
@@ -313,13 +313,13 @@ dim(se_mRNA)
 
 :::::::::::::::::::::::::::::::::::::::
 
-## 遺伝子注釈
+## 遺伝子アノテーション
 
-カウントデータを生成する人によっては、追加の遺伝子注釈の適切なファイルがないかもしれません。 遺伝子シンボルやENTREZID、あるいは他のデータベースのIDのみが存在するかもしれません。 遺伝子注釈の特性は、その注釈戦略と情報源によって異なります。 たとえば、RefSeqヒト遺伝子モデル（つまり、NCBIのEntrez）は、さまざまな研究でよくサポートされ、広く使用されています。 UCSC Known Genes データセットは、Swiss-Prot/TrEMBL (UniProt) のタンパク質データと、GenBankからの関連するmRNAデータに基づいており、UCSC Genome Browserの基盤として機能します。 Ensemblの遺伝子は、自動生成されたゲノムアノテーションと手動キュレーションの両方を含んでいます。
+カウントデータを生成する人によっては、追加の遺伝子アノテーションの適切なファイルがないかもしれません。 遺伝子シンボルやENTREZID、あるいは他のデータベースのIDのみが存在するかもしれません。 遺伝子アノテーションの特性は、そのアノテーション戦略と情報源によって異なります。 たとえば、RefSeqヒト遺伝子モデル（つまり、NCBIのEntrez）は、さまざまな研究でよくサポートされ、広く使用されています。 UCSC Known Genes データセットは、Swiss-Prot/TrEMBL (UniProt) のタンパク質データと、GenBankからの関連するmRNAデータに基づいており、UCSC Genome Browserの基盤として機能します。 Ensemblの遺伝子は、自動生成されたゲノムアノテーションと手動キュレーションの両方を含んでいます。
 
 Bioconductorでの詳細情報は、[Annotation Workshop](https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html)の資料で見つけることができます。
 
-Bioconductorには、遺伝子の追加注釈情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セット濃縮解析](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
+Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セット濃縮解析](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
 
 ここでは、遺伝子IDマッピング関数の1つである`mapIds`を紹介します：
 
@@ -329,7 +329,7 @@ mapIds(annopkg, keys, column, keytype, ..., multiVals)
 
 どこで
 
-- _annopkg_は、注釈パッケージです
+- _annopkg_は、アノテーションパッケージです
 - _keys_は、私たちが**知っている**IDです
 - _column_は、私たちが**望む**値です
 - _keytype_は、使用するキーのタイプです
@@ -339,7 +339,7 @@ mapIds(org.Mm.eg.db, keys = "497097", column = "SYMBOL", keytype = "ENTREZID")
 ```
 
 `select()`関数とは異なり、`mapIds()`関数は、追加の引数`multiVals`を通じてキーと列の間の1:多のマッピングを処理します。
-以下の例では、`hgu95av2.db`パッケージを使用してこの機能を示します。AffymetrixヒトゲノムU95セット注釈データ。
+以下の例では、`hgu95av2.db`パッケージを使用してこの機能を示します。AffymetrixヒトゲノムU95セットアノテーションデータ。
 
 ```{r add-alias, purl=TRUE}
 keys <- head(keys(hgu95av2.db, "ENTREZID"))
@@ -362,8 +362,9 @@ mapIds(hgu95av2.db, keys = keys, column = "ALIAS", keytype = "ENTREZID", multiVa
 sessionInfo()
 ```
 
-::: keypoints
+:::::::::::::::::::::::::::::::::::::::: keypoints
 
 - 使用される遺伝子発現定量ツールによって、出力を`SummarizedExperiment`または`DGEList`オブジェクトに読み込む方法が異なります（多くはBioconductorパッケージで配布されています）。
 - EnsemblやEntrez IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な識別子として使用されるべきで、解釈を容易にするために遺伝子シンボルを追加する必要があります。
-  :::
+
+::::::::::::::::::::::::::::::::::::::::::::::::::
