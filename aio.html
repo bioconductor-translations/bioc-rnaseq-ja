@@ -374,7 +374,7 @@
 <figure><img src="fig/rnaseq_martin_wang.png" alt="Illustration of the major experimental steps of an RNA-seq experiment" class="figure mx-auto d-block"></figure><p>(図は<a href="https://www.nature.com/articles/nrg3068" class="external-link">Martin &amp;
 Wang (2011)</a>より引用）。</p>
 <p>典型的なRNA-seq実験では、まず目的のサンプルからRNA分子を収集する。
-ポリA末端を持つ分子（主にmRNA）を濃縮する、あるいは、そうでなければ非常に豊富なリボソームRNAを除去した後、残りの分子を細かく断片化する（分子全体を考慮するロングリード・プロトコルもあるが、このレッスンの焦点ではない）。
+ポリA末端を持つ分子（主にmRNA）をエンリッチメントする、あるいは、そうでなければ非常に豊富なリボソームRNAを除去した後、残りの分子を細かく断片化する（分子全体を考慮するロングリード・プロトコルもあるが、このレッスンの焦点ではない）。
 イントロン配列を除いたスプライシングのために、RNA分子（したがって生成された断片）はゲノムの途切れることのない領域に対応しない可能性があることを心に留めておくことが重要である。
 その後、RNA断片はcDNAに逆転写され、両端に配列決定用アダプターが付加される。
 これらのアダプターにより、フラグメントをフローセルに取り付けることができる。
@@ -554,7 +554,7 @@ benchmarking</a>）を得ることができる。
 差次的発現解析の結果は、MAプロットやヒートマップなどのグラフを用いて表現されることが多い（例は下記参照）。</p>
 <p><img src="fig/maPlot-example.png" alt="An example MA plot" class="figure"><img src="fig/heatmap-example.png" alt="An example heatmap" class="figure"></p>
 <p>以下のエピソードでは、特にこれらのプロットの作成と解釈の仕方を学ぶ。
-また、上位にランクされた遺伝子間に機能的関係があるかどうかを調べるために、遺伝子セット（濃縮）解析と呼ばれるフォローアップ解析を行うことも一般的であるが、これについても後のエピソードで取り上げる。</p>
+また、上位にランクされた遺伝子間に機能的関係があるかどうかを調べるために、遺伝子セット（エンリッチメント）解析と呼ばれるフォローアップ解析を行うことも一般的であるが、これについても後のエピソードで取り上げる。</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -1654,7 +1654,7 @@ Ensemblの遺伝子は、自動生成されたゲノムアノテーションと�
 Workshop</a>の資料で見つけることができます。</p>
 <p>Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。
 利用可能なリソースについては、<a href="https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources" class="external-link">エピソード7
-遺伝子セット濃縮解析</a>で詳しく説明されています。</p>
+遺伝子セットエンリッチメント解析</a>で詳しく説明されています。</p>
 <p>ここでは、遺伝子IDマッピング関数の1つである<code>mapIds</code>を紹介します：</p>
 <pre><code><span><span class="fu">mapIds</span><span class="op">(</span><span class="va">annopkg</span>, <span class="va">keys</span>, <span class="va">column</span>, <span class="va">keytype</span>, <span class="va">...</span>, <span class="va">multiVals</span><span class="op">)</span></span></code></pre>
 <p>どこで</p>
@@ -1946,7 +1946,7 @@ IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な�
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>
 </li></ol>
@@ -2186,7 +2186,7 @@ RNA-seqのようなリードカウントデータの場合、この前提は成�
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li><p>このデータにおける主要なシグナル（分散の37%）は性別と関連しています。私たちは時間経過に伴う性特異的な変化には関心がないため、下流解析ではこの影響を調整する必要があります（<a href="05-differential-expression.html">次のエピソード</a>参照）。また、今後の探索的下流解析においてもこの要因を考慮に入れておく必要があります。この影響を補正する方法として、性染色体上に位置する遺伝子を除去することが考えられます。</p></li>
@@ -2226,7 +2226,7 @@ RNA-seqのようなリードカウントデータの場合、この前提は成�
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb26">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2718,7 +2718,7 @@ lesson?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>In the lesson example the last variable of the design formula is
 <code>time</code>. The <strong>reference level</strong> (first in
@@ -2823,7 +2823,7 @@ time.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb22">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2964,7 +2964,7 @@ results then?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb30">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -4696,7 +4696,7 @@ linear combinations of the model coefficients.</li>
 </div>
 </section></section><section id="aio-07-gene-set-analysis"><p>Content from <a href="07-gene-set-analysis.html">遺伝子セットエンリッチメント解析</a></p>
 <hr>
-<p> Last updated on 2025-08-20 |
+<p> Last updated on 2025-09-06 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/07-gene-set-analysis.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -4738,7 +4738,7 @@ body h3 {
 </div>
 </div>
 </div>
-<p>発現変動遺伝子（DE遺伝子）のリストを取得した後、次に当然生じる疑問は、これらのDE遺伝子がどのような生物学的機能に影響を与える可能性があるかということです。遺伝子セットエンリッチメント解析（GSEA）では、事前に定義された遺伝子セット群に対して、DE遺伝子リストとの関連性を評価します。各遺伝子セットは特定の生物学的意味を持っています。DE遺伝子が特定の遺伝子セットに有意に濃縮されている場合、対応する生物学的意味（例えば生物学的プロセスやパスウェイなど）が有意に影響を受けるという結論が導かれます。</p>
+<p>発現変動遺伝子（DE遺伝子）のリストを取得した後、次に当然生じる疑問は、これらのDE遺伝子がどのような生物学的機能に影響を与える可能性があるかということです。遺伝子セットエンリッチメント解析（GSEA）では、事前に定義された遺伝子セット群に対して、DE遺伝子リストとの関連性を評価します。各遺伝子セットは特定の生物学的意味を持っています。DE遺伝子が特定の遺伝子セットに有意にエンリッチメントされている場合、対応する生物学的意味（例えば生物学的プロセスやパスウェイなど）が有意に影響を受けるという結論が導かれます。</p>
 <p>遺伝子セットの定義は非常に柔軟であり、その構築方法も簡潔です。多くの場合、遺伝子セットは公共データベースから取得され、科学的なキュレーターによって遺伝子を明確な生物学的意味を持つグループに慎重に分類するための多大な労力が既に費やされています。ただし、遺伝子セットは個々の研究から独自に定義することも可能です。例えば、共発現ネットワーク解析におけるネットワークモジュールを構成する遺伝子群や、特定の疾患において発現が上昇する遺伝子群などがこれに該当します。</p>
 <p>GSEA（Gene Set Enrichment
 Analysis）には数多くの分析手法が存在します。このエピソードでは、最もシンプルでかつ最も広く用いられている手法である「過剰表現解析（Over-Representation
@@ -4870,7 +4870,7 @@ Analysis）の結果を可視化するためのいくつかの手法を習得し
 0.25%）と比較すると、発現変動遺伝子とこの遺伝子セットとの間には強い関連性が存在することが示唆されます。さらに、遺伝子セットに属する発現変動遺伝子の割合（13/54
 = 24.1%）と、ゲノム全体における_XY遺伝子セット_の割合（1134/21198 =
 5.3%）を比較することも可能です。なお、この結果は生物学的に極めて妥当なものです。なぜなら、一方は性別間の比較に基づくデータであり、他方は性別に関連する遺伝子群の集合体という、いずれも生物学的に重要な事象を扱っているからです。</p>
-<p>では、遺伝子セットの濃縮度や過剰表現を統計的に測定するにはどうすればよいでしょうか？次のセクションに進みましょう。</p>
+<p>では、遺伝子セットのエンリッチメント度や過剰表現を統計的に測定するにはどうすればよいでしょうか？次のセクションに進みましょう。</p>
 <div class="section level3">
 <h3 id="fishers-正確確率検定">Fisher’s 正確確率検定<a class="anchor" aria-label="anchor" href="#fishers-%E6%AD%A3%E7%A2%BA%E7%A2%BA%E7%8E%87%E6%A4%9C%E5%AE%9A"></a>
 </h3>
@@ -4996,7 +4996,7 @@ sample estimates:
 odds ratio
   5.662486 </code></pre>
 </div>
-<p>出力結果から、_p値_が非常に小さい値（<code>3.906e-06</code>）であることが確認できます。したがって、DE遺伝子が_XY遺伝子セット_に極めて強く濃縮されていると結論付けることができます。</p>
+<p>出力結果から、_p値_が非常に小さい値（<code>3.906e-06</code>）であることが確認できます。したがって、DE遺伝子が_XY遺伝子セット_に極めて強くエンリッチメントされていると結論付けることができます。</p>
 <p>Fisherの正確確率検定の結果は、オブジェクト<code>t</code>として保存できます。このオブジェクトは単純なリスト形式であり、_p値_は<code>t$p.value</code>で取得可能です。</p>
 <div class="codewrapper sourceCode" id="cb18">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5223,9 +5223,9 @@ distribution of its statistic.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>Unit: microseconds
-   expr     min      lq      mean   median       uq     max neval
- fisher 248.864 253.858 264.45468 257.1850 270.5150 490.576   100
-  hyper   1.543   1.743   2.71625   2.2395   3.2365  17.322   100</code></pre>
+   expr     min      lq      mean   median      uq      max neval
+ fisher 249.936 254.936 277.77333 259.2240 272.278 1457.399   100
+  hyper   1.553   1.809   2.77466   2.9705   3.276   14.737   100</code></pre>
 </div>
 <p>It is very astonishing that <code>phyper()</code> is hundreds of
 times faster than <code>fisher.test()</code>. Main reason is in
@@ -5385,7 +5385,7 @@ convert a list to a two-column data frame?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -6011,7 +6011,7 @@ sets are automatically retrieved and processed from
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 68017,50931,30946,76781,21958,70556</code></pre>
+<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 226153,19362,12914,67245,66233,233406</code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -6296,19 +6296,19 @@ mmu00592                               alpha-Linolenic acid metabolism
 mmu04913                                       Ovarian steroidogenesis
 mmu04061 Viral protein interaction with cytokine and cytokine receptor
          GeneRatio  BgRatio RichFactor FoldEnrichment   zScore       pvalue
-mmu00590    16/456 89/10567  0.1797753       4.165977 6.369483 1.071769e-06
-mmu00591    12/456 55/10567  0.2181818       5.055981 6.404353 2.916153e-06
-mmu00565    11/456 49/10567  0.2244898       5.202157 6.261010 5.640144e-06
-mmu00592     8/456 25/10567  0.3200000       7.415439 6.819861 6.392124e-06
-mmu04913    12/456 65/10567  0.1846154       4.278138 5.629742 1.808160e-05
-mmu04061    14/456 95/10567  0.1473684       3.415005 5.021178 5.259449e-05
+mmu00590    16/456 89/10569  0.1797753       4.166765 6.370434 1.069127e-06
+mmu00591    12/456 55/10569  0.2181818       5.056938 6.405227 2.910485e-06
+mmu00565    11/456 49/10569  0.2244898       5.203142 6.261855 5.630024e-06
+mmu00592     8/456 25/10569  0.3200000       7.416842 6.820677 6.383250e-06
+mmu04913    12/456 65/10569  0.1846154       4.278947 5.630573 1.804781e-05
+mmu04061    14/456 95/10569  0.1473684       3.415651 5.022021 5.248763e-05
              p.adjust       qvalue
-mmu00590 0.0003376072 0.0002752754
-mmu00591 0.0004592941 0.0003744954
-mmu00565 0.0005033797 0.0004104416
-mmu00592 0.0005033797 0.0004104416
-mmu04913 0.0011391410 0.0009288234
-mmu04061 0.0027612106 0.0022514131
+mmu00590 0.0003367749 0.0002745967
+mmu00591 0.0004584013 0.0003737675
+mmu00565 0.0005026809 0.0004098718
+mmu00592 0.0005026809 0.0004098718
+mmu04913 0.0011370119 0.0009270874
+mmu04061 0.0027556005 0.0022468388
                                                                                                        geneID
 mmu00590 18783/19215/211429/329502/78390/19223/67103/242546/13118/18781/18784/11689/232889/15446/237625/11687
 mmu00591                        18783/211429/329502/78390/242546/18781/18784/13113/622127/232889/237625/11687
