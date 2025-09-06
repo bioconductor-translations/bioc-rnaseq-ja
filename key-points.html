@@ -204,7 +204,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="03-import-annotate.html">3. Rに量的データをインポートして注釈を付ける</a>
+        <a href="03-import-annotate.html">3. Rに量的データをインポートしてアノテーションを付ける</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -336,15 +336,20 @@
 <li>RNA-seqデータの定量化には多くのアプローチが存在する。
 リードをゲノムにアライメントし、遺伝子座にオーバーラップするリードの数をカウントする方法もある。
 他の方法は、リードをトランスクリプトームにマッピングし、確率的アプローチを使って各遺伝子や転写産物の存在量を推定する。</li>
-<li>注釈付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
+<li>アノテーション付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
 </ul></section><section id="02-setup"><h2 class="section-heading"><a href="02-setup.html">RStudioプロジェクトと実験データ</a></h2>
 <hr class="half-width">
 <ul>
 <li>プロジェクトに必要なファイルを作業ディレクトリに適切に整理することは、秩序を維持し、将来のアクセスを容易にするために重要です。</li>
 <li>RStudioプロジェクトは、プロジェクトの作業ディレクトリを管理し、分析を促進するための貴重なツールとして機能します。</li>
 <li>Rにおける<code>download.file</code>関数は、インターネットからデータセットをダウンロードするために使用できます。</li>
-</ul></section><section id="03-import-annotate"><h2 class="section-heading"><a href="03-import-annotate.html">Rに量的データをインポートして注釈を付ける</a></h2>
-<hr class="half-width"></section><section id="04-exploratory-qc"><h2 class="section-heading"><a href="04-exploratory-qc.html">探索的解析と品質管理</a></h2>
+</ul></section><section id="03-import-annotate"><h2 class="section-heading"><a href="03-import-annotate.html">Rに量的データをインポートしてアノテーションを付ける</a></h2>
+<hr class="half-width">
+<ul>
+<li>使用される遺伝子発現定量ツールによって、出力を<code>SummarizedExperiment</code>または<code>DGEList</code>オブジェクトに読み込む方法が異なります（多くはBioconductorパッケージで配布されています）。</li>
+<li>EnsemblやEntrez
+IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な識別子として使用されるべきで、解釈を容易にするために遺伝子シンボルを追加する必要があります。</li>
+</ul></section><section id="04-exploratory-qc"><h2 class="section-heading"><a href="04-exploratory-qc.html">探索的解析と品質管理</a></h2>
 <hr class="half-width">
 <ul>
 <li>探索的分析は、データセットの品質管理と潜在的な問題の検出において不可欠なプロセスです。</li>
@@ -430,8 +435,8 @@ quantified.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/key-points.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/key-points.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-09-02",
-  "datePublished": "2025-09-02"
+  "dateModified": "2025-09-06",
+  "datePublished": "2025-09-06"
 }
 
   </script><script>

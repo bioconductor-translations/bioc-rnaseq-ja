@@ -204,7 +204,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="03-import-annotate.html">3. Rに量的データをインポートして注釈を付ける</a>
+        <a href="03-import-annotate.html">3. Rに量的データをインポートしてアノテーションを付ける</a>
     </div>
 <!--/div.accordion-header-->
 
@@ -329,7 +329,7 @@
         
 <section id="aio-01-intro-to-rnaseq"><p>Content from <a href="01-intro-to-rnaseq.html">RNA-seq入門</a></p>
 <hr>
-<p> Last updated on 2025-07-24 |
+<p> Last updated on 2025-09-06 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/01-intro-to-rnaseq.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -522,7 +522,7 @@ benchmarking</a>）を得ることができる。
 この情報は、さまざまなオンラインレポジトリから得ることができる。
 特定のプロジェクトには、異なるソースからの情報を混在させず、これらのうちの1つを選択することを強く推奨する。
 選択した定量化ツールによって、必要な参照情報の種類は異なる。
-リードをゲノムにアライメントし、既知の注釈付きフィーチャーとのオーバーラップを調べる場合、全ゲノム配列（fastaファイルで提供）と、各注釈付きフィーチャーのゲノム上の位置を示すファイル（通常gtfファイルで提供）が必要です。
+リードをゲノムにアライメントし、既知のアノテーション付きフィーチャーとのオーバーラップを調べる場合、全ゲノム配列（fastaファイルで提供）と、各アノテーション付きフィーチャーのゲノム上の位置を示すファイル（通常gtfファイルで提供）が必要です。
 リードをトランスクリプトームにマッピングする場合は、代わりに各トランスクリプトの配列を含むファイル（これもfastaファイル）が必要になります。</p>
 <ul>
 <li>マウスやヒトのサンプルを扱う場合、<a href="https://www.gencodegenes.org/" class="external-link">GENCODEプロジェクト</a>は、十分にキュレートされた参照ファイルを提供している。</li>
@@ -569,7 +569,7 @@ benchmarking</a>）を得ることができる。
 <li>RNA-seqデータの定量化には多くのアプローチが存在する。
 リードをゲノムにアライメントし、遺伝子座にオーバーラップするリードの数をカウントする方法もある。
 他の方法は、リードをトランスクリプトームにマッピングし、確率的アプローチを使って各遺伝子や転写産物の存在量を推定する。</li>
-<li>注釈付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
+<li>アノテーション付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
 </ul>
 </div>
 </div>
@@ -690,7 +690,7 @@ RNA-seqデータ分析の場合、このディレクトリには通常、<code>*
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <figure style="text-align: center"><img src="fig/02_setup/folders_working_dir.png" alt="Your working directory should look like this" width="1221" class="figure mx-auto d-block"><figcaption>
 Your working directory should look like this
@@ -803,7 +803,7 @@ data folder.
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -843,9 +843,9 @@ data folder.
 </div>
 </div>
 </div>
-</section></section><section id="aio-03-import-annotate"><p>Content from <a href="03-import-annotate.html">Rに量的データをインポートして注釈を付ける</a></p>
+</section></section><section id="aio-03-import-annotate"><p>Content from <a href="03-import-annotate.html">Rに量的データをインポートしてアノテーションを付ける</a></p>
 <hr>
-<p> Last updated on 2025-07-25 |
+<p> Last updated on 2025-09-06 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/03-import-annotate.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -872,7 +872,7 @@ data folder.
 <h3 class="card-title">Objectives</h3>
 <ul>
 <li>量的データをSummarizedExperimentオブジェクトにインポートする方法を学びます。</li>
-<li>オブジェクトに追加の遺伝子注釈を追加する方法を学びます。</li>
+<li>オブジェクトに追加の遺伝子アノテーションを追加する方法を学びます。</li>
 </ul>
 </div>
 </div>
@@ -911,7 +911,7 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 このワークショップでは、分析を簡素化するために22の小脳サンプルのみを使用します。
 発現の定量化は、STARを使用してマウスのゲノムにアライメントを行い、その後、遺伝子にマッピングされるリードの数を数えることを通じて行われました。
 各遺伝子ごとのサンプルあたりのカウントに加えて、どのサンプルがどの性別/時間点/複製に属するかの情報も必要です。
-遺伝子に関しては、注釈と呼ばれる追加の情報があると便利です。
+遺伝子に関しては、アノテーションと呼ばれる追加の情報があると便利です。
 前回ダウンロードしたデータファイルを読み込み、探索し始めましょう：</p>
 <div class="section level3">
 <h3 id="カウント">カウント<a class="anchor" aria-label="anchor" href="#%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88"></a>
@@ -942,9 +942,9 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 行名は遺伝子シンボルであり、列名はGEOのサンプルIDであるようです。これは、私たちがどのサンプルが何かを教えてくれないため、あまり有益ではありません。</p>
 </div>
 <div class="section level3">
-<h3 id="サンプルの注釈">サンプルの注釈<a class="anchor" aria-label="anchor" href="#%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%81%AE%E6%B3%A8%E9%87%88"></a>
+<h3 id="サンプルのアノテーション">サンプルのアノテーション<a class="anchor" aria-label="anchor" href="#%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%E3%81%AE%E3%82%A2%E3%83%8E%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3"></a>
 </h3>
-<p>次に、サンプルの注釈を読み込みます。
+<p>次に、サンプルのアノテーションを読み込みます。
 カウント行列の列にはサンプルが含まれているため、オブジェクトに<code>coldata</code>という名前を付けます：</p>
 <div class="codewrapper sourceCode" id="cb5">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -969,12 +969,12 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 このワークショップで最も便利な列は、<code>geo_accession</code>（再度、GEOサンプルID）、<code>sex</code>、および<code>time</code>です。</p>
 </div>
 <div class="section level3">
-<h3 id="遺伝子の注釈">遺伝子の注釈<a class="anchor" aria-label="anchor" href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E3%81%AE%E6%B3%A8%E9%87%88"></a>
+<h3 id="遺伝子のアノテーション">遺伝子のアノテーション<a class="anchor" aria-label="anchor" href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E3%81%AE%E3%82%A2%E3%83%8E%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3"></a>
 </h3>
 <p>カウントには遺伝子シンボルしかありませんが、それは短くて人間の脳にとってはある程度認識可能ですが、実際に測定された遺伝子の正確な同定子としてはあまり利便性がありません。
-そのため、著者によって提供された追加の遺伝子注釈が必要です。
-<code>count</code>および<code>coldata</code>ファイルはカンマ区切り値（.csv）形式でしたが、遺伝子注釈ファイルにはそれが使用できません。なぜなら、説明には、カンマを含む可能性があるため、.csvファイルを正しく読み込むのを妨げるからです。
-その代わりに、遺伝子注釈ファイルはタブ区切り値（.tsv）形式です。
+そのため、著者によって提供された追加の遺伝子アノテーションが必要です。
+<code>count</code>および<code>coldata</code>ファイルはカンマ区切り値（.csv）形式でしたが、遺伝子アノテーションファイルにはそれが使用できません。なぜなら、説明には、カンマを含む可能性があるため、.csvファイルを正しく読み込むのを妨げるからです。
+その代わりに、遺伝子アノテーションファイルはタブ区切り値（.tsv）形式です。
 同様に、説明には単一引用符<code>'</code>（例：5’）が含まれる可能性があり、Rはデフォルトでこれを文字列として扱うためです。
 そのため、データがタブ区切りであることを指定するために、より一般的な関数<code>read.delim()</code>に追加の引数を使用する必要があります（<code>sep = "\t"</code>）で、引用符は使用しない（<code>quote = ""</code>）。
 さらに、最初の行に列名が含まれていることを指定するためにその他の引数を追加し（<code>header = TRUE</code>）、行名として指定される遺伝子シンボルは5列目（<code>row.names = 5</code>）であること、NCBIの種特異的遺伝子ID（すなわちENTREZID）は、数字のように見えるが文字列として読み込む（<code>colClasses</code>引数）必要があることを指定します。
@@ -1046,7 +1046,7 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>
@@ -1061,11 +1061,11 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 </div>
 </div>
 </div>
-<p>関連情報を別のオブジェクトに保持することで、カウント、遺伝子の注釈、サンプルの注釈の間で不一致が発生する可能性があります。
+<p>関連情報を別のオブジェクトに保持することで、カウント、遺伝子のアノテーション、サンプルのアノテーションの間で不一致が発生する可能性があります。
 これが、Bioconductorが<code>SummarizedExperiment</code>という特殊なS4クラスを作成した理由です。
 <code>SummarizedExperiment</code>の詳細は、<a href="https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps" class="external-link">RNA解析とBioconductorの導入</a>ワークショップの最後で詳しく説明されています。
 リマインダーとして、<code>SummarizedExperiment</code>クラスの構造を表す図を見てみましょう：</p>
-<figure><img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list." width="80%" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>これは、任意の種類の定量的なオミクスデータ（<code>assays</code>）と、それにリンクされたサンプル注釈（<code>colData</code>）、および（遺伝子）特徴注釈（<code>rowRanges</code>）または染色体、開始および終了位置を持たない（<code>rowData</code>）形式で保持されるように設計されています。
+<figure><img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list." width="80%" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>これは、任意の種類の定量的なオミクスデータ（<code>assays</code>）と、それにリンクされたサンプルアノテーション（<code>colData</code>）、および（遺伝子）特徴アノテーション（<code>rowRanges</code>）または染色体、開始および終了位置を持たない（<code>rowData</code>）形式で保持されるように設計されています。
 これらの3つのテーブルが（正しく）リンクされると、サンプルや特徴の部分集合が<code>assay</code>、<code>colData</code>、<code>rowRanges</code>の正しい部分集合に変わります。
 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャに基づいて構築されているため、<code>SummarizedExperiment</code>オブジェクトを認識し、操作することができます。
 さらに、ほとんどのBioconductorパッケージは同じコアデータインフラストラクチャの周りに構築されているため、<code>SummarizedExperiment</code>オブジェクトを認識し、操作できるようになります。
@@ -1132,7 +1132,7 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 <div class="callout-inner">
 <h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>アッセイ（例：<code>counts</code>）および遺伝子注釈テーブル（例：<code>rowranges</code>）内の特徴（すなわち遺伝子）が異なる場合、これらをどのように修正できますか？
+<p>アッセイ（例：<code>counts</code>）および遺伝子アノテーションテーブル（例：<code>rowranges</code>）内の特徴（すなわち遺伝子）が異なる場合、これらをどのように修正できますか？
 コードを記述してください。</p>
 </div>
 </div>
@@ -1142,7 +1142,7 @@ al. 2017</a>の元の実験デザインはかなり複雑でした。8週齢の
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1308,7 +1308,7 @@ Sox17               273        197        310        246</code></pre>
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># サンプル注釈にアクセス</span></span>
+<code class="sourceCode R"><span><span class="co"># サンプルアノテーションにアクセス</span></span>
 <span><span class="fu">colData</span><span class="op">(</span><span class="va">se</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="codewrapper">
@@ -1357,7 +1357,7 @@ GSM2545380  InfluenzaA     C57BL/6        Day8  Cerebellum        19</code></pre
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 遺伝子注釈にアクセス</span></span>
+<code class="sourceCode R"><span><span class="co"># 遺伝子アノテーションにアクセス</span></span>
 <span><span class="fu">head</span><span class="op">(</span><span class="fu">rowData</span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="codewrapper">
@@ -1510,7 +1510,7 @@ Male_Day8_24          24   Male_Day8_24 Male_Day8  </code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb46">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1621,7 +1621,7 @@ mRNA遺伝子をサブセットにする方法</h3>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb55">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1639,12 +1639,12 @@ mRNA遺伝子をサブセットにする方法</h3>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="遺伝子注釈">遺伝子注釈<a class="anchor" aria-label="anchor" href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E6%B3%A8%E9%87%88"></a>
+</section><section><h2 class="section-heading" id="遺伝子アノテーション">遺伝子アノテーション<a class="anchor" aria-label="anchor" href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%A2%E3%83%8E%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3"></a>
 </h2>
 <hr class="half-width">
-<p>カウントデータを生成する人によっては、追加の遺伝子注釈の適切なファイルがないかもしれません。
+<p>カウントデータを生成する人によっては、追加の遺伝子アノテーションの適切なファイルがないかもしれません。
 遺伝子シンボルやENTREZID、あるいは他のデータベースのIDのみが存在するかもしれません。
-遺伝子注釈の特性は、その注釈戦略と情報源によって異なります。
+遺伝子アノテーションの特性は、そのアノテーション戦略と情報源によって異なります。
 たとえば、RefSeqヒト遺伝子モデル（つまり、NCBIのEntrez）は、さまざまな研究でよくサポートされ、広く使用されています。
 UCSC Known Genes データセットは、Swiss-Prot/TrEMBL (UniProt)
 のタンパク質データと、GenBankからの関連するmRNAデータに基づいており、UCSC
@@ -1652,14 +1652,14 @@ Genome Browserの基盤として機能します。
 Ensemblの遺伝子は、自動生成されたゲノムアノテーションと手動キュレーションの両方を含んでいます。</p>
 <p>Bioconductorでの詳細情報は、<a href="https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html" class="external-link">Annotation
 Workshop</a>の資料で見つけることができます。</p>
-<p>Bioconductorには、遺伝子の追加注釈情報を取得するための多くのパッケージや関数があります。
+<p>Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。
 利用可能なリソースについては、<a href="https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources" class="external-link">エピソード7
 遺伝子セット濃縮解析</a>で詳しく説明されています。</p>
 <p>ここでは、遺伝子IDマッピング関数の1つである<code>mapIds</code>を紹介します：</p>
 <pre><code><span><span class="fu">mapIds</span><span class="op">(</span><span class="va">annopkg</span>, <span class="va">keys</span>, <span class="va">column</span>, <span class="va">keytype</span>, <span class="va">...</span>, <span class="va">multiVals</span><span class="op">)</span></span></code></pre>
 <p>どこで</p>
 <ul>
-<li>_annopkg_は、注釈パッケージです</li>
+<li>_annopkg_は、アノテーションパッケージです</li>
 <li>_keys_は、私たちが<strong>知っている</strong>IDです</li>
 <li>_column_は、私たちが<strong>望む</strong>値です</li>
 <li>_keytype_は、使用するキーのタイプです</li>
@@ -1682,7 +1682,7 @@ Workshop</a>の資料で見つけることができます。</p>
 <span><span class="st">"Xkr4"</span> </span></code></pre>
 </div>
 <p><code>select()</code>関数とは異なり、<code>mapIds()</code>関数は、追加の引数<code>multiVals</code>を通じてキーと列の間の1:多のマッピングを処理します。
-以下の例では、<code>hgu95av2.db</code>パッケージを使用してこの機能を示します。AffymetrixヒトゲノムU95セット注釈データ。</p>
+以下の例では、<code>hgu95av2.db</code>パッケージを使用してこの機能を示します。AffymetrixヒトゲノムU95セットアノテーションデータ。</p>
 <div class="codewrapper sourceCode" id="cb61">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1815,13 +1815,22 @@ loaded via a namespace (and not attached):
 [31] evaluate_1.0.4          abind_1.4-8             httr_1.4.7
 [34] pkgconfig_2.0.3         tools_4.5.1             UCSC.utils_1.4.0       </code></pre>
 </div>
-<p>::: keypoints</p>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<span class="callout-header">Key Points</span>
+<div class="callout-inner">
+<div class="callout-content">
 <ul>
 <li>使用される遺伝子発現定量ツールによって、出力を<code>SummarizedExperiment</code>または<code>DGEList</code>オブジェクトに読み込む方法が異なります（多くはBioconductorパッケージで配布されています）。</li>
 <li>EnsemblやEntrez
-IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な識別子として使用されるべきで、解釈を容易にするために遺伝子シンボルを追加する必要があります。
-:::</li>
-</ul></section></section><section id="aio-04-exploratory-qc"><p>Content from <a href="04-exploratory-qc.html">探索的解析と品質管理</a></p>
+IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な識別子として使用されるべきで、解釈を容易にするために遺伝子シンボルを追加する必要があります。</li>
+</ul>
+</div>
+</div>
+</div>
+</section></section><section id="aio-04-exploratory-qc"><p>Content from <a href="04-exploratory-qc.html">探索的解析と品質管理</a></p>
 <hr>
 <p> Last updated on 2025-08-17 |
 
@@ -5376,7 +5385,7 @@ convert a list to a two-column data frame?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -7170,8 +7179,8 @@ quantified.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/aio.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/aio.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-09-02",
-  "datePublished": "2025-09-02"
+  "dateModified": "2025-09-06",
+  "datePublished": "2025-09-06"
 }
 
   </script><script>
