@@ -11,32 +11,33 @@ source("download_data.R")
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Explain the steps involved in a differential expression analysis.
-- Explain how to perform these steps in R, using DESeq2.
+- Differential expression 解析における主要な手順について説明してください。
+- DESeq2パッケージを使用してR環境でこれらの手順を実行する方法を説明してください。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- What are the steps performed in a typical differential expression analysis?
-- How does one interpret the output of DESeq2?
+- 典型的な Differential expression 解析で実施される主な手順は何ですか？
+- DESeq2の出力結果をどのように解釈すればよいですか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Differential expression inference
+## Differential expression の推定
 
-A major goal of RNA-seq data analysis is the quantification and statistical inference of systematic changes between experimental groups or conditions (e.g., treatment vs. control, timepoints, tissues). This is typically performed by identifying genes with differential expression pattern using between- and within-condition variability and thus requires biological replicates (multiple sample of the same condition).
-Multiple software packages exist to perform differential expression analysis. Comparative studies have shown some concordance of differentially expressed (DE) genes, but also variability between tools with no tool consistently outperforming all others (see [Soneson and Delorenzi, 2013](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91)).
-In the following we will explain and conduct differential expression analysis using the [DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
-software package. The [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html) package implements similar methods following the same main assumptions about count data. Both packages show a general good and stable performance with comparable results.
+RNA-seqデータ解析における主要な目的の一つは、実験群間または条件間（例：処理群と対照群、時間点、組織など）における系統的な変化を定量化し、統計的に推論することです。これは通常、条件間変動と条件内変動を用いて発現変動パターンを示す遺伝子を同定することで行われ、生物学的複製サンプル（同一条件下での複数サンプル）が必要となります。
+発現変動解析を実施するためのソフトウェアパッケージは複数存在します。比較研究によれば、発現変動遺伝子（DE遺伝子）に関してはある程度の一致が見られるものの、ツール間にはばらつきがあり、どのツールも他のすべてのツールを一貫して上回る性能を示すことはないことが報告されています（[Soneson and Delorenzi, 2013](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91)参照）。
+以下では、[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
+ソフトウェアパッケージを使用した発現変動解析の実施方法を説明し、実際に解析を行います。[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)パッケージも同様の手法を実装しており、カウントデータに関する主要な仮定を共有しています。両パッケージとも一般的に良好な安定性を示し、同等の結果が得られます。
 
-## The DESeqDataSet
+## DESeqDataSetオブジェクト
 
-To run `DESeq2` we need to represent our count data as object of the `DESeqDataSet` class.
-The `DESeqDataSet` is an extension of the `SummarizedExperiment` class (see section [Importing and annotating quantified data into R](../episodes/03-import-annotate.Rmd) ) that stores a _design formula_ in addition to the count assay(s) and feature (here gene) and sample metadata.
-The _design formula_ expresses the variables which will be used in modeling. These are typically the variable of interest (group variable) and other variables you want to account for (e.g., batch effect variables). A detailed explanation of _design formulas_ and related _design matrices_ will follow in the section about [extra exploration of design matrices](../episodes/06-extra-design.Rmd). Objects of the `DESeqDataSet` class can be build from [count matrices](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat), [SummarizedExperiment objects](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se), [transcript abundance files](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport) or [htseq count files](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq).
+`DESeq2`を実行するには、カウントデータを`DESeqDataSet`クラスのオブジェクトとして表現する必要があります。
+`DESeqDataSet`は`SummarizedExperiment`クラス（[定量データのインポートとアノテーション](../episodes/03-import-annotate.Rmd)セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_デザイン式_を保持します。
+_デザイン式_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_デザイン式_および関連する_デザイン行列_に関する詳細な説明は、[デザイン行列の詳細な探索](../episodes/06-extra-design.Rmd)セクションで行います。`DESeqDataSet`クラスのオブジェクトは、[カウント行列](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat)、[SummarizedExperimentオブジェクト](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se)、[トランスクリプト存在量ファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport)、または[htseqカウントファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq)から構築可能です。
 
-### Load packages
+### パッケージの読み込み
+
 
 ```{r load-pkg}
 suppressPackageStartupMessages({
@@ -50,18 +51,21 @@ suppressPackageStartupMessages({
 })
 ```
 
-### Load data
+### データの読み込み
 
-Let's load in our `SummarizedExperiment` object again. In the last episode for quality control exploration, we removed ~35% genes that had 5 or fewer counts because they had too little information in them. For DESeq2 statistical analysis, we do not technically have to remove these genes because by default it will do some independent filtering, but it can reduce the memory size of the `DESeqDataSet` object resulting in faster computation. Plus, we do not want these genes cluttering up some of the visualizations.
+前回の品質管理分析で使用した `SummarizedExperiment` オブジェクトを再度読み込みます。品質管理の探索的分析では、カウント数が5未満の遺伝子約35%を削除しました。これらの遺伝子は情報量が不足していたためです。DESeq2の統計解析においては、デフォルトで独立したフィルタリングが行われるため、これらの遺伝子を厳密に削除する必要はありません。ただし、これにより `DESeqDataSet` オブジェクトのメモリ使用量が減少し、計算速度が向上する可能性があります。さらに、これらの遺伝子が可視化結果を乱雑にするのを防ぐことができます。
 
 ```{r read-se}
 se <- readRDS("data/GSE96870_se.rds")
 se <- se[rowSums(assay(se, "counts")) > 5, ]
 ```
 
-### Create DESeqDataSet
+### DESeqDataSetの作成
 
-The design matrix we will use in this example is `~ sex + time`. This will allow us test the difference between males and females (averaged over time point) and the difference between day 0, 4 and 8 (averaged over males and females). If we wanted to test other comparisons (e.g., Female.Day8 vs. Female.Day0 and also Male.Day8 vs. Male.Day0) we could use a different design matrix to more easily extract those pairwise comparisons.
+本例で使用するデザイン行列は `~ sex + time` とします。これにより、以下の比較が可能になります：
+- 雄と雌の平均値の差（時間ポイントを平均化）
+- day 0、4、8の平均値の差（雄と雌を平均化）
+他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるデザイン行列を使用することで、これらのペアワイズ比較をより容易に抽出できます。
 
 ```{r make-deseqdataset}
 dds <- DESeq2::DESeqDataSet(se,
@@ -69,7 +73,8 @@ dds <- DESeq2::DESeqDataSet(se,
 ```
 
 ::::::::::::::::::::::::::::::::::::: instructor
-The function to generate a `DESeqDataSet` needs to be adapted depending on the input type, e.g,
+
+`DESeqDataSet`を生成する関数は、入力データの種類に応じて適切に調整する必要があります。例えば：
 
 ```{r make-deseqdataset-options, eval=FALSE}
 #From SummarizedExperiment object
@@ -83,15 +88,15 @@ dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Normalization
+## 正規化処理
 
-`DESeq2` and `edgeR` make the following assumptions:
+`DESeq2` と `edgeR` は以下の前提条件に基づいています：
 
-- most genes are not differentially expressed
-- the probability of a read mapping to a specific gene is the same for all samples within the same group
+- ほとんどの遺伝子は発現量に有意な差がない
+- 特定の遺伝子にリードがマッピングされる確率は、同一グループ内のすべてのサンプルにおいて同一である
 
-As shown in the [previous section](../episodes/04-exploratory-qc.Rmd) on exploratory data analysis the total counts of a sample (even from the same condition) depends on the library size (total number of reads sequenced). To compare the variability of counts from a specific gene between and within groups we first need to account for library sizes and compositional effects.
-Recall the `estimateSizeFactors()` function from the previous section:
+[前節](../episodes/04-exploratory-qc.Rmd) の探索的データ分析で示したように、サンプルの総リード数（同一条件下で取得されたものであっても）はライブラリサイズ（シーケンシングされた総リード数）に依存します。グループ間およびグループ内で特定の遺伝子のカウント変動を比較するためには、まずライブラリサイズと組成効果を考慮する必要があります。
+前節で説明した `estimateSizeFactors()` 関数を思い出してください：
 
 ```{r estimate-sizefactors}
 dds <- estimateSizeFactors(dds)
@@ -99,23 +104,24 @@ dds <- estimateSizeFactors(dds)
 
 ::::::::::::::::::::::::::::::::::::: instructor
 
-_DESeq2_ uses the **"Relative Log Expression” (RLE)** method to calculate sample-wise _size factors_ tĥat account for read depth and library composition.
-_edgeR_ uses the **“Trimmed Mean of M-Values” (TMM)** method to account for library size differences and compositional effects. _edgeR_'s _normalization factors_ and _DESeq2_'s _size factors_ yield similar results, but are not equivalent theoretical parameters.
+_DESeq2_ では、**「相対対数発現量」（RLE：Relative Log Expression）**法を用いて、リード深度とライブラリ構成を考慮したサンプルごとの**サイズ因子**を算出します。
+一方、_edgeR_ では**「トリミング平均M値」（TMM：Trimmed Mean of M-Values）**法を採用し、ライブラリサイズの差異や組成的影響を補正します。
+_edgeR_の**正規化係数**と_DESeq2_の**サイズ因子**は類似した結果をもたらしますが、これらは理論的に同等のパラメータではありません。
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Statistical modeling
+## 統計モデリング
 
-`DESeq2` and `edgeR` model RNA-seq counts as **negative binomial** distribution to account for a limited number of replicates per group, a mean-variance dependency (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and a skewed count distribution.
+`DESeq2` と `edgeR` は、RNA-seqデータのカウント値を **負の二項分布** としてモデル化します。これは、グループあたりのサンプル数が少ない場合、平均値と分散の相関関係（[探索的データ解析](../episodes/04-exploratory-qc.Rmd)参照）、およびカウント分布の偏りを考慮するためです。
 
-### Dispersion
+### 分散パラメータ
 
-The within-group variance of the counts for a gene following a negative binomial distribution with mean $\mu$ can be modeled as:
+負の二項分布に従う遺伝子のカウント値におけるグループ内分散は、平均 $\mu$ に対して以下のようにモデル化できます：
 
 $var = \mu + \theta \mu^2$
 
-$\theta$ represents the gene-specific **dispersion**, a measure of variability or spread in the data. As a second step, we need to estimate gene-wise dispersions to get the expected within-group variance and test for group differences. Good dispersion estimates are challenging with a few samples per group only. Thus, information from genes with similar expression pattern are "borrowed". Gene-wise dispersion estimates are _shrinked_ towards center values of the observed distribution of dispersions. With `DESeq2` we can get dispersion estimates using the `estimateDispersions()` function.
-We can visualize the effect of _shrinkage_ using `plotDispEsts()`:
+ここで $\theta$ は遺伝子固有の **分散パラメータ** を表し、データのばらつき度合いを示す指標です。第二段階として、各遺伝子の分散パラメータを推定することで、グループ内の期待分散値を算出し、グループ間の差異を検定します。サンプル数が限られている場合、適切な分散推定値は得にくいため、類似した発現パターンを示す遺伝子間の情報が活用されます。各遺伝子の分散推定値は、観測された分散分布の中央値方向に「縮小」（shrinked）されます。`DESeq2` では、`estimateDispersions()` 関数を使用して分散推定値を取得できます。
+`plotDispEsts()` 関数を用いることで、この **縮小効果** の影響を視覚的に確認することが可能です：
 
 ```{r estimate-dispersions, fig.alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts."}
 dds <- estimateDispersions(dds)
