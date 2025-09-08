@@ -210,8 +210,8 @@
     <div id="flush-collapsecurrent" class="accordion-collapse collapse show" aria-labelledby="flush-headingcurrent" data-bs-parent="#accordionFlushcurrent">
       <div class="accordion-body">
         <ul><li><a href="#%E7%B5%B1%E8%A8%88%E7%9A%84%E6%89%8B%E6%B3%95%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">統計的手法について</a></li>
-<li><a href="#gene-set-resources">Gene set resources</a></li>
-<li><a href="#ora-with-clusterprofiler">ORA with clusterProfiler</a></li>
+<li><a href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%BB%E3%83%83%E3%83%88%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9">遺伝子セットリソース</a></li>
+<li><a href="#clusterprofiler%E3%82%92%E7%94%A8%E3%81%84%E3%81%9Fora%E8%A7%A3%E6%9E%90">clusterProfilerを用いたORA解析</a></li>
 <li><a href="#visualization">Visualization</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
@@ -279,7 +279,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>遺伝子セットエンリッチメント解析</h1>
-        <p> Last updated on 2025-09-06 |
+        <p> Last updated on 2025-09-08 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/07-gene-set-analysis.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -630,83 +630,61 @@ odds ratio
 </div>
 </div>
 <div class="section level3">
-<h3 id="the-hypergeometric-distribution">The hypergeometric distribution<a class="anchor" aria-label="anchor" href="#the-hypergeometric-distribution"></a></h3>
-<p>We can look at the problem from another aspect. This time we treat
-all genes as balls in a big box where all the genes have the same
-probability to be picked up. Some genes are marked as DE genes (in red
-in the figure) and other genes are marked as non-DE genes (in blue). We
-grab <span class="math inline">\(n_{+1}\)</span> genes (the size of the
-gene set) from the box and we want to ask <strong>what is the
-probability of having <span class="math inline">\(n_{11}\)</span> DE
-genes in our hand?</strong></p>
-<figure><img src="fig/07-gene-set-analysis-rendered-hypergeom-1.png" width="80%" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We first calculate the total number of ways of picking <span class="math inline">\(n_{+1}\)</span> genes from total <span class="math inline">\(n\)</span> genes, without distinguishing whether
-they are DE or not: <span class="math inline">\(\binom{n}{n_{+1}}\)</span>.</p>
-<p>Next, in the <span class="math inline">\(n_{+1}\)</span> genes that
-have been picked, there are <span class="math inline">\(n_{11}\)</span>
-DE genes which can only be from the total <span class="math inline">\(n_{1+}\)</span> DE genes. Then the number of ways
-of picking <span class="math inline">\(n_{11}\)</span> DE genes from
-<span class="math inline">\(n_{1+}\)</span> total DE genes is <span class="math inline">\(\binom{n_{1+}}{n_{11}}\)</span>.</p>
-<p>Similarly, there are still <span class="math inline">\(n_{21}\)</span> non-DE genes in our hand, which
-can only be from the total <span class="math inline">\(n_{2+}\)</span>
-non-DE genes. Then the number of ways of picking <span class="math inline">\(n_{21}\)</span> non-DE genes from <span class="math inline">\(n_{2+}\)</span> total non-DE genes: <span class="math inline">\(\binom{n_{2+}}{n_{21}}\)</span>.</p>
-<p>Since picking DE genes and picking non-DE genes are independent, the
-number of ways of picking <span class="math inline">\(n_{+1}\)</span>
-genes which contain <span class="math inline">\(n_{11}\)</span> DE genes
-and <span class="math inline">\(n_{21}\)</span> non-DE genes is their
-multiplication: <span class="math inline">\(\binom{n_{1+}}{n_{11}}
-\binom{n_{2+}}{n_{21}}\)</span>.</p>
-<p>And the probability <span class="math inline">\(P\)</span> is:</p>
+<h3 id="超幾何分布について">超幾何分布について<a class="anchor" aria-label="anchor" href="#%E8%B6%85%E5%B9%BE%E4%BD%95%E5%88%86%E5%B8%83%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"></a></h3>
+<p>この問題を別の視点から考察してみましょう。
+今回は、すべての遺伝子を大きな箱の中のボールとして扱います。
+各遺伝子が選ばれる確率は等しく設定されています。
+特定の遺伝子群はDE遺伝子としてマークされており（図では赤色で表示）、それ以外の遺伝子は非DE遺伝子としてマークされています（青色で表示）。
+箱から<span class="math inline">\(n_{+1}\)</span>個の遺伝子（遺伝子セットのサイズ）を取り出したとき、「<strong>手に取った<span class="math inline">\(n_{11}\)</span>個の遺伝子のうち、DE遺伝子が占める確率はどのくらいか？</strong>」という問いを立てます。</p>
+<figure><img src="fig/07-gene-set-analysis-rendered-hypergeom-1.png" width="80%" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>まず、DE遺伝子かどうかの区別をせずに、総遺伝子数<span class="math inline">\(n\)</span>の中から<span class="math inline">\(n_{+1}\)</span>個の遺伝子を選ぶ場合の総数を計算します：<span class="math inline">\(\binom{n}{n_{+1}}\)</span>。</p>
+<p>次に、選ばれた<span class="math inline">\(n_{+1}\)</span>個の遺伝子の中には、総DE遺伝子数<span class="math inline">\(n_{1+}\)</span>個の中から選ばれた<span class="math inline">\(n_{11}\)</span>個のDE遺伝子が含まれています。したがって、総DE遺伝子数<span class="math inline">\(n_{1+}\)</span>個の中から<span class="math inline">\(n_{11}\)</span>個のDE遺伝子を選ぶ方法の数は：<span class="math inline">\(\binom{n_{1+}}{n_{11}}\)</span>となります。</p>
+<p>同様に、手元に残っている非DE遺伝子は<span class="math inline">\(n_{21}\)</span>個あり、これは総非DE遺伝子数<span class="math inline">\(n_{2+}\)</span>個の中から選ばれたものです。したがって、総非DE遺伝子数<span class="math inline">\(n_{2+}\)</span>個の中から<span class="math inline">\(n_{21}\)</span>個の非DE遺伝子を選ぶ方法の数は：<span class="math inline">\(\binom{n_{2+}}{n_{21}}\)</span>となります。</p>
+<p>DE遺伝子を選ぶ過程と非DE遺伝子を選ぶ過程は互いに独立しているため、<span class="math inline">\(n_{11}\)</span>個のDE遺伝子と<span class="math inline">\(n_{21}\)</span>個の非DE遺伝子を含む<span class="math inline">\(n_{+1}\)</span>個の遺伝子を選ぶ方法の総数は、これら二つの組み合わせになります：<span class="math inline">\(\binom{n_{1+}}{n_{11}}
+\binom{n_{2+}}{n_{21}}\)</span>。</p>
+<p>確率<span class="math inline">\(P\)</span>は以下のように表されます：</p>
 <p><span class="math display">\[P = \frac{\binom{n_{1+}}{n_{11}}
-\binom{n_{2+}}{n_{21}}}{\binom{n}{n_{+1}}}
-=  \frac{\binom{n_{1+}}{n_{11}} \binom{n - n_{1+}}{n_{+1}
--n_{11}}}{\binom{n}{n_{+1}}} \]</span></p>
-<p>where in the denominator is the number of ways of picking <span class="math inline">\(n_{+1}\)</span> genes without distinguishing
-whether they are DE or not.</p>
-<p>If <span class="math inline">\(n\)</span> (number of total genes),
-<span class="math inline">\(n_{1+}\)</span> (number of DE genes) and
-<span class="math inline">\(n_{+1}\)</span> (size of gene set) are all
-fixed values, the number of DE genes that are picked can be denoted as a
-random variable <span class="math inline">\(X\)</span>. Then <span class="math inline">\(X\)</span> follows the hypergeometric distribution
-with parameters <span class="math inline">\(n\)</span>, <span class="math inline">\(n_{1+}\)</span> and <span class="math inline">\(n_{+1}\)</span>, written as:</p>
+\binom{n_{2+}}{n_{21}}}{\binom{n}{n_{+1}}} =
+\frac{\binom{n_{1+}}{n_{11}} \binom{n - n_{1+}}{n_{+1} -
+n_{11}}}{\binom{n}{n_{+1}}}\]</span></p>
+<p>ここで分母は、DE遺伝子かどうかの区別をせずに<span class="math inline">\(n_{+1}\)</span>個の遺伝子を選ぶ場合の総数を表しています。</p>
+<p><span class="math inline">\(n\)</span>（総遺伝子数）、<span class="math inline">\(n_{1+}\)</span>（DE遺伝子数）、<span class="math inline">\(n_{+1}\)</span>（遺伝子セットのサイズ）がすべて固定値である場合、選ばれるDE遺伝子の数は確率変数<span class="math inline">\(X\)</span>で表せます。この場合、<span class="math inline">\(X\)</span>はパラメータ<span class="math inline">\(n\)</span>、<span class="math inline">\(n_{1+}\)</span>、<span class="math inline">\(n_{+1}\)</span>を持つ超幾何分布に従い、これを以下のように表記します：</p>
 <p><span class="math display">\[ X \sim \mathrm{Hyper}(n, n_{1+},
 n_{+1})\]</span></p>
-<p>The <em>p</em>-value of the enrichment is calculated as the
-probability of having an observation equal to or larger than <span class="math inline">\(n_{11}\)</span> under the assumption of
-independence:</p>
+<p>エンリッチメントの_p値_は、独立性を仮定した場合に<span class="math inline">\(n_{11}\)</span>個以上の遺伝子が観測される確率として計算されます：</p>
 <p><span class="math display">\[
-\mathrm{Pr}( X \geqslant  n_{11} ) = \sum_{x \in \{ {n_{11}, n_{11}+1,
+\mathrm{Pr}( X \geqslant n_{11} ) = \sum_{x \in \{ {n_{11}, n_{11}+1,
 ..., \min\{n_{1+}, n_{+1}\} \}}} \mathrm{Pr}(X = x)
 \]</span></p>
-<p>In R, the function <code>phyper()</code> calculates <em>p</em>-values
-from the hypergeometric distribution. There are four arguments:</p>
+<p>R言語では、関数<code>phyper()</code>を使用して超幾何分布から_p値_を計算できます。この関数には4つの引数があります：</p>
 <div class="codewrapper sourceCode" id="cb22">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">phyper</span><span class="op">(</span><span class="va">q</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">k</span><span class="op">)</span></span></code></pre>
 </div>
-<p>which are:</p>
+<p>これらの変数の意味は以下の通りです：</p>
 <ul><li>
-<code>q</code>: the observation,</li>
+<code>q</code>：観測値</li>
 <li>
-<code>m</code>: number of DE genes,</li>
+<code>m</code>：DE遺伝子の数</li>
 <li>
-<code>n</code>: number of non-DE genes,</li>
+<code>n</code>：非DE遺伝子の数</li>
 <li>
-<code>k</code>: size of the gene set.</li>
-</ul><p><code>phyper()</code> calculates <span class="math inline">\(\mathrm{Pr}(X \leqslant q)\)</span>. To calculate
-<span class="math inline">\(\mathrm{Pr}(X \geqslant q)\)</span>, we need
-to transform it a little bit:</p>
+<code>k</code>：遺伝子セットのサイズ</li>
+</ul><p><code>phyper()</code> 関数は <span class="math inline">\(\mathrm{Pr}(X \leqslant q)\)</span>
+を計算します。<span class="math inline">\(\mathrm{Pr}(X \geqslant
+q)\)</span> を計算するには、以下のように少し変形する必要があります：</p>
 <p><span class="math display">\[ \mathrm{Pr}(X \geqslant q) = 1 -
 \mathrm{Pr}(X &lt; q) = 1 - \mathrm{Pr}(X \leqslant q-1)\]</span></p>
-<p>Then, the correct use of <code>phyper()</code> is:</p>
+<p>したがって、<code>phyper()</code>
+関数の正しい使用方法は以下の通りです：</p>
 <div class="codewrapper sourceCode" id="cb23">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fl">1</span> <span class="op">-</span> <span class="fu">phyper</span><span class="op">(</span><span class="va">q</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">m</span>, <span class="va">n</span>, <span class="va">k</span><span class="op">)</span></span></code></pre>
 </div>
-<p>Let’s plugin our variables:</p>
+<p>変数を代入してみましょう：</p>
 <div class="codewrapper sourceCode" id="cb24">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -718,9 +696,9 @@ to transform it a little bit:</p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 3.9059e-06</code></pre>
 </div>
-<p>Optionally, <code>lower.tail</code> argument can be specified which
-directly calculates <em>p</em>-values from the upper tail of the
-distribution.</p>
+<p>オプションとして、<code>lower.tail</code>
+引数を指定することで、分布の上側テールから直接
+_p_値を計算することも可能です。</p>
 <div class="codewrapper sourceCode" id="cb26">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -732,8 +710,8 @@ distribution.</p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 3.9059e-06</code></pre>
 </div>
-<p>If we switch <code>n_01</code> and <code>n_10</code>, the
-<em>p</em>-values are identical:</p>
+<p><code>n_01</code> と <code>n_10</code>
+を入れ替えた場合、_p_値は同じ結果になります：</p>
 <div class="codewrapper sourceCode" id="cb28">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -745,11 +723,10 @@ distribution.</p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 3.9059e-06</code></pre>
 </div>
-<p><code>fisher.test()</code> and <code>phyper()</code> give the same
-<em>p</em>-value. Actually the two methods are identical because in
-Fisher’s exact test, hypergeometric distribution is the exact
-distribution of its statistic.</p>
-<p>Let’s test the runtime of the two functions:</p>
+<p><code>fisher.test()</code> と <code>phyper()</code> は同じ
+_p_値を返します。実際、この2つの手法は同一のものです。
+Fisherの正確検定では、超幾何分布がその統計量の厳密な分布となるためです。</p>
+<p>これら2つの関数の実行時間を比較してみましょう：</p>
 <div class="codewrapper sourceCode" id="cb30">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -765,73 +742,56 @@ distribution of its statistic.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>Unit: microseconds
-   expr     min      lq      mean   median      uq      max neval
- fisher 249.936 254.936 277.77333 259.2240 272.278 1457.399   100
-  hyper   1.553   1.809   2.77466   2.9705   3.276   14.737   100</code></pre>
+   expr     min       lq     mean   median       uq     max neval
+ fisher 253.284 259.0295 275.2027 266.2070 278.9055 699.627   100
+  hyper   1.573   1.8135   2.9330   3.1505   3.4865  18.916   100</code></pre>
 </div>
-<p>It is very astonishing that <code>phyper()</code> is hundreds of
-times faster than <code>fisher.test()</code>. Main reason is in
-<code>fisher.test()</code>, there are many additional calculations
-besides calculating the <em>p</em>-value. So if you want to implement
-ORA analysis by yourself, always consider to use <code>phyper()</code><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
-<div id="further-reading" class="callout">
+<p><code>phyper()</code> が <code>fisher.test()</code>
+よりも数百倍高速であることは驚くべき結果です。
+主な理由は、<code>fisher.test()</code> では
+_p_値の計算以外にも多くの追加処理が行われているためです。
+ご自身でORA分析を実装する場合には、常に <code>phyper()</code>
+を使用することをお勧めします<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>。</p>
+<div id="関連文献" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="further-reading" class="callout-inner">
-<h3 class="callout-title">Further reading</h3>
+<div id="関連文献" class="callout-inner">
+<h3 class="callout-title">関連文献</h3>
 <div class="callout-content">
-<p>Current tools also use Binomial distribution or chi-square test for
-ORA analysis. These two are just approximations. Please refer to <a href="https://doi.org/10.1093/bioinformatics/btl633" class="external-link">Rivals et al.,
-Enrichment or depletion of a GO category within a class of genes: which
-test? Bioinformatics 2007</a> which gives an overview of statistical
-methods used in ORA analysis.</p>
+<p>現在使用されている解析ツールでは、二項分布やカイ二乗検定がORA（Over-Representation
+Analysis）の統計的手法として採用されています。
+ただし、これらの手法はあくまで近似値に基づくものであり、より厳密な統計解析を行う場合には以下の文献を参照することをお勧めします：<a href="https://doi.org/10.1093/bioinformatics/btl633" class="external-link">Rivals et al.,
+“Enrichment or depletion of a GO category within a class of genes: which
+test?』Bioinformatics 2007</a>。
+この論文では、ORA解析において用いられる各種統計手法について包括的な解説がなされています。</p>
 </div>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="gene-set-resources">Gene set resources<a class="anchor" aria-label="anchor" href="#gene-set-resources"></a></h2>
-<hr class="half-width"><p>We have learnt the basic methods of ORA analysis. Now we go to the
-second component of the analysis: the gene sets.</p>
-<p>Gene sets represent prior knowledge of what is the general shared
-biological attribute of genes in the gene set. For example, in a “cell
-cycle” gene set, all the genes are involved in the cell cycle process.
-Thus, if DE genes are significantly enriched in the “cell cycle” gene
-set, which means there are significantly more cell cycle genes
-differentially expressed than expected, we can conclude that the normal
-function of cell cycle process may be affected.</p>
-<p>As we have mentioned, genes in the gene set share the same
-“biological attribute” where “the attribute” will be used for making
-conclusions. The definition of “biological attribute” is very flexible.
-It can be a biological process such as “cell cycle”. It can also be from
-a wide range of other definitions, to name a few:</p>
-<ul><li>Locations in the cell, e.g. cell membrane or cell nucleus.</li>
-<li>Positions on chromosomes, e.g. sex chromosomes or the cytogenetic
-band p13 on chromome 10.</li>
-<li>Target genes of a transcription factor or a microRNA, e.g. all genes
-that are transcriptionally regulationed by NF-κB.</li>
-<li>Signature genes in a certain tumor type, i.e. genes that are
-uniquely highly expressed in a tumor type.</li>
-</ul><p>The <a href="https://www.gsea-msigdb.org/gsea/msigdb" class="external-link">MSigDB
-database</a> contains gene sets in many topics. We will introduce it
-later in this section.</p>
-<p>You may have encountered many different ways to name gene sets: “gene
-sets”, “biological terms”, “GO terms”, “GO gene sets”, “pathways”, and
-so on. They basically refer to the same thing, but from different
-aspects. As shown in the following figure, “gene set” corresponds to a
-vector of genes and it is the representation of the data for
-computation. “Biological term” is a textual entity that contains
-description of its biological meaning; It corresponds to the knowledge
-of the gene set and is for the inference of the analysis. “GO gene sets”
-and “pathways” specifically refer to the enrichment analysis using GO
-gene sets and pahtway gene sets.</p>
-<figure><img src="fig/geneset.svg" class="figure mx-auto d-block"></figure><p>Before we touch the gene set databases, we first summarize the
-general formats of gene sets in R. In most analysis, a gene set is
-simply treated as a vector of genes. Thus, naturally, a collection of
-gene sets can be represented as a list of vectors. In the following
-example, there are three gene sets with 3, 5 and 2 genes. Some genes
-exist in multiple gene sets.</p>
+</section><section><h2 class="section-heading" id="遺伝子セットリソース">遺伝子セットリソース<a class="anchor" aria-label="anchor" href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%BB%E3%83%83%E3%83%88%E3%83%AA%E3%82%BD%E3%83%BC%E3%82%B9"></a></h2>
+<hr class="half-width"><p>ORA解析の基本手法について学んだところで、次は解析の第二の要素である「遺伝子セット」について説明します。</p>
+<p>遺伝子セットとは、遺伝子セット内の遺伝子が共有する生物学的特性に関する事前知識を表したものです。
+例えば、「細胞周期」遺伝子セットに含まれるすべての遺伝子は、細胞周期プロセスに関与しています。
+したがって、DE遺伝子がこの「細胞周期」遺伝子セットに有意に濃縮されている場合、これは細胞周期関連遺伝子の発現差異が予想よりも顕著であることを意味します。
+このことから、細胞周期プロセスの正常な機能が何らかの影響を受けている可能性が示唆されます。</p>
+<p>前述の通り、遺伝子セット内の遺伝子は「生物学的特性」を共有しており、この「特性」が解析結果の解釈に用いられます。
+「生物学的特性」の定義は非常に柔軟であり、例えば「細胞周期」のような生物学的プロセスを指す場合もあれば、以下のような多様な定義が含まれることもあります：</p>
+<ul><li>細胞内の位置（例：細胞膜、細胞核）</li>
+<li>染色体上の位置（例：性染色体、染色体10上の細胞遺伝学的バンドp13）</li>
+<li>転写因子やマイクロRNAの標的遺伝子（例：NF-κBによって転写制御されるすべての遺伝子）</li>
+<li>特定の腫瘍型に特徴的な遺伝子（例：特定の腫瘍型において特異的に高発現する遺伝子群）</li>
+</ul><p><a href="https://www.gsea-msigdb.org/gsea/msigdb" class="external-link">MSigDBデータベース</a>には、さまざまなトピックに関する遺伝子セットが収録されています。
+このデータベースについては、本節の後半で詳しく説明します。</p>
+<p>遺伝子セットの名称には多様な表現方法があります：「遺伝子セット」「生物学的用語」「GO用語」「GO遺伝子セット」「パスウェイ」など。これらは本質的には同じ概念を異なる観点から表現したものです。
+以下の図に示すように、「遺伝子セット」は遺伝子のベクトルとして表現され、計算処理のためのデータ表現形式です。
+「生物学的用語」はその生物学的意味を説明するテキストデータであり、遺伝子セットの知識ベースとして解析推論に用いられます。
+「GO遺伝子セット」と「パスウェイ」は、特にGO遺伝子セットとパスウェイ遺伝子セットを用いたエンリッチメント解析を指す用語です。</p>
+<figure><img src="fig/geneset.svg" class="figure mx-auto d-block"></figure><p>遺伝子セットデータベースの詳細に入る前に、R言語における遺伝子セットの一般的な形式について概説します。
+ほとんどの解析では、遺伝子セットは単に遺伝子のベクトルとして扱われます。
+したがって、複数の遺伝子セットの集合は、ベクトルのリストとして表現できます。
+以下の例では、3個、5個、2個の遺伝子を含む3つの遺伝子セットがあり、一部の遺伝子は複数の遺伝子セットに重複して存在しています。</p>
 <div class="codewrapper sourceCode" id="cb32">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -854,10 +814,9 @@ $gene_set_2
 $gene_set_3
 [1] "gene_4" "gene_7"</code></pre>
 </div>
-<p>It is also very common to store the relations of gene sets and genes
-as a two-column data frame. The order of the gene set column and the
-gene column, i.e. which column locates as the first column, are quite
-arbitrary. Different tools may require differently.</p>
+<p>遺伝子セットと遺伝子の関係を2列のデータフレームとして保存することも非常に一般的です。
+遺伝子セット列と遺伝子列の順序、つまりどちらの列を最初の列とするかは任意に決定できます。
+使用するツールによって要件が異なる場合があります。</p>
 <div class="codewrapper sourceCode" id="cb34">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -880,7 +839,7 @@ arbitrary. Different tools may require differently.</p>
 9  gene_set_3 gene_4
 10 gene_set_3 gene_7</code></pre>
 </div>
-<p>Or genes be in the first column:</p>
+<p>あるいは、遺伝子列を最初の列に配置することもできます：</p>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -896,12 +855,9 @@ arbitrary. Different tools may require differently.</p>
 9  gene_4 gene_set_3
 10 gene_7 gene_set_3</code></pre>
 </div>
-<p>Not very often, gene sets are represented as a matrix where one
-dimension corresponds to gene sets and the other dimension corresponds
-to genes. The values in the matix are binary where a value of 1
-represents the gene is a member of the corresponding gene sets. In some
-methods, 1 is replaced by <span class="math inline">\(w_{ij}\)</span> to
-weight the effect of the genes in the gene set.</p>
+<p>あまり一般的ではありませんが、遺伝子セットを行列形式で表現する場合もあります。
+この場合、1つの次元が遺伝子セットに、もう1つの次元が遺伝子に対応します。行列の値はバイナリ形式であり、1の値は対応する遺伝子セットにその遺伝子が含まれていることを示します。
+一部の手法では、遺伝子セット内の遺伝子の影響度を調整するため、1を<span class="math inline">\(w_{ij}\)</span>で置き換える場合があります。</p>
 <pre><code><span><span class="co">#            gene_1 gene_2 gene_3 gene_4</span></span>
 <span><span class="co"># gene_set_1      1      1      0      0</span></span>
 <span><span class="co"># gene_set_2      1      0      1      1</span></span></code></pre>
@@ -913,8 +869,8 @@ weight the effect of the genes in the gene set.</p>
 <div class="callout-inner">
 <h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>Can you convert between different gene set representations? E.g.
-convert a list to a two-column data frame?</p>
+<p>異なる遺伝子セット表現形式間の変換は可能ですか？
+例えば、リスト形式のデータを2列のデータフレームに変換することはできますか？</p>
 </div>
 </div>
 </div>
@@ -923,7 +879,7 @@ convert a list to a two-column data frame?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -934,8 +890,7 @@ convert a list to a two-column data frame?</p>
 <span>           gene_set_3 <span class="op">=</span> <span class="fu">c</span><span class="op">(</span><span class="st">"gene_4"</span>, <span class="st">"gene_7"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre>
 </div>
-<p>To convert <code>lt</code> to a data frame (e.g. let’s put gene sets
-in the first column):</p>
+<p><code>lt</code>をデータフレーム形式に変換する場合（例えば遺伝子セットを最初の列に配置するには以下のようにします）：</p>
 <div class="codewrapper sourceCode" id="cb39">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -959,7 +914,7 @@ in the first column):</p>
 9  gene_set_3 gene_4
 10 gene_set_3 gene_7</code></pre>
 </div>
-<p>To convert <code>df</code> back to the list:</p>
+<p>変換後の<code>df</code>を元のリスト形式に戻すには：</p>
 <div class="codewrapper sourceCode" id="cb41">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -982,17 +937,14 @@ $gene_set_3
 </div>
 </div>
 </div>
-<p>Next, let’s go through gene sets from several major databases: the
-GO, KEGG and MSigDB databases.</p>
+<p>次に、主要なデータベースであるGO、KEGG、MSigDBの遺伝子セットについて見ていきましょう。</p>
 <div class="section level3">
-<h3 id="gene-ontology-gene-sets">Gene Ontology gene sets<a class="anchor" aria-label="anchor" href="#gene-ontology-gene-sets"></a></h3>
-<p>Gene Ontology (GO) is the standard source for gene set enrichment
-analysis. GO contains three namespaces of biological process (BP),
-cellular components (CC) and molecular function (MF) which describe a
-biological entity from different aspect. The associations between GO
-terms and genes are integrated in the Bioconductor standard packages:
-<em>the organism annotation packages</em>. In the current Bioconductor
-release, there are the following organism packages:</p>
+<h3 id="遺伝子オントロジーgo遺伝子セット">遺伝子オントロジー（GO）遺伝子セット<a class="anchor" aria-label="anchor" href="#%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%AA%E3%83%B3%E3%83%88%E3%83%AD%E3%82%B8%E3%83%BCgo%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%BB%E3%83%83%E3%83%88"></a></h3>
+<p>遺伝子オントロジー（Gene Ontology:
+GO）は、遺伝子セットのエンリッチメント解析における標準的なリソースです。
+GOには、生物学的プロセス（BP）、細胞構成要素（CC）、分子機能（MF）という3つの異なる観点で生物的実体を記述する名前空間が含まれています。
+これらのGO用語と遺伝子との関連性は、Bioconductor標準パッケージである「生物種アノテーションパッケージ」に統合されています。
+現在のBioconductorリリースでは以下の生物種パッケージが利用可能です：</p>
 <center>
 <table class="table"><colgroup><col width="27%"><col width="25%"><col width="36%"><col width="10%"></colgroup><thead><tr class="header"><th>Package</th>
 <th>Organism</th>
@@ -1035,26 +987,20 @@ release, there are the following organism packages:</p>
 <td>org.EcSakai.eg.db</td>
 <td>E coli strain Sakai</td>
 </tr></tbody></table></center>
-<p>There are four sections in the name of an organism package. The
-naming convention is: <code>org</code> simply means “organism”. The
-second section corresponds to a specific organism, e.g. <code>Hs</code>
-for human and <code>Mm</code> for mouse. The third section corresponds
-to the primary gene ID type used in the package, where normally
-<code>eg</code> is used which means “Entrez genes” because data is
-mostly retrieved from the NCBI database. However, for some organisms,
-the primary ID can be from its own primary database,
-e.g. <code>sgd</code> for Yeast which corresponds to the <a href="https://www.yeastgenome.org/" class="external-link">Saccharomyces Genome Database</a>,
-the primary database for yeast. The last section is always “db”, which
-simply implies it is a database package.</p>
-<p>Taking the <strong>org.Hs.eg.db</strong> package as an example, all
-the data is stored in a database object <code>org.Hs.eg.db</code> in the
-<code>OrgDb</code> class. The object contains a connection to a local
-SQLite database. Users can simply think <code>org.Hs.eg.db</code> as a
-huge table that contains ID mappings between various databases. GO gene
-sets are essentially mappings between GO terms and genes. Let’s try to
-extract it from the <code>org.Hs.eg.db</code> object.</p>
-<p>All the columns (the key column or the source column) can be obtained
-by <code>keytypes()</code>:</p>
+<p>生物パッケージの名称には4つのセクションが存在します。
+命名規則は以下の通りです：<code>org</code>は単に「生物」を意味します。
+2番目のセクションは特定の生物種に対応しており、例えばヒトの場合は<code>Hs</code>、マウスの場合は<code>Mm</code>となります。
+3番目のセクションはパッケージ内で主に使用される遺伝子IDのタイプを示し、通常は<code>eg</code>が使用されます。
+これはデータのほとんどがNCBIデータベースから取得されるためで、「Entrez遺伝子」を意味します。
+ただし、一部の生物種では、主IDが独自の主要データベースから取得される場合もあります。例えば酵母の場合は<code>sgd</code>で、これは<a href="https://www.yeastgenome.org/" class="external-link">Saccharomyces Genome
+Database</a>に対応しており、酵母の主要データベースです。
+最後のセクションは常に”db”であり、これは単に「データベースパッケージ」であることを示しています。</p>
+<p><strong>org.Hs.eg.db</strong>パッケージを例に説明すると、すべてのデータは<code>OrgDb</code>クラスのデータベースオブジェクト<code>org.Hs.eg.db</code>に格納されています。
+このオブジェクトはローカルのSQLiteデータベースへの接続を保持しています。
+ユーザーは<code>org.Hs.eg.db</code>を、さまざまなデータベース間のIDマッピングを含む巨大なテーブルとして考えるとよいでしょう。
+GO遺伝子セットは基本的に、GO用語と遺伝子の間のマッピングです。
+<code>org.Hs.eg.db</code>オブジェクトからこれを抽出する方法を見ていきましょう。</p>
+<p>すべての列（キー列またはソース列）は<code>keytypes()</code>関数で取得できます：</p>
 <div class="codewrapper sourceCode" id="cb43">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1072,12 +1018,11 @@ by <code>keytypes()</code>:</p>
 [21] "PMID"         "PROSITE"      "REFSEQ"       "SYMBOL"       "UCSCKG"
 [26] "UNIPROT"     </code></pre>
 </div>
-<p>To get the GO gene sets, we first obtain all GO IDs under the BP
-(biological process) namespace. As shown in the output from
-<code>keytype()</code>, <code>"ONTOLOGY"</code> is also a valid “key
-column”, thus we can query “<em>select all GO IDs where the
-corresponding ONTOLOGY is BP</em>”, which is translated into the
-following code:</p>
+<p>GO遺伝子セットを取得するには、まずBP（生物学的プロセス）ネームスペースに属するすべてのGO
+IDを取得します。
+<code>keytype()</code>の出力に示されているように、<code>"ONTOLOGY"</code>も有効な「キー列」として扱えるため、「対応するONTOLOGYがBPであるすべてのGO
+IDを選択する」というクエリを実行できます。
+これは以下のコードに変換されます：</p>
 <div class="codewrapper sourceCode" id="cb45">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1092,15 +1037,13 @@ following code:</p>
 <pre class="output" tabindex="0"><code>[1] "GO:0002764" "GO:0001553" "GO:0001869" "GO:0002438" "GO:0006953"
 [6] "GO:0007584"</code></pre>
 </div>
-<p><code>mapIds()</code> maps IDs between two sources. Since a GO
-namespace have more than one GO terms, we have to set
-<code>multiVals = "list"</code> to obtain all GO terms under that
-namespace. And since we only query for one GO “ONTOLOGY”, we directly
-take the first element from the list returned by
-<code>mapIds()</code>.</p>
-<p>Next we do mapping from GO IDs to gene Entrez IDs. Now the query
-becomes “<em>providing a vector of GO IDs, select ENTREZIDs which
-correspond to every one of them</em>”.</p>
+<p><code>mapIds()</code>関数は2つのソース間のIDマッピングを行います。
+GOネームスペースには複数のGO用語が存在するため、特定のネームスペースに属するすべてのGO用語を取得するには<code>multiVals = "list"</code>を設定する必要があります。
+今回は単一のGO
+“ONTOLOGY”のみをクエリしているため、<code>mapIds()</code>が返すリストの最初の要素を直接取得しています。</p>
+<p>次に、GO IDから遺伝子のEntrez IDへのマッピングを行います。
+この場合のクエリは「<em>GO
+IDのベクトルを指定し、それらすべてに対応するENTREZIDを選択する</em>」となります。</p>
 <div class="codewrapper sourceCode" id="cb47">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1108,24 +1051,19 @@ correspond to every one of them</em>”.</p>
 <code class="sourceCode R"><span><span class="va">BPGeneSets</span> <span class="op">=</span> <span class="fu">mapIds</span><span class="op">(</span><span class="va">org.Hs.eg.db</span>, keys <span class="op">=</span> <span class="va">BP_Id</span>, keytype <span class="op">=</span> <span class="st">"GOALL"</span>, </span>
 <span>                    column <span class="op">=</span> <span class="st">"ENTREZID"</span>, multiVals <span class="op">=</span> <span class="st">"list"</span><span class="op">)</span></span></code></pre>
 </div>
-<p>You may have noticed there is a “GO” key column as well a “GOALL”
-column in the database. As GO has a hierarchical structure where a child
-term is a sub-class of a parent term. All the genes annotated to a child
-term are also annotated to its parent terms. To reduce the duplicated
-information when annotating genes to GO terms, genes are normally
-annotated to the most specific offspring terms in the GO hierarchy.
-Upstream merging of gene annotations should be done by the tools which
-perform analysis. In this way, the mapping between <code>"GO"</code> and
-<code>"ENTREZID"</code> only contains “primary” annotations which is not
-complete, and mapping between <code>"GOALL"</code> and
-<code>"ENTREZID"</code> is the correct one to use.</p>
-<p>We filter out GO gene sets with no gene annotated.</p>
+<p>データベース内に「GO」キー列と「GOALL」列の両方が存在することにお気づきかもしれません。
+GOには階層構造があり、子用語は親用語のサブクラスとなります。
+子用語にアノテーションされた遺伝子は、その親用語にもすべてアノテーションされています。
+遺伝子をGO用語にアノテーションする際に重複した情報を減らすため、通常はGO階層の中で最も具体的な子孫用語に遺伝子がアノテーションされます。
+遺伝子アノテーションの上流統合は、分析を行うツール側で実施されるべきです。
+この方法により、<code>"GO"</code>と<code>"ENTREZID"</code>の間のマッピングは完全なものではなく、「主要な」アノテーションのみを含むことになり、<code>"GOALL"</code>と<code>"ENTREZID"</code>の間のマッピングが適切な使用法となります。</p>
+<p>遺伝子がアノテーションされていないGO遺伝子セットは除外します。</p>
 <div class="codewrapper sourceCode" id="cb48">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BPGeneSets</span> <span class="op">=</span> <span class="va">BPGeneSets</span><span class="op">[</span><span class="fu">sapply</span><span class="op">(</span><span class="va">BPGeneSets</span>, <span class="va">length</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">]</span></span>
-<span><span class="va">BPGeneSets</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span> <span class="co"># BPGeneSets[[1]] is too long</span></span></code></pre>
+<span><span class="va">BPGeneSets</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span> <span class="co"># BPGeneSets[[1]]は長すぎるため省略</span></span></code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1137,59 +1075,45 @@ complete, and mapping between <code>"GOALL"</code> and
 $`GO:0001869`
 [1] "2"   "710"</code></pre>
 </div>
-<p>In most cases, because <code>OrgDb</code> is a standard Bioconductor
-data structure, most tools can automatically construct GO gene sets
-internally. There is no need for users to touch such low-level
-processings.</p>
-<div id="further-reading-1" class="callout">
+<p>ほとんどの場合、<code>OrgDb</code>は標準的なBioconductorデータ構造であるため、ほとんどのツールは内部的にGO遺伝子セットを自動的に構築できます。
+ユーザーはこのような低レベルの処理に直接触れる必要はありません。</p>
+<div id="関連文献-1" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="further-reading-1" class="callout-inner">
-<h3 class="callout-title">Further reading</h3>
+<div id="関連文献-1" class="callout-inner">
+<h3 class="callout-title">関連文献</h3>
 <div class="callout-content">
-<p>Mapping between various databases can also be done with the general
-<code>select()</code> interface. If the <code>OrgDb</code> object is
-provided by a package such as <strong>org.Hs.eg.db</strong>, there is
-also a separated object that specifically contains mapping between GO
-terms and genes. Readers can check the documentation of
-<code>org.Hs.egGO2ALLEGS</code>. Additional information on GO terms such
-as GO names and long descriptions are available in the package
-<strong>GO.db</strong>.</p>
-<p>Bioconductor has already provided a large number of organism
-packages. However, if the organism you are working on is not supported
-there, you may consider to look for it with the
-<strong>AnnotationHub</strong> package, which additionally provide
-<code>OrgDb</code> objects for approximately 2000 organisms. The
-<code>OrgDb</code> object can be directly used in the ORA analysis
-introduced in the next section.</p>
+<p>各種データベース間のマッピングは、汎用の<code>select()</code>インターフェースを使用して実行することも可能です。
+<code>OrgDb</code>オブジェクトが<strong>org.Hs.eg.db</strong>などのパッケージから提供される場合、GO用語と遺伝子間のマッピング情報に特化した別のオブジェクトが用意されています。
+詳細は<code>org.Hs.egGO2ALLEGS</code>のドキュメントを参照してください。
+GO用語に関する追加情報（用語名や詳細な説明など）については、<strong>GO.db</strong>パッケージで入手できます。</p>
+<p>Bioconductorでは既に多数の生物種向けパッケージが提供されています。
+ただし、研究対象の生物種がこれらのパッケージでサポートされていない場合、<strong>AnnotationHub</strong>パッケージを利用して検索することをお勧めします。
+このパッケージでは約2,000種の生物種に対する<code>OrgDb</code>オブジェクトが提供されています。
+これらの<code>OrgDb</code>オブジェクトは、次節で紹介するORA解析に直接使用することができます。</p>
 </div>
 </div>
 </div>
 </div>
 <div class="section level3">
-<h3 id="kegg-gene-sets">KEGG gene sets<a class="anchor" aria-label="anchor" href="#kegg-gene-sets"></a></h3>
-<p>A biological pathway is a series of interactions among molecules in a
-cell that leads to a certain product or a change in a cell<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. A pathway involves a
-list of genes playing different roles which constructs the “pathway gene
-set”. <a href="https://www.genome.jp/kegg/pathway.html" class="external-link">KEGG pathway</a>
-is the mostly used database for pathways. It provides its data via a
-REST API (<a href="https://rest.kegg.jp/" class="external-link uri">https://rest.kegg.jp/</a>). There are several commands to
-retrieve specific types of data. To retrieve the pathway gene sets, we
-can use the “link” command as shown in the following URL (“link” means
-to link genes to pathways). When you enter the URL in the web
-browser:</p>
+<h3 id="kegg遺伝子セット">KEGG遺伝子セット<a class="anchor" aria-label="anchor" href="#kegg%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%BB%E3%83%83%E3%83%88"></a></h3>
+<p>生物学的経路とは、細胞内における分子間の一連の相互作用のことで、特定の生成物や細胞状態の変化をもたらすプロセスを指します<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>。
+経路とは、それぞれ異なる役割を担う遺伝子群によって構成される「経路遺伝子セット」のことです。
+<a href="https://www.genome.jp/kegg/pathway.html" class="external-link">KEGG経路データベース</a>は経路情報を扱う最も広く利用されているデータベースです。
+このデータベースのデータはREST API（<a href="https://rest.kegg.jp/%EF%BC%89%E3%82%92%E9%80%9A%E3%81%98%E3%81%A6%E6%8F%90%E4%BE%9B%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99" class="external-link uri">https://rest.kegg.jp/）を通じて提供されています</a>。
+特定の種類のデータを取得するにはいくつかのコマンドが用意されています。
+経路遺伝子セットを取得するには、以下のURLで示されているように「link」コマンドを使用します（「link」コマンドは遺伝子と経路を関連付ける機能です）。
+WebブラウザでこのURLにアクセスすると：</p>
 <pre><code>https://rest.kegg.jp/link/pathway/hsa</code></pre>
-<p>there will be a text table which contains a column of genes and a
-column of pathway IDs.</p>
+<p>遺伝子名の列と経路IDの列からなるテキスト形式のテーブルが表示されます。</p>
 <pre><code>hsa:10327   path:hsa00010
 hsa:124 path:hsa00010
 hsa:125 path:hsa00010
 hsa:126 path:hsa00010</code></pre>
-<p>We can directly read the text output with <code>read.table()</code>.
-Wrapping the URL with the function <code>url()</code>, you can pretend
-to directly read data from the remote web server.</p>
+<p>このテキスト出力は<code>read.table()</code>関数でそのまま読み込むことができます。
+URLを<code>url()</code>関数でラップすることで、リモートWebサーバーから直接データを読み込むように処理できます。</p>
 <div class="codewrapper sourceCode" id="cb52">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1208,10 +1132,9 @@ to directly read data from the remote web server.</p>
 5   hsa:127 path:hsa00010
 6   hsa:128 path:hsa00010</code></pre>
 </div>
-<p>In this two-column table, the first column contains genes in the
-Entrez ID type. Let’s remove the <code>"hsa:"</code> prefix, also we
-remove the <code>"path:"</code> prefix for pathway IDs in the second
-column.</p>
+<p>この2列のテーブルでは、最初の列にEntrez
+ID形式の遺伝子名が含まれています。
+ここでは<code>"hsa:"</code>のプレフィックスを削除するとともに、2列目の経路IDから<code>"path:"</code>のプレフィックスも削除します。</p>
 <div class="codewrapper sourceCode" id="cb54">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1231,7 +1154,7 @@ column.</p>
 5   127 hsa00010
 6   128 hsa00010</code></pre>
 </div>
-<p>The full pathway names can be obtained via the “list” command.</p>
+<p>完全な経路名は「list」コマンドを使用して取得できます。</p>
 <div class="codewrapper sourceCode" id="cb56">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1250,50 +1173,43 @@ column.</p>
 5 hsa01230     Biosynthesis of amino acids - Homo sapiens (human)
 6 hsa01232           Nucleotide metabolism - Homo sapiens (human)</code></pre>
 </div>
-<p>In both commands, we obtained data for human where the corresponding
-KEGG code is <code>"hsa"</code>. The code for other organisms can be
-found from the <a href="https://www.genome.jp/kegg/" class="external-link">KEGG website</a>
-(e.g. <code>"mmu"</code> for mouse), or via <a href="https://rest.kegg.jp/list/organism" class="external-link uri">https://rest.kegg.jp/list/organism</a>.</p>
-<p>Keep in mind, KEGG pathways are only free for academic users. If you
-use it for commercial purposes, <a href="https://www.kegg.jp/kegg/legal.html" class="external-link">please contact the KEGG team
-to get a licence</a>.</p>
-<div id="further-reading-2" class="callout">
+<p>どちらのコマンドでも、対応するKEGGコードが<code>"hsa"</code>であるヒトのデータが取得されます。
+他の生物種のコードは<a href="https://www.genome.jp/kegg/" class="external-link">KEGGウェブサイト</a>で確認できます（例：マウスの場合は<code>"mmu"</code>）、またはhttps://rest.kegg.jp/list/organismから取得可能です。</p>
+<p>なお、KEGGの経路情報は学術利用に限り無料で提供されています。
+商用目的で利用される場合は、<a href="https://www.kegg.jp/kegg/legal.html" class="external-link">KEGGチームまで連絡してライセンスを取得してください</a>。</p>
+<div id="さらに詳しく知りたい方へ" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="further-reading-2" class="callout-inner">
-<h3 class="callout-title">Further reading</h3>
+<div id="さらに詳しく知りたい方へ" class="callout-inner">
+<h3 class="callout-title">さらに詳しく知りたい方へ</h3>
 <div class="callout-content">
-<p>Instead directly reading from the URLs, there are also R packages
-which help to obtain data from the KEGG database, such as the
-<strong>KEGGREST</strong> package or the <code>download_KEGG()</code>
-function from the <strong>clusterProfiler</strong> package. But
-essentially, they all obtain KEGG data with the REST API.</p>
+<p>直接URLからデータを取得する方法以外にも、KEGGデータベースからデータを取得するのに役立つRパッケージがいくつか存在します。
+代表的なものとして、<strong>KEGGREST</strong>パッケージや<strong>clusterProfiler</strong>パッケージに含まれる<code>download_KEGG()</code>関数などが挙げられます。
+ただし、これらのパッケージはいずれもREST
+APIを利用してKEGGデータを取得する仕組みとなっています。</p>
 </div>
 </div>
 </div>
 </div>
 <div class="section level3">
-<h3 id="msigdb-gene-sets">MSigDB gene sets<a class="anchor" aria-label="anchor" href="#msigdb-gene-sets"></a></h3>
-<p><a href="https://www.gsea-msigdb.org/gsea/msigdb/" class="external-link">Molecular
-signature database</a> (MSigDB) is a manually curated gene set database.
-Initially, it was proposed as a supplementary dataset for <a href="https://www.nature.com/articles/ng1180" class="external-link">the original GSEA
-paper</a>. Later it has been separated out and developed independently.
-In the first version in 2005, there were only two gene sets collections
-and in total 843 gene sets. Now in the newest version of MSigDB
-(v2023.1.Hs), it has grown into nine gene sets collections, covering
-&gt; 30K gene sets. It provides gene sets on a variety of topics.</p>
-<p>MSigDB categorizes gene sets into nine collections where each
-collection focuses on a specific topic. For some collections, they are
-additionally split into sub-collections. There are several ways to
-obtain gene sets from MSigDB. One convenient way is to use the
-<strong>msigdb</strong> package. Another option is to use the
-<strong>msigdbr</strong> CRAN package, which supports organisms other
-than human and mouse by mapping to orthologs.</p>
-<p><strong>msigdb</strong> provides mouse and human gene sets, defined
-using either gene symbols or Entrez IDs. Let’s get the mouse
-collection.</p>
+<h3 id="msigdb遺伝子セット">MSigDB遺伝子セット<a class="anchor" aria-label="anchor" href="#msigdb%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%BB%E3%83%83%E3%83%88"></a></h3>
+<p><a href="https://www.gsea-msigdb.org/gsea/msigdb/" class="external-link">分子シグネチャデータベース</a>
+（MSigDB）は、専門家によって手作業でキュレーションされた遺伝子セットデータベースです。
+当初は<a href="https://www.nature.com/articles/ng1180" class="external-link">オリジナルのGSEA論文</a>の補助データセットとして提案されました。
+その後、独立したデータベースとして発展を続けています。
+2005年の初版では遺伝子セットコレクションが2つ、合計843セットのみでしたが、最新バージョンのMSigDB
+v2023.1.Hsでは9つのコレクションに拡大し、3万セット以上を網羅するまでに成長しました。
+多様な研究テーマに対応した遺伝子セットを提供しています。</p>
+<p>MSigDBでは遺伝子セットを9つのコレクションに分類しており、各コレクションは特定の研究テーマに特化しています。
+一部のコレクションはさらにサブコレクションに細分化されています。
+MSigDBから遺伝子セットを取得する方法はいくつかありますが、最も便利な方法の一つが<strong>msigdb</strong>パッケージを使用することです。
+また、<strong>msigdbr</strong>
+CRANパッケージを使用する方法もあり、このパッケージではヒトやマウス以外の生物種についても、オーソログへのマッピング機能を通じて対応しています。</p>
+<p><strong>msigdb</strong>パッケージでは、マウスおよびヒトの遺伝子セットを、遺伝子記号またはEntrez
+IDのいずれかの形式で提供しています。
+ここではマウスコレクションを取得してみましょう。</p>
 <div class="codewrapper sourceCode" id="cb58">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1303,12 +1219,8 @@ collection.</p>
 <span><span class="kw">library</span><span class="op">(</span><span class="va">GSEABase</span><span class="op">)</span></span>
 <span><span class="va">MSigDBGeneSets</span> <span class="op">&lt;-</span> <span class="fu">getMsigdb</span><span class="op">(</span>org <span class="op">=</span> <span class="st">"mm"</span>, id <span class="op">=</span> <span class="st">"SYM"</span>, version <span class="op">=</span> <span class="st">"7.4"</span><span class="op">)</span></span></code></pre>
 </div>
-<p>The <code>msigdb</code> object above is a
-<code>GeneSetCollection</code>, storing all gene sets from MSigDB. The
-<code>GeneSetCollection</code> object class is defined in the
-<code>GSEABase</code> package, and it is a linear data structure similar
-to a base list object, but with additional metadata such as the type of
-gene identifier or provenance information about the gene sets.</p>
+<p>上記の<code>msigdb</code>オブジェクトは<code>GeneSetCollection</code>型であり、MSigDBに含まれるすべての遺伝子セットを格納しています。
+<code>GeneSetCollection</code>オブジェクトクラスは<code>GSEABase</code>パッケージで定義されており、基本的なリストオブジェクトと同様の線形データ構造を持ちつつ、遺伝子識別子の種類などのメタデータや、遺伝子セットの由来情報などの追加情報を保持しています。</p>
 <div class="codewrapper sourceCode" id="cb59">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1336,8 +1248,7 @@ gene identifier or provenance information about the gene sets.</p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 44688</code></pre>
 </div>
-<p>Each signature is stored in a <code>GeneSet</code> object, also
-defined in the <code>GSEABase</code> package.</p>
+<p>各遺伝子セットは<code>GeneSet</code>オブジェクトとして格納されており、これも<code>GSEABase</code>パッケージで定義されています。</p>
 <div class="codewrapper sourceCode" id="cb63">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1384,8 +1295,8 @@ details: use 'details(object)'</code></pre>
 [19] "Ptchd1"   "Ptchd4"   "Reg4"     "Slc22a26" "Slc22a30" "Slc22a19"
 [25] "Slc22a27" "Slc22a29" "Slc22a28" "Slc22a22"</code></pre>
 </div>
-<p>We can also subset the collection. First, let’s list the available
-collections and subcollections.</p>
+<p>コレクションの一部を抽出することも可能です。
+まず、利用可能なコレクションとサブコレクションの一覧を表示します。</p>
 <div class="codewrapper sourceCode" id="cb69">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1412,7 +1323,7 @@ collections and subcollections.</p>
 [13] "MIR:MIRDB"       "CM"              "CP"              "CP:PID"
 [17] "CP:REACTOME"     "CP:WIKIPATHWAYS"</code></pre>
 </div>
-<p>Then, we retrieve only the ‘hallmarks’ collection.</p>
+<p>次に、「hallmarks」コレクションのみを抽出します。</p>
 <div class="codewrapper sourceCode" id="cb73">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1429,32 +1340,20 @@ collections and subcollections.</p>
     geneIdType: SymbolIdentifier (1 total)
     collectionType: BroadCollection (1 total)</code></pre>
 </div>
-<p>If you only want to use a sub-category, specify both the
-<code>collection</code> and <code>subcollection</code> arguments to
-<code>subsetCollection</code>.</p>
+<p>特定のサブカテゴリのみを使用したい場合は、<code>subsetCollection</code>関数に<code>collection</code>と<code>subcollection</code>の両方の引数を指定してください。</p>
 </div>
-</section><section><h2 class="section-heading" id="ora-with-clusterprofiler">ORA with clusterProfiler<a class="anchor" aria-label="anchor" href="#ora-with-clusterprofiler"></a></h2>
-<hr class="half-width"><p>The ORA method itself is quite simple and it has been implemented in
-a large number of R packages. Among them, the
-<strong>clusterProfiler</strong> package especially does a good job in
-that it has a seamless integration to the Bioconductor annotation
-resources which allows extending GSEA analysis to other organisms
-easily; it has pre-defined functions for common analysis tasks, e.g. GO
-enrichment, KEGG enrichment; and it implements a variety of different
-visualization methods on the GSEA results. In this section, we will
-learn how to perform ORA analysis with
-<strong>clusterProfiler</strong>.</p>
-<p>Here we will use a list of DE genes from a different comparison. As
-you may still remember, there are only 54 DE genes between genders,
-which may not be a good case for GSEA analysis, since after overlapping
-to a collection of gene sets, the majority of the gene sets will have
-few or even no gene overlapped. In this example we use the list of DE
-genes from the comparison between different time points.</p>
-<p>Another thing worth to mention is, in the following code where we
-filter DE genes, we additionally add a filtering on the log2 fold
-change. This is recommended when the number of DE genes is too large.
-The filtering on log2 fold change can be thought as a filtering from the
-biology aspect.</p>
+</section><section><h2 class="section-heading" id="clusterprofilerを用いたora解析">clusterProfilerを用いたORA解析<a class="anchor" aria-label="anchor" href="#clusterprofiler%E3%82%92%E7%94%A8%E3%81%84%E3%81%9Fora%E8%A7%A3%E6%9E%90"></a></h2>
+<hr class="half-width"><p>ORA手法自体は非常にシンプルなアルゴリズムであり、数多くのRパッケージに実装されています。
+中でも<strong>clusterProfiler</strong>パッケージは特に優れた機能を備えており、Bioconductorが提供する豊富なアノテーションリソースとシームレスに連携することで、GSEA解析を他の生物種にも容易に拡張可能です。
+また、一般的な解析タスク（GOエンリッチメント解析、KEGGエンリッチメント解析など）向けの事前定義関数を備えており、GSEA結果に対して多様な可視化手法を実装しています。
+このセクションでは、<strong>clusterProfiler</strong>を用いたORA解析の実施方法について解説します。</p>
+<p>ここでは異なる比較条件から得られたDE遺伝子リストを使用します。
+ご記憶の通り、性別間の差異ではDE遺伝子はわずか54個しか検出されておらず、これはGSEA解析には不向きなケースです。
+遺伝子セットコレクションとのオーバーラップを行うと、ほとんどの遺伝子セットで重複遺伝子がごく少数、あるいは全く存在しない状態になるためです。
+この例では、異なる時間ポイント間の比較から得られたDE遺伝子リストを使用します。</p>
+<p>もう一つ重要な点として、以下のコードでDE遺伝子をフィルタリングする際に、log2倍変化量に基づく追加フィルタを適用しています。
+これはDE遺伝子の数が過度に多い場合に推奨される手法です。
+log2倍変化量によるフィルタリングは、生物学的観点からのフィルタリングと捉えることができます。</p>
 <div class="codewrapper sourceCode" id="cb75">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1483,18 +1382,13 @@ biology aspect.</p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] 1134</code></pre>
 </div>
-<p>Let’s confirm that there are around one thousand DE genes, and the DE
-genes are in gene symbols.</p>
+<p>確認しますと、約1,000個のDE遺伝子が検出されており、これらの遺伝子は遺伝子シンボル形式で表示されています。</p>
 <div class="section level3">
-<h3 id="go-enrichment">GO enrichment<a class="anchor" aria-label="anchor" href="#go-enrichment"></a></h3>
-<p>In <strong>clusterProfiler</strong>, there is an
-<code>enrichGO()</code> function which performs ORA on GO gene sets. To
-use it, we need to provide the DE genes, the organism <code>OrgDb</code>
-object which is from the organism package <strong>org.Mm.eg.db</strong>
-(because our data is from mouse), also the GO namespace (one of
-<code>"BP"</code>, <code>"CC"</code> and <code>"MF"</code>). The GO gene
-sets are automatically retrieved and processed from
-<code>org.Mm.eg.db</code> in <code>enrichGO()</code>.</p>
+<h3 id="goエンリッチメント解析">GOエンリッチメント解析<a class="anchor" aria-label="anchor" href="#go%E3%82%A8%E3%83%B3%E3%83%AA%E3%83%83%E3%83%81%E3%83%A1%E3%83%B3%E3%83%88%E8%A7%A3%E6%9E%90"></a></h3>
+<p><strong>clusterProfiler</strong>
+パッケージには、GO遺伝子セットに対してORA（Over-Representation
+Analysis）を実行する<code>enrichGO()</code>関数が用意されています。
+この関数を使用するには、以下の情報を入力する必要があります：発現変動遺伝子、対象生物種の<code>OrgDb</code>オブジェクト（本データがマウス由来の場合は<strong>org.Mm.eg.db</strong>パッケージを使用）、およびGOの分類体系（<code>"BP"</code>：生物学的プロセス、<code>"CC"</code>：細胞成分、<code>"MF"</code>：分子機能のいずれか）です。<code>enrichGO()</code>関数では、<code>org.Mm.eg.db</code>から自動的にGO遺伝子セットが取得・処理されます。</p>
 <div class="codewrapper sourceCode" id="cb79">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1513,26 +1407,24 @@ sets are automatically retrieved and processed from
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 226153,19362,12914,67245,66233,233406</code></pre>
+<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 20852,15193,216049,232210,208084,75317</code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>--&gt; return NULL...</code></pre>
 </div>
-<p>Oops, something seems wrong. Well, this is a common mistake where the
-gene ID types do not match between DE genes and the gene sets.
-Thankfully, the message clearly explains the reason. The ID type for
-gene sets is Entrez ID and it cannot match any DE gene.</p>
-<p>There are two ways to solve this problem. 1. Convert gene IDs in
-<code>timeDEgenes</code> to Entrez IDs in advance; or 2. Simply specify
-the ID type of DE genes and let <code>enrichGO()</code> do the
-conversion job (recall various gene ID types are also stored in the
-<code>OrgDb</code> object). Let’s choose the second way.</p>
-<p>In the next code, we additionally specify
-<code>keyType = "SYMBOL"</code> to explicitly tell the function that DE
-genes are in gene symbols. Recall that all valid values for
-<code>keyType</code> are in <code>keytypes(org.Mm.eg.db)</code>.</p>
+<p>おや、何か問題があるようです。
+これはよくあるミスで、発現変動遺伝子と遺伝子セット間で遺伝子IDの形式が一致していない場合に発生します。
+幸いなことに、メッセージには明確な原因説明が記載されています。
+遺伝子セットのID形式はEntrez
+IDであり、これはどの発現変動遺伝子とも一致しません。</p>
+<p>この問題を解決する方法は2つあります：1)
+<code>timeDEgenes</code>内の遺伝子IDを事前にEntrez
+IDに変換しておく方法、あるいは2)
+DE遺伝子のID形式を明示的に指定し、<code>enrichGO()</code>関数にID形式の変換作業を任せる方法です（<code>OrgDb</code>オブジェクトには様々な遺伝子ID形式が格納されていることに留意してください）。ここでは後者の方法を採用します。</p>
+<p>次のコードでは、DE遺伝子が遺伝子記号で表されていることを明確に指定するため、<code>keyType = "SYMBOL"</code>を追加で指定しています。
+<code>keyType</code>の有効な値はすべて<code>keytypes(org.Mm.eg.db)</code>で確認できます。</p>
 <div class="codewrapper sourceCode" id="cb83">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1576,76 +1468,49 @@ GO:0030595    35
 GO:0060326    41
 GO:0071674    32</code></pre>
 </div>
-<p>Now <code>enrichGO()</code> went through! The returned object
-<code>resTimeGO</code> is in a special format which looks like a table
-but actually is not! To get rid of the confusion, in the code it is
-converted to a real data frame <code>resTimeGOTable</code>.</p>
-<p>In the output data frame, there are the following columns:</p>
+<p>これで<code>enrichGO()</code>関数が正常に動作しました！返される<code>resTimeGO</code>オブジェクトは特殊な形式をしており、一見するとテーブルのように見えますが、実際にはテーブルではありません<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>。</p>
+<p>出力データフレームには以下の列が含まれています：</p>
 <ul><li>
-<code>ID</code>: ID of the gene set. In this example analysis, it is
-the GO ID.</li>
+<code>ID</code>：遺伝子セットのID。この例ではGO
+IDが該当します。</li>
 <li>
-<code>Description</code>: Readable description. Here it is the name
-of the GO term.</li>
+<code>Description</code>：人間が読める形式の説明。ここではGOタームの名称が表示されます。</li>
 <li>
-<code>GeneRatio</code>: Number of DE genes in the gene set / total
-number of DE genes.</li>
+<code>GeneRatio</code>：遺伝子セットに含まれる発現変動遺伝子数 /
+全発現変動遺伝子数の比率</li>
 <li>
-<code>BgRatio</code>: Size of the gene set / total number of
-genes.</li>
+<code>BgRatio</code>：遺伝子セットのサイズ / 全遺伝子数の比率</li>
 <li>
-<code>pvalue</code>: <em>p</em>-value calculated from the
-hypergeometric distribution.</li>
+<code>pvalue</code>：ハイパー幾何分布に基づいて算出された_p_値</li>
 <li>
-<code>p.adjust</code>: Adjusted <em>p</em>-value by the BH
-method.</li>
+<code>p.adjust</code>：BH法（Benjamini-Hochberg法）による調整後_p_値</li>
 <li>
-<code>qvalue</code>: <em>q</em>-value which is another way for
-controlling false positives in multiple testings.</li>
+<code>qvalue</code>：多重検定における偽陽性を制御するための別の指標である_q_値</li>
 <li>
-<code>geneID</code>: A list of DE genes in the gene set.</li>
+<code>geneID</code>：遺伝子セットに含まれる発現変動遺伝子のリスト</li>
 <li>
-<code>Count</code>: Number of DE genes in the gene set.</li>
-</ul><p>You may have found the total number of DE genes changes. There are
-1134 in <code>timeDEgenes</code>, but only 983 DE genes are included in
-the enrichment result table (in the <code>GeneRatio</code> column). The
-main reason is by default DE genes not annotated to any GO gene set are
-filtered out. This relates to the “universe” of all genes in ORA, which
-we will touch in the end of this section.</p>
-<p>There are several additional arguments in
-<code>enrichGO()</code>:</p>
+<code>Count</code>：遺伝子セットに含まれる発現変動遺伝子の数</li>
+</ul><p>発現変動遺伝子の総数が変化していることにお気づきかもしれません。
+<code>timeDEgenes</code>には1134個の遺伝子が含まれていますが、エンリッチメント結果表（<code>GeneRatio</code>列）には983個の発現変動遺伝子のみが含まれます。
+この主な理由は、デフォルトではGO遺伝子セットにアノテーションされていない発現変動遺伝子が自動的に除外されるためです。
+これはORAにおける「ユニバース」（全遺伝子集合）の概念に関連しており、本節の最後に詳しく説明します。</p>
+<p><code>enrichGO()</code>関数には他にもいくつかの追加引数があります：</p>
 <ul><li>
-<code>universe</code>: the universe set of genes, i.e. total genes
-to use. By default it uses the union of the genes in all gene sets. If
-it is set, DE genes and all gene sets will take intersections with it.
-We will discuss it in the end of this section.</li>
+<code>universe</code>：使用する全遺伝子の集合、つまり「ユニバース」セット。デフォルトではすべての遺伝子セットに含まれる遺伝子の和集合が使用されます。この引数を指定すると、発現変動遺伝子とすべての遺伝子セットがこの集合と交差演算されます。この詳細については本節の最後に解説します。</li>
 <li>
-<code>minGSSize</code>: Minimal size of gene sets. Normally gene
-sets with very small size have very specific biological meanings which
-are not helpful too much for the interpretation. Gene sets with size
-smaller than it will be removed from the analysis. By default it is
-10.</li>
+<code>minGSSize</code>：遺伝子セットの最小サイズ。通常、非常に小さなサイズの遺伝子セットは特定の生物学的意味を持つものの、解釈にはあまり役立ちません。この値未満のサイズの遺伝子セットは解析から除外されます。デフォルト値は10です。</li>
 <li>
-<code>maxGSSize</code>: Maximal size of gene sets. Normally gene
-sets with huge size provide too general biological meanings and are not
-helpful either. By default is 500.</li>
+<code>maxGSSize</code>：遺伝子セットの最大サイズ。通常、非常に大きなサイズの遺伝子セットは生物学的意味が一般化されすぎており、やはり解釈には有用ではありません。デフォルト値は500です。</li>
 <li>
-<code>pvalueCutoff</code>: Cutoff for both <em>p</em>-values and
-adjusted <em>p</em>-values. By default is 0.05.</li>
+<code>pvalueCutoff</code>：_p_値と調整後_p_値の両方に対する閾値。デフォルト値は0.05です。</li>
 <li>
-<code>qvalueCutoff</code>: Cutoff for <em>q</em>-values. by default
-is 0.2.</li>
-</ul><p>Note, <code>enrichGO()</code> only returns significant gene sets that
-pass the cutoffs<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>. This function design might not be proper
-because a function should return all the results no matter they are
-significant or not. Later users may need to use the complete enrichment
-table for downstream anlaysis. Second, the meaning of
-<code>pvalueCutoff</code> is not precise and there is redundancy between
-<code>pvalueCutoff</code> and <code>qvalueCutoff</code> (adjusted
-<em>p</em>-values and <em>q</em>-values are always non-smaller than raw
-<em>p</em>-values). Thus it is suggested to set both
-<code>pvalueCutoff</code> and <code>qvalueCutoff</code> to 1 in
-<code>enrichGO()</code>.</p>
+<code>qvalueCutoff</code>：_q_値に対する閾値。デフォルト値は0.2です。</li>
+</ul><p>注：<code>enrichGO()</code>関数は閾値を満たした有意な遺伝子セットのみを返します<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>。
+この関数設計は適切ではない可能性があります。
+なぜなら、関数は有意かどうかに関わらずすべての結果を返すべきだからです。
+後のユーザーは下流解析のために完全なエンリッチメントテーブルを必要とする場合があります。
+さらに、<code>pvalueCutoff</code>の意味は厳密ではなく、<code>pvalueCutoff</code>と<code>qvalueCutoff</code>の間には冗長性が存在します（調整後_p_値と_q_値は常に生の_p_値よりも小さくなることはありません）。
+したがって、<code>enrichGO()</code>関数では<code>pvalueCutoff</code>と<code>qvalueCutoff</code>の両方を1に設定することが推奨されます。</p>
 <div class="codewrapper sourceCode" id="cb85">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1691,22 +1556,19 @@ GO:0030595    35
 GO:0060326    41
 GO:0071674    32</code></pre>
 </div>
-<div id="perform-go-enrichment-on-other-organisms" class="callout">
+<div id="他の生物種に対するgoエンリッチメント解析の実施" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="perform-go-enrichment-on-other-organisms" class="callout-inner">
-<h3 class="callout-title">Perform GO enrichment on other organisms</h3>
+<div id="他の生物種に対するgoエンリッチメント解析の実施" class="callout-inner">
+<h3 class="callout-title">他の生物種に対するGOエンリッチメント解析の実施</h3>
 <div class="callout-content">
-<p>Gene sets are provided as an <code>OrgDb</code> object in
-<code>enrichGO()</code>, thus you can perform ORA analysis on any
-organism as long as there is a corresponding <code>OrgDb</code>
-object.</p>
-<ul><li>For model organisms, the <code>OrgDb</code> object can be obtained
-from the corresponding <strong>org.*.db</strong> package.</li>
-<li>For other organisms, the <code>OrgDb</code> object can be found with
-the <strong>AnnotationHub</strong> package.</li>
+<p><code>enrichGO()</code>関数では遺伝子セットが<code>OrgDb</code>オブジェクトとして提供されます。
+このため、対応する<code>OrgDb</code>オブジェクトが存在する限り、任意の生物種に対してORA（Over-Representation
+Analysis）解析を実行することが可能です。</p>
+<ul><li>モデル生物の場合、対応する<strong>org.*.db</strong>パッケージから<code>OrgDb</code>オブジェクトを取得できます。</li>
+<li>その他の生物種については、<strong>AnnotationHub</strong>パッケージを使用して<code>OrgDb</code>オブジェクトを取得してください。</li>
 </ul></div>
 </div>
 </div>
@@ -1725,7 +1587,7 @@ only take the first one if there are multiple hits by setting
 <code>multiVals = "first"</code>(but of course you can choose other
 options for <code>multiVals</code>, check the documentation). We also
 remove genes with no mapping available (with <code>NA</code> after the
-mapping)<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
+mapping)<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>.</p>
 <div class="codewrapper sourceCode" id="cb87">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -1924,12 +1786,12 @@ HALLMARK_ALLOGRAFT_REJECTION          33
 HALLMARK_INTERFERON_ALPHA_RESPONSE    21
 HALLMARK_IL2_STAT5_SIGNALING          30</code></pre>
 </div>
-<div id="further-reading-3" class="callout">
+<div id="further-reading" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="further-reading-3" class="callout-inner">
+<div id="further-reading" class="callout-inner">
 <h3 class="callout-title">Further reading</h3>
 <div class="callout-content">
 <p>Implementing ORA is rather simple. The following function
@@ -2236,7 +2098,7 @@ gene sets. Let’s calculate it:</p>
 <span><span class="va">resTimeGOTable</span><span class="op">$</span><span class="va">GS_size</span> <span class="op">=</span> <span class="va">n_01</span>  <span class="co"># size of gene sets</span></span></code></pre>
 </div>
 <p>Then intuitively, if a gene set has a higher <code>DE_Ratio</code>
-value, we could say DE genes have a higher enrichment<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> in it.</p>
+value, we could say DE genes have a higher enrichment<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> in it.</p>
 <p>We can measure the enrichment in two other ways. First, the log2 fold
 enrichment, defined as:</p>
 <p><span class="math display">\[ \log_2(\mathrm{Fold\_enrichment}) =
@@ -2406,7 +2268,7 @@ returns a long list of significant GO terms (e.g. several hundreds).
 This makes it difficult to summarize the common functions from the long
 list. The last package we will introduce is the
 <strong>simplifyEnrichment</strong> package which partitions GO terms
-into clusters based on their semantic similarity<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> and summarizes their
+into clusters based on their semantic similarity<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> and summarizes their
 common functions via word clouds.</p>
 <p>The input of the <code>simplifyGO()</code> function is a vector of GO
 IDs. It is recommended to have at least 100 GO IDs for summarization and
@@ -2422,12 +2284,12 @@ visualization.</p>
 <!-- Carpentry CI cannot install RcppParallel which is indirectly depended by simplifyenrichment,
     so the plot is not generated on the fly.
  -->
-<figure><img src="fig/simplifyEnrichment.png" class="figure mx-auto d-block"></figure><div id="further-reading-4" class="callout">
+<figure><img src="fig/simplifyEnrichment.png" class="figure mx-auto d-block"></figure><div id="further-reading-1" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="further-reading-4" class="callout-inner">
+<div id="further-reading-1" class="callout-inner">
 <h3 class="callout-title">Further reading</h3>
 <div class="callout-content">
 <p>ORA analysis actually applies a binary conversion on genes where
@@ -2480,18 +2342,17 @@ $(function() {
 });
 </script></section><div class="footnotes footnotes-end-of-document">
 <hr><ol><li id="fn1"><p>各ベクトル内の遺伝子は一意である必要があります<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>Also note <code>phyper()</code> can be vectorized.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>The definition is from Wikipedia: <a href="https://en.wikipedia.org/wiki/Biological_pathway" class="external-link uri">https://en.wikipedia.org/wiki/Biological_pathway</a>.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p>This is actually not true. Indeed
-<code>as.data.frame(resTimeGO)</code> only returns the significant GO
-terms, but the complete enrichment table is still stored in
-<code>resTimeGO@result</code>. However, directly retrieving the slot of
-an S4 object is highly unrecommended.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
-<li id="fn5"><p>You can also use <code>select()</code> function:
-<code>select(org.Mm.eg.db, keys = timeDEgenes, keytype = "SYMBOL", column = "ENTREZID")</code><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
-<li id="fn6"><p>If here the term “enrichment” does mean statistically.<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
-<li id="fn7"><p>The semantic similarity between GO terms considers the
-topological relations in the GO hierarchy.<a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>なお、<code>phyper()</code>
+はベクトル化処理にも対応しています<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>この定義はWikipediaの「生物学的経路」の項目に基づいています:
+<a href="https://en.wikipedia.org/wiki/Biological_pathway" class="external-link uri">https://en.wikipedia.org/wiki/Biological_pathway</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>この問題を回避するため、コード内では<code>as.data.frame()</code>関数を使用して実際のデータフレーム<code>resTimeGOTable</code>に変換しています<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>これは厳密には正しくありません。実際には<code>as.data.frame(resTimeGO)</code>は有意なGOタームのみを返しますが、完全なエンリッチメントテーブル自体は<code>resTimeGO@result</code>に保持されています。ただし、S4オブジェクトのスロットを直接参照することは推奨されません<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>You can also use <code>select()</code> function:
+<code>select(org.Mm.eg.db, keys = timeDEgenes, keytype = "SYMBOL", column = "ENTREZID")</code><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p>If here the term “enrichment” does mean statistically.<a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn8"><p>The semantic similarity between GO terms considers the
+topological relations in the GO hierarchy.<a href="#fnref8" class="footnote-back">↩︎</a></p></li>
 </ol></div>
 
 
@@ -2551,8 +2412,8 @@ topological relations in the GO hierarchy.<a href="#fnref7" class="footnote-back
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-09-06",
-  "datePublished": "2025-09-06"
+  "dateModified": "2025-09-08",
+  "datePublished": "2025-09-08"
 }
 
   </script><script>
