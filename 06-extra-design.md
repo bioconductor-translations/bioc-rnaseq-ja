@@ -1,6 +1,6 @@
 ---
 source: Rmd
-title: Extra exploration of design matrices
+title: デザイン行列の詳細な解析
 teaching: 30
 exercises: 30
 editor_options:
@@ -13,21 +13,21 @@ editor_options:
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 
-- Explain the formula notation and design matrices.
-- Explore different designs and learn how to interpret coefficients.
+- 数式表記法とデザイン行列について説明します。
+- さまざまな実験デザインの種類を紹介し、各係数の解釈方法について学びます。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::: questions
 
-- How can one translate biological questions and comparisons to statistical terms suitable for use with RNA-seq analysis packages?
+- 生物学的な質問や比較結果を、RNA-seq解析パッケージで使用可能な統計用語に翻訳するにはどうすればよいでしょうか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Loading required packages and reading data
+## 必要なパッケージの読み込みとデータの読み込み
 
-We start by loading a few packages that will be needed in this episode.
-In particular, the [ExploreModelMatrix](https://bioconductor.org/packages/ExploreModelMatrix/) package provides resources for exploring design matrices in a graphical fashion, for easier interpretation.
+まず、今回のエピソードで使用するいくつかのパッケージを読み込みます。
+特に、[ExploreModelMatrix](https://bioconductor.org/packages/ExploreModelMatrix/) パッケージは、設計行列を視覚的に探索するための機能を提供しており、解釈を容易にします。
 
 
 ``` r
@@ -39,10 +39,10 @@ suppressPackageStartupMessages({
 })
 ```
 
-Next, we read the metadata table for our data set. Because we want to explore many different design matrices, we will read in the 4th file we downloaded but haven't used yet: that for both Cerebellum and Spinal Cord samples (45 samples total). As seen in previous episodes, the metadata contains information about the age, sex, infection status, time of measurement and tissue of the collected samples.
-Note that Day0 always corresponds to non-infected samples, and that infected samples are collected on days 4 and 8.
-Moreover, all mice have the same age (8 weeks).
-Hence, in the first part of this episode we consider only the sex, tissue and time variables further.
+次に、データセットのメタデータテーブルを読み込みます。さまざまなデザイン行列を検討するため、これまで使用していない4番目のファイルを読み込みます。このファイルには、小脳と脊髄のサンプル（合計45サンプル）のデータが含まれています。以前のエピソードで説明した通り、メタデータには収集サンプルの年齢、性別、感染状態、測定時点、および組織情報が含まれています。
+特に注意すべき点として、Day0は常に非感染サンプルに対応しており、感染サンプルはDay4とDay8に採取されています。
+さらに、すべてのマウスの年齢は8週間で統一されています。
+したがって、本エピソードの前半では、これらの変数（性別、組織、測定時点）のみを考慮します。
 
 
 ``` r
@@ -90,7 +90,7 @@ table(meta$age)
      45 
 ```
 
-We can start by visualizing the number of observations for each combination of the three predictor variables.
+まず、3つの予測変数の組み合わせごとの観測値数を可視化することから始めましょう。
 
 
 ``` r
@@ -114,20 +114,20 @@ $`tissue = Spinalcord`
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-### Challenge
+### 課題
 
-Based on this visualization, would you say that the data set is balanced, or are there combinations of predictor variables that are severely over- or underrepresented?
+この可視化結果を踏まえると、このデータセットはバランスが取れていると言えますか？あるいは、予測変数の組み合わせにおいて著しく過少または過剰表現されているケースが存在するでしょうか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Compare males and females, non-infected spinal cord
+## 雄雌および非感染脊髄の比較解析
 
-Next, we will set up our first design matrix.
-Here, we will focus on the uninfected (Day0) spinal cord samples, and our aim is to compare the male and female mice.
-Thus, we first subset the metadata to only the samples of interest, and next set up and visualize the design matrix with a single predictor variable (sex).
-By defining the design formula as `~ sex`, we tell R to include an intercept in the design.
-This intercept will represent the 'baseline' level of the predictor variable, which in this case is selected to be the Female mice.
-If not explicitly specified, R will order the values of the predictor in alphabetical order and select the first one as the reference or baseline level.
+次に、最初のデザイン行列を設定します。
+ここでは、非感染状態（Day0）の脊髄サンプルに焦点を当て、雄マウスと雌マウスを比較することを目的とします。
+そこで、まずメタデータを対象サンプルのみに絞り込み、次に単一の予測変数（性別）を用いてデザイン行列を設定し可視化します。
+デザイン式を `~ sex` と定義することで、Rに対してデザイン行列に切片項を含めるよう指示します。
+この切片項は、予測変数の「基準レベル」を表し、この場合は「雌マウス」が基準として選択されます。
+特に指定がない場合、Rは予測変数の値をアルファベット順に並べ替え、最初の値を参照レベルまたは基準レベルとして自動的に選択します。
 
 
 ``` r
@@ -212,21 +212,21 @@ attr(,"contrasts")$sex
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-### Challenge
+### 課題
 
-With this design, what is the interpretation of the `sexMale` coefficient?
+この設計において、`sexMale` 係数はどのような解釈が可能でしょうか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-### Challenge
+### 課題
 
-Set up the design formula to compare male and female spinal cord samples from Day0 as above, but instruct R to not include an intercept in the model. How does this change the interpretation of the coefficients? What contrast would have to be specified to compare the mean expression of a gene between male and female mice?
+Day0時点の雄雌脊髄組織サンプルを比較するため、前述の設計式を設定してください。ただし、Rに対してモデルに切片項を含めないよう指示してください。この変更は各係数の解釈にどのような影響を与えるでしょうか？また、雄マウスと雌マウス間で特定の遺伝子の平均発現量を比較するには、どのような対比を指定する必要があるでしょうか？
 
 :::::::::::::::  solution
 
-### Solution
+### 解答
 
 
 ``` r
@@ -290,9 +290,9 @@ vd$plotlist
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 
-### Challenge
+### 課題
 
-Set up the design formula to compare the three time points (Day0, Day4, Day8) in the male spinal cord samples, and visualize it using `ExploreModelMatrix`.
+男性脊髄組織サンプルにおける3時点（Day0、Day4、Day8）を比較するためのデザイン式を設定し、`ExploreModelMatrix`を使用してその結果を可視化してください。
 
 :::::::::::::::  solution
 
@@ -368,10 +368,10 @@ vd$plotlist
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Factorial design without interactions
+## 交互作用のないファクトリアルデザイン
 
-Next, we again consider only non-infected mice, but fit a model incorporating both sex and tissue as predictors.
-We assume that the tissue differences are the same for both male and female mice, and consequently fit an additive model, without interaction terms.
+次に、再び非感染マウスのみを対象に、性別と組織を予測因子として組み込んだモデルを構築します。
+組織間の差異は雄マウスと雌マウスで同等であると仮定し、したがって交互作用項を含まない加算モデルを適用します。
 
 
 ``` r
@@ -449,10 +449,10 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-factorial-noint-1.png" style="display: block; margin: auto;" />
 
-## Factorial design with interactions
+## 交互作用を考慮した要因計画
 
-In the previous model, we assumed that the tissue differences were the same for both male and female mice.
-To allow for the estimation of sex-specific tissue differences (at the expense of having one additional coefficient to estimate from the data), we can include an interaction term in the model.
+前回のモデルでは、組織間の差異は雄マウスと雌マウスで同等であると仮定していました。
+性別ごとに異なる組織間差異を推定可能にするため（ただし推定すべき係数が1つ増加するというコストが生じます）、モデルに交互作用項を追加することができます。
 
 
 ``` r
@@ -533,10 +533,10 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-factorial-withint-1.png" style="display: block; margin: auto;" />
 
-## Combining multiple factors into one
+## 複数の因子を1つに統合する
 
-Sometimes, for experiments with multiple factors, it is easier to interpret coefficients and set up contrasts of interest if the factors are combined into one.
-Let's consider the previous example again, using this approach:
+複数の因子を含む実験において、因子を1つに統合することで、係数の解釈や目的とする対比の設定が容易になる場合があります。
+この手法を用いて、先ほどの例を再度検討してみましょう：
 
 
 ``` r
@@ -631,12 +631,12 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-factorial-combine-1.png" style="display: block; margin: auto;" />
 
-## Paired design
+## ペアデザイン
 
-In this particular data set the samples are paired - the same mice have contributed both the cerebellum and spinal cord samples.
-This information was not included in the previous models.
-However, accounting for it can increase power to detect tissue differences by eliminating variability in baseline expression levels between mice.
-Here, we define a paired design for the female non-infected mice, aimed at testing for differences between tissues after accounting for baseline differences between mice.
+本データセットでは、サンプルがペアとして収集されています。すなわち、同一のマウスから大脳小脳と脊髄の両方のサンプルが採取されています。
+この情報は従来のモデルでは考慮されていませんでした。
+しかし、この情報をモデルに組み込むことで、マウス間のベースライン発現レベルのばらつきを排除し、組織間の差異を検出する検出力を向上させることが可能になります。
+ここでは、雌の非感染マウスを対象に、マウス間のベースライン差異を考慮した上で組織間の差異を検証するためのペアデザインを定義します。
 
 
 ``` r
@@ -698,13 +698,13 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-paired-1.png" style="display: block; margin: auto;" />
 
-## Within- and between-subject comparisons
+## 被験者内比較と被験者間比較
 
-In some situations, we need to combine the types of models considered above.
-For example, let's say that we want to investigate if the tissue differences are different for infected and non-infected female mice.
-In this case, each mice only contributes to one of the infection groups (each mice is either infected or non-infected), but contributes both a cerebellum and a spinal cord sample.
-One way to view this type of design is as two paired experiments, one for each infection group (see the [edgeR user guide section 3.5](https://www.bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf)).
-We can then easily compare the two tissues in each infection group, and contrast the tissue differences between the infection groups.
+場合によっては、前述した2種類のモデルを組み合わせる必要があります。
+例えば、感染マウスと非感染マウスの雌個体間で組織学的差異に違いがあるかどうかを調査したい場合を考えてみましょう。
+この場合、各マウスはいずれか一方の感染群にのみ寄与します（各マウスは感染群か非感染群のいずれかに分類されます）が、小脳と脊髄の両方の組織サンプルを提供します。
+この実験デザインを解釈する一つの方法は、各感染群ごとに2つのペア実験として捉えることです（[edgeRユーザーガイド 第3.5節](https://www.bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf)参照）。
+この手法を用いれば、各感染群における2種類の組織を容易に比較でき、さらに感染群間の組織学的差異を対比することが可能になります。
 
 
 ``` r
@@ -865,10 +865,10 @@ $`time = Day4`
 
 <img src="fig/06-extra-design-rendered-within-and-between-2.png" style="display: block; margin: auto;" />
 
-## How does this relate to the DESeq2 analysis we did in the previous episode?
+## この内容は、前回のエピソードで行った DESeq2 解析とどのように関連しているのでしょうか？
 
-Now that we have learnt more about interpreting design matrices, let's look back to the differential expression analysis we performed in the previous episode.
-We will repeat the main lines of code here.
+設計行列の解釈方法についてさらに理解を深めたところで、前回のエピソードで行った差異発現解析を振り返ってみましょう。
+ここでは主要なコードの流れを改めて説明します。
 
 
 ``` r
@@ -902,7 +902,7 @@ final dispersion estimates
 fitting model and testing
 ```
 
-`DESeq2` stores the design matrix in the object:
+`DESeq2` では、デザイン行列がオブジェクト内に以下のように格納されます：
 
 
 ``` r
@@ -943,7 +943,7 @@ attr(,"contrasts")$time
 [1] "contr.treatment"
 ```
 
-The column names can be obtained via the `resultsNames` function:
+列名は `resultsNames` 関数を使用して取得できます：
 
 
 ``` r
@@ -955,7 +955,7 @@ resultsNames(dds)
 [4] "time_Day8_vs_Day0" 
 ```
 
-Let's visualize this design:
+このデザインを可視化してみましょう：
 
 
 ``` r
@@ -971,22 +971,22 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-vis-sex-time-1.png" style="display: block; margin: auto;" />
 
-In the previous episode, we performed a test comparing Day8 samples to Day0 samples:
+前回のエピソードでは、Day8のサンプルとDay0のサンプルを比較するテストを実施しました：
 
 
 ``` r
 resTime <- results(dds, contrast = c("time", "Day8", "Day0"))
 ```
 
-From the figure above, we see that this comparison is represented by the `time_Day8_vs_Day0` coefficient, which corresponds to the fourth column in the design matrix.
-Thus, an alternative way of specifying the contrast for the test would be:
+上記の図からわかるように、この比較はデザイン行列の4列目に対応する`time_Day8_vs_Day0`係数によって表現されています。
+したがって、この検定における対比を別の方法で指定する場合、以下のように記述できます：
 
 
 ``` r
 resTimeNum <- results(dds, contrast = c(0, 0, 0, 1))
 ```
 
-Let's check if the results are comparable:
+結果が比較可能かどうかを確認してみましょう：
 
 
 ``` r
@@ -1039,11 +1039,11 @@ abline(0, 1)
 
 <img src="fig/06-extra-design-rendered-compare-tests-sex-time-2.png" style="display: block; margin: auto;" />
 
-## Redo DESeq2 analysis with interaction
+## 相互作用を考慮した DESeq2 解析の再実行
 
-Next, let's look at a different setup.
-We still consider the sex and time predictors, but now we allow an interaction between them.
-In other words, we allow the time effect to be different for males and females.
+次に、異なる設定条件について検討します。
+ここでは引き続き性別と時間を予測因子として考慮しますが、これらの間に相互作用項を導入します。
+つまり、時間の影響が男性と女性で異なる可能性を認めるということです。
 
 
 ``` r
@@ -1138,7 +1138,7 @@ attr(,"contrasts")$time
 [1] "contr.treatment"
 ```
 
-Let's visualize this design:
+このデザインを可視化してみましょう：
 
 
 ``` r
@@ -1154,8 +1154,8 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-vis-sex-time-int-1.png" style="display: block; margin: auto;" />
 
-Note that now, the `time_Day8_vs_Day0` coefficient represents the difference between Day8 and Day0 **for the Female samples**.
-To get the corresponding difference for the male samples, we need to also add the interaction effect (`sexMale.timeDay8`).
+現在、`time_Day8_vs_Day0` 係数は **雌サンプル** における Day8 と Day0 の差を表しています。
+雄サンプルに対応する差を求めるには、相互作用効果（`sexMale.timeDay8`）も追加する必要があります。
 
 
 ``` r
@@ -1166,7 +1166,7 @@ resTimeFemale <- results(dds, contrast = c("time", "Day8", "Day0"))
 resTimeInt <- results(dds, name = "sexMale.timeDay8")
 ```
 
-Let's try to fit this model with the second approach mentioned above, namely to create a single factor.
+前述の第2のアプローチ、すなわち単一の因子を作成する方法を用いて、このモデルの適合を試みてみましょう。
 
 
 ``` r
@@ -1259,7 +1259,7 @@ attr(,"contrasts")$sex_time
 [1] "contr.treatment"
 ```
 
-We again visualize this design:
+このデザインを再度可視化します：
 
 
 ``` r
@@ -1275,7 +1275,7 @@ vd$plotlist
 
 <img src="fig/06-extra-design-rendered-vis-sex-time-int-single-1.png" style="display: block; margin: auto;" />
 
-We then set up the same contrasts as above
+次に、前述と同様のコントラスト設定を行います
 
 
 ``` r
@@ -1295,7 +1295,7 @@ resultsNames(dds)
 resTimeIntSingle <- results(dds, contrast = c(1, 0, -1, -1, 0, 1))
 ```
 
-Check that these results agree with the ones obtained by fitting the model with the two factors and the interaction term.
+これらの結果が、2つの因子と交互作用項を含むモデルを適合させた場合に得られる結果と一致することを確認してください。
 
 
 ``` r
@@ -1382,8 +1382,8 @@ abline(0, 1)
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
-- The formula framework in R allows creation of design matrices, which details the variables expected to be associated with systematic differences in gene expression levels.
-- Comparisons of interest can be defined using contrasts, which are linear combinations of the model coefficients.
+- R言語のformulaフレームワークを使用すると、設計行列を作成できます。この設計行列は、遺伝子発現レベルにおける系統的な差異に関連すると予想される変数の詳細を記述するものです。
+- 比較対象として関心のある条件は、モデル係数の線形結合であるコントラストを用いて定義することができます。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
