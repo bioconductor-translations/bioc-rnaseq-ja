@@ -2416,7 +2416,7 @@ loaded via a namespace (and not attached):
 </div>
 </section></section><section id="aio-05-differential-expression"><p>Content from <a href="05-differential-expression.html">Differential expression analysis</a></p>
 <hr>
-<p> Last updated on 2025-09-06 |
+<p> Last updated on 2025-09-09 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/05-differential-expression.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time <i aria-hidden="true" data-feather="clock"></i> 105 minutes </p>
@@ -2524,7 +2524,7 @@ design formula are characters, converting to factors</code></pre>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p><code>DESeqDataSet</code>を生成する関数は、入力データの種類に応じて適切に調整する必要があります。例えば：</p>
 <div class="codewrapper sourceCode" id="cb5">
@@ -2568,7 +2568,7 @@ design formula are characters, converting to factors</code></pre>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor2" aria-expanded="false" aria-controls="collapseInstructor2">
   <h3 class="accordion-header" id="headingInstructor2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor2" class="accordion-collapse collapse" aria-labelledby="headingInstructor2" data-bs-parent="#accordionInstructor2">
+<div id="collapseInstructor2" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor2" aria-labelledby="headingInstructor2">
 <div class="accordion-body">
 <p><em>DESeq2</em> では、<strong>「相対対数発現量」（RLE：Relative Log
 Expression）</strong>法を用いて、リード深度とライブラリ構成を考慮したサンプルごとの<strong>サイズ因子</strong>を算出します。
@@ -2630,41 +2630,28 @@ _edgeR_の<strong>正規化係数</strong>と_DESeq2_の<strong>サイズ因子<
 <figure><img src="../fig/05-differential-expression-rendered-estimate-dispersions-1.png" alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure>
 </div>
 <div class="section level3">
-<h3 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
+<h3 id="検定方法">検定方法<a class="anchor" aria-label="anchor" href="#%E6%A4%9C%E5%AE%9A%E6%96%B9%E6%B3%95"></a>
 </h3>
-<p>We can use the <code>nbinomWaldTest()</code>function of
-<code>DESeq2</code> to fit a <em>generalized linear model (GLM)</em> and
-compute <em>log2 fold changes</em> (synonymous with “GLM coefficients”,
-“beta coefficients” or “effect size”) corresponding to the variables of
-the <em>design matrix</em>. The <em>design matrix</em> is directly
-related to the <em>design formula</em> and automatically derived from
-it. Assume a design formula with one variable (<code>~ treatment</code>)
-and two factor levels (treatment and control). The mean expression <span class="math inline">\(\mu_{j}\)</span> of a specific gene in sample
-<span class="math inline">\(j\)</span> will be modeled as following:</p>
-<p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span>,</p>
-<p>with <span class="math inline">\(β_T\)</span> corresponding to the
-log2 fold change of the treatment groups, <span class="math inline">\(x_j\)</span> = 1, if <span class="math inline">\(j\)</span> belongs to the treatment group and
-<span class="math inline">\(x_j\)</span> = 0, if <span class="math inline">\(j\)</span> belongs to the control group.</p>
-<p>Finally, the estimated log2 fold changes are scaled by their standard
-error and tested for being significantly different from 0 using the
-<em>Wald test</em>.</p>
+<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>デザイン行列_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_デザイン式_と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つデザイン式で、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル<span class="math inline">\(j\)</span>における特定遺伝子の平均発現量<span class="math inline">\(\mu_{j}\)</span>は以下のようにモデル化されます：</p>
+<p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span></p>
+<p>ここで、<span class="math inline">\(β_T\)</span>は処理群と対照群間の対数2倍変化量を表し、<span class="math inline">\(x_j\)</span>はサンプル<span class="math inline">\(j\)</span>が処理群に属する場合に1、対照群に属する場合に0となります。</p>
+<p>最終的に、推定された対数2倍変化量は標準誤差でスケーリングされ、_Wald検定_を用いて0と有意に異なるかどうかが検証されます。</p>
 <div class="codewrapper sourceCode" id="cb12">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dds</span> <span class="op">&lt;-</span> <span class="fu">nbinomWaldTest</span><span class="op">(</span><span class="va">dds</span><span class="op">)</span></span></code></pre>
 </div>
-<div id="note" class="callout">
+<div id="注意" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="note" class="callout-inner">
-<h3 class="callout-title">Note</h3>
+<div id="注意" class="callout-inner">
+<h3 class="callout-title">注意</h3>
 <div class="callout-content">
-<p>Standard differential expression analysis as performed above is
-wrapped into a single function, <code>DESeq()</code>. Running the first
-code chunk is equivalent to running the second one:</p>
+<p>上記で説明した標準的な差異発現解析は、単一の関数 <code>DESeq()</code>
+にまとめられています。最初のコードブロックを実行することは、2番目のコードブロックを実行することと等価です：</p>
 <div class="codewrapper sourceCode" id="cb13">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2683,27 +2670,20 @@ code chunk is equivalent to running the second one:</p>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="explore-results-for-specific-contrasts">Explore results for specific contrasts<a class="anchor" aria-label="anchor" href="#explore-results-for-specific-contrasts"></a>
+</section><section><h2 class="section-heading" id="特定の対比に関する結果の探索">特定の対比に関する結果の探索<a class="anchor" aria-label="anchor" href="#%E7%89%B9%E5%AE%9A%E3%81%AE%E5%AF%BE%E6%AF%94%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E7%B5%90%E6%9E%9C%E3%81%AE%E6%8E%A2%E7%B4%A2"></a>
 </h2>
 <hr class="half-width">
-<p>The <code>results()</code> function can be used to extract gene-wise
-test statistics, such as log2 fold changes and (adjusted) p-values. The
-comparison of interest can be defined using contrasts, which are linear
-combinations of the model coefficients (equivalent to combinations of
-columns within the <em>design matrix</em>) and thus directly related to
-the design formula. A detailed explanation of design matrices and how to
-use them to specify different contrasts of interest can be found in the
-section on the <a href="06-extra-design.html">exploration of design
-matrices</a>. In the <code>results()</code> function a contrast can be
-represented by the variable of interest (reference variable) and the
-related level to compare using the <code>contrast</code> argument. By
-default the reference variable will be the <strong>last
-variable</strong> of the design formula, the <em>reference level</em>
-will be the first factor level and the <em>last level</em> will be used
-for comparison. You can also explicitly specify a contrast by the
-<code>name</code> argument of the <code>results()</code> function. Names
-of all available contrasts can be accessed using
-<code>resultsNames()</code>.</p>
+<p><code>results()</code>
+関数を使用すると、遺伝子ごとの検定統計量（対数2倍変化量や調整済みp値など）を抽出できます。比較対象とする対比は、モデル係数の線形結合として定義します（これは設計行列内の列の組み合わせに相当します）。したがって、この定義は設計式と直接関連しています。設計行列の詳細な解説と、異なる対比を指定するための使用方法については、<a href="06-extra-design.html">設計行列の探索</a>
+のセクションを参照してください。<code>results()</code>
+関数では、対比を対象変数（参照変数）と、その比較対象となる水準を用いて
+<code>contrast</code>
+引数で指定します。デフォルトでは、参照変数は設計式の<strong>最後の変数</strong>となり、<em>参照水準</em>
+は最初の因子水準、<em>最後の水準</em>
+が比較対象として自動的に使用されます。また、<code>results()</code>
+関数の <code>name</code>
+引数を使用して明示的に対比を指定することも可能です。利用可能なすべての対比名は、<code>resultsNames()</code>
+関数で取得できます。</p>
 <div id="challenge1" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -2712,11 +2692,11 @@ of all available contrasts can be accessed using
 <div class="callout-inner">
 <h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>What will be the default <strong>contrast</strong>, <strong>reference
-level</strong> and <strong>“last level”</strong> for comparisons when
-running <code>results(dds)</code> for the example used in this
-lesson?</p>
-<p><em>Hint: Check the design formula used to build the object.</em></p>
+<p>このレッスンで使用されている例に対して <code>results(dds)</code>
+を実行する際、比較のデフォルト値となる
+<strong>コントラスト</strong>、<strong>基準レベル</strong>、および
+<strong>「最終レベル」</strong> はそれぞれ何になりますか？</p>
+<p><em>ヒント：オブジェクト構築に使用された設計式を確認してください。</em></p>
 </div>
 </div>
 </div>
@@ -2725,12 +2705,12 @@ lesson?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
-<p>In the lesson example the last variable of the design formula is
-<code>time</code>. The <strong>reference level</strong> (first in
-alphabetical order) is <code>Day0</code> and the <strong>last
-level</strong> is <code>Day8</code></p>
+<p>このレッスンの例では、設計式の最後の変数は <code>time</code> です。
+<strong>基準レベル</strong>（アルファベット順で最初の値）は
+<code>Day0</code> で、<strong>最終レベル</strong>は <code>Day8</code>
+です。</p>
 <div class="codewrapper sourceCode" id="cb15">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2742,21 +2722,13 @@ level</strong> is <code>Day8</code></p>
 </h3>
 <pre class="output" tabindex="0"><code>[1] "Day0" "Day4" "Day8"</code></pre>
 </div>
-<p>No worries, if you had difficulties to identify the default contrast
-the output of the <code>results()</code> function explicitly states the
-contrast it is referring to (see below)!</p>
+<p>デフォルトの対比を特定するのが難しい場合でも、<code>results()</code>
+関数の出力には明示的に参照している対比が記載されています（以下参照）！</p>
 </div>
 </div>
 </div>
 </div>
-<p>To explore the output of the <code>results()</code> function we can
-use the <code>summary()</code> function and order results by
-significance (p-value). Here we assume that we are interested in changes
-over <code>time</code> (“variable of interest”), more specifically genes
-with differential expression between <code>Day0</code> (“reference
-level”) and <code>Day8</code> (“level to compare”). The model we used
-included the <code>sex</code> variable (see above). Thus our results
-will be “corrected” for sex-related differences.</p>
+<p><code>results()</code>関数の出力を詳細に分析するには、<code>summary()</code>関数を使用し、有意性（p値）に基づいて結果を並べ替えることができます。ここでは、特に<code>時間</code>（「関心のある変数」）における変化に関心があり、具体的には<code>Day0</code>（「基準レベル」）と<code>Day8</code>（「比較対象レベル」）の間で発現量に差異が見られる遺伝子を対象としています。使用したモデルには<code>性別</code>変数が含まれています（上記参照）。したがって、本分析結果は性別に関連する差異を考慮した「補正済み」の値となります。</p>
 <div class="codewrapper sourceCode" id="cb17">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2814,11 +2786,11 @@ A330076C08Rik 3.01518e-48</code></pre>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor3" aria-expanded="false" aria-controls="collapseInstructor3">
   <h3 class="accordion-header" id="headingInstructor3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor3" class="accordion-collapse collapse" aria-labelledby="headingInstructor3" data-bs-parent="#accordionInstructor3">
+<div id="collapseInstructor3" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor3" aria-labelledby="headingInstructor3">
 <div class="accordion-body">
-<p>Both of the below ways of specifying the contrast are essentially
-equivalent. The <code>name</code> parameter can be accessed using
-<code>resultsNames()</code>.</p>
+<p>以下の2つのコントラスト指定方法は、本質的に同等の結果をもたらします。
+<code>name</code> パラメータには <code>resultsNames()</code>
+関数を使用してアクセスできます。</p>
 <div class="codewrapper sourceCode" id="cb21">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2838,10 +2810,11 @@ equivalent. The <code>name</code> parameter can be accessed using
 <div class="callout-inner">
 <h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>Explore the DE genes between males and females independent of
-time.</p>
-<p><em>Hint: You don’t need to fit the GLM again. Use
-<code>resultsNames()</code> to get the correct contrast.</em></p>
+<p>時間の影響を排除して、雄個体と雌個体間における DE
+遺伝子を探索してください。</p>
+<p><em>ヒント: GLM
+を再度適合させる必要はありません。<code>resultsNames()</code>
+関数を使用して正しい対比を取得してください。</em></p>
 </div>
 </div>
 </div>
@@ -2850,7 +2823,7 @@ time.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb22">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2907,44 +2880,34 @@ LOC105243748  1.11194e-48</code></pre>
 </div>
 </div>
 </div>
-<div id="multiple-testing-correction" class="callout">
+<div id="多重検定補正" class="callout">
 <div class="callout-square">
 <i class="callout-icon" data-feather="bell"></i>
 </div>
 <span class="callout-header">Callout</span>
-<div id="multiple-testing-correction" class="callout-inner">
-<h3 class="callout-title">Multiple testing correction</h3>
+<div id="多重検定補正" class="callout-inner">
+<h3 class="callout-title">多重検定補正</h3>
 <div class="callout-content">
-<p>Due to the high number of tests (one per gene) our DE results will
-contain a substantial number of <strong>false positives</strong>. For
-example, if we tested 20,000 genes at a threshold of <span class="math inline">\(\alpha = 0.05\)</span> we would expect 1,000
-significant DE genes with no differential expression.</p>
-<p>To account for this expected high number of false positives, we can
-correct our results for <strong>multiple testing</strong>. By default
-<code>DESeq2</code> uses the <a href="https://link.springer.com/referenceworkentry/10.1007/978-1-4419-9863-7_1215" class="external-link">Benjamini-Hochberg
-procedure</a> to calculate <strong>adjusted p-values</strong> (padj) for
-DE results.</p>
+<p>遺伝子ごとに1回ずつ行われる多数の検定を実施するため、DE解析の結果には必然的に<strong>偽陽性</strong>が相当数含まれることになります。例えば、20,000個の遺伝子を<span class="math inline">\(\alpha =
+0.05\)</span>の有意水準で検定した場合、実際には発現差が認められない遺伝子が1,000個有意に検出されると予想されます。</p>
+<p>このような高い偽陽性率を考慮するため、我々は結果に対して<strong>多重検定補正</strong>を適用します。<code>DESeq2</code>ではデフォルトで、<a href="https://link.springer.com/referenceworkentry/10.1007/978-1-4419-9863-7_1215" class="external-link">Benjamini-Hochberg法</a>を用いて、DE解析結果に対する<strong>調整済みp値</strong>（padj）を算出します。</p>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="independent-filtering-and-log-fold-shrinkage">Independent Filtering and log-fold shrinkage<a class="anchor" aria-label="anchor" href="#independent-filtering-and-log-fold-shrinkage"></a>
+</section><section><h2 class="section-heading" id="独立フィルタリングと対数倍率変化の縮小処理">独立フィルタリングと対数倍率変化の縮小処理<a class="anchor" aria-label="anchor" href="#%E7%8B%AC%E7%AB%8B%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%A8%E5%AF%BE%E6%95%B0%E5%80%8D%E7%8E%87%E5%A4%89%E5%8C%96%E3%81%AE%E7%B8%AE%E5%B0%8F%E5%87%A6%E7%90%86"></a>
 </h2>
 <hr class="half-width">
-<p>We can visualize the results in many ways. A good check is to explore
-the relationship between <em>log2fold changes</em>, <em>significant DE
-genes</em> and the <em>genes mean count</em>. <code>DESeq2</code>
-provides a useful function to do so, <code>plotMA()</code>.</p>
+<p>結果はさまざまな方法で可視化できます。特に有用なのは、<em>log2倍変化量</em>、<em>有意に発現変動した遺伝子</em>、および_遺伝子の平均カウント数_の関係性を分析することです。
+<code>DESeq2</code>にはこの分析を行うための便利な関数<code>plotMA()</code>が用意されています。</p>
 <div class="codewrapper sourceCode" id="cb26">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plotMA</span><span class="op">(</span><span class="va">resTime</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/05-differential-expression-rendered-plot-ma-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. The range of log fold changes is larger for low values of the mean normalized counts." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>We can see that genes with a low mean count tend to have larger log
-fold changes. This is caused by counts from lowly expressed genes
-tending to be very noisy. We can <em>shrink</em> the log fold changes of
-these genes with low mean and high dispersion, as they contain little
-information.</p>
+<figure><img src="../fig/05-differential-expression-rendered-plot-ma-1.png" alt="MAプロット：x軸に正規化後の平均カウント数、y軸に対数倍率変化量を表示。有意に発現変動した遺伝子は青色で表示されています。平均正規化カウント数が少ない遺伝子ほど、対数倍率変化量の範囲が広くなっています。" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>この結果から、平均カウント数が少ない遺伝子ほど対数倍率変化量が大きくなる傾向が確認できます。
+これは、発現量の低い遺伝子のカウントデータが非常にノイズを含む性質によるものです。
+平均カウント数が少なく分散が大きいこれらの遺伝子については、情報量が限られているため、対数倍率変化量を縮小処理することができます。</p>
 <div class="codewrapper sourceCode" id="cb27">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2965,10 +2928,7 @@ information.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">plotMA</span><span class="op">(</span><span class="va">resTimeLfc</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="../fig/05-differential-expression-rendered-res-time-lfc-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the shrunken log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. Most log fold changes for low mean normalized counts have been shrunken to be close to zero." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>Shrinkage of log fold changes is useful for visualization and ranking
-of genes, but for result exploration typically the
-<code>independentFiltering</code> argument is used to remove lowly
-expressed genes.</p>
+<figure><img src="../fig/05-differential-expression-rendered-res-time-lfc-1.png" alt="MAプロット：x軸に正規化後の平均カウント数、y軸に縮小処理された対数倍率変化量を表示。有意に発現変動した遺伝子は青色で表示されています。平均正規化カウント数が少ない遺伝子の対数倍率変化量は、ほとんどがゼロに近い値に縮小されています。" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>対数倍率変化量の縮小処理は、遺伝子の可視化やランキングにおいて有用ですが、結果の詳細な検討を行う場合には、通常<code>independentFiltering</code>引数を使用して発現量の低い遺伝子を除去します。</p>
 <div id="challenge3" class="callout challenge">
 <div class="callout-square">
 <i class="callout-icon" data-feather="zap"></i>
@@ -2977,12 +2937,12 @@ expressed genes.</p>
 <div class="callout-inner">
 <h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>By default <code>independentFiltering</code> is set to
-<code>TRUE</code>. What happens without filtering lowly expressed genes?
-Use the <code>summary()</code> function to compare the results. Most of
-the lowly expressed genes are not significantly differential expressed
-(blue in the above MA plots). What could cause the difference in the
-results then?</p>
+<p>デフォルトでは <code>independentFiltering</code> は <code>TRUE</code>
+に設定されています。低発現遺伝子をフィルタリングしない場合、どのような結果が得られるでしょうか？
+<code>summary()</code>
+関数を使用して結果を比較してみてください。ほとんどの低発現遺伝子は、有意な発現差を示していません（上記の
+MA
+プロットでは青色で表示されています）。それでは、結果に差異が生じる原因は何でしょうか？</p>
 </div>
 </div>
 </div>
@@ -2991,7 +2951,7 @@ results then?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb30">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3036,28 +2996,16 @@ low counts [2]     : 0, 0%
 [1] see 'cooksCutoff' argument of ?results
 [2] see 'independentFiltering' argument of ?results</code></pre>
 </div>
-<p>Genes with very low counts are not likely to see significant
-differences typically due to high dispersion. Filtering of lowly
-expressed genes thus increased detection power at the same
-experiment-wide false positive rate.</p>
+<p>発現頻度が極めて低い遺伝子では、分散が大きいため有意差が認められることはほとんどありません。したがって、低発現遺伝子をフィルタリングすることで、実験全体における偽陽性率を一定に保ったまま検出感度を向上させることが可能となります。</p>
 </div>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="visualize-selected-set-of-genes">Visualize selected set of genes<a class="anchor" aria-label="anchor" href="#visualize-selected-set-of-genes"></a>
+</section><section><h2 class="section-heading" id="選択した遺伝子セットの可視化">選択した遺伝子セットの可視化<a class="anchor" aria-label="anchor" href="#%E9%81%B8%E6%8A%9E%E3%81%97%E3%81%9F%E9%81%BA%E4%BC%9D%E5%AD%90%E3%82%BB%E3%83%83%E3%83%88%E3%81%AE%E5%8F%AF%E8%A6%96%E5%8C%96"></a>
 </h2>
 <hr class="half-width">
-<p>The amount of DE genes can be overwhelming and a ranked list of genes
-can still be hard to interpret with regards to an experimental question.
-Visualizing gene expression can help to detect expression pattern or
-group of genes with related functions. We will perform systematic
-detection of over represented groups of genes in a <a href="07-gene-set-analysis.html">later section</a>. Before this
-visualization can already help us to get a good intuition about what to
-expect.</p>
-<p>We will use transformed data (see <a href="04-exploratory-qc.html">exploratory data analysis</a>) and the top
-differentially expressed genes for visualization. A heatmap can reveal
-expression pattern across sample groups (columns) and automatically
-orders genes (rows) according to their similarity.</p>
+<p>発現変動遺伝子の数は非常に膨大であり、単に発現変動遺伝子をランク付けしたリストだけでは、実験的な疑問に対する解釈が難しい場合があります。遺伝子発現パターンを可視化することで、発現パターンの傾向や、関連する機能を持つ遺伝子群を特定することが可能になります。具体的な遺伝子群の過剰表現については、<a href="07-gene-set-analysis.html">後のセクション</a>で体系的な検出を行います。ただし、この可視化作業を行うだけでも、今後の解析で期待すべき結果のイメージを掴む上で大いに役立ちます。</p>
+<p>可視化には、変換処理を施したデータ（<a href="04-exploratory-qc.html">探索的データ解析</a>を参照）と、最も有意に発現変動が認められた遺伝子群を使用します。ヒートマップを作成することで、サンプル群間（列方向）の発現パターンを明らかにできるほか、遺伝子（行方向）をその類似性に基づいて自動的に順序付けすることが可能です。</p>
 <div class="codewrapper sourceCode" id="cb34">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -3091,18 +3039,14 @@ orders genes (rows) according to their similarity.</p>
 <div class="callout-inner">
 <h3 class="callout-title">Challenge</h3>
 <div class="callout-content">
-<p>Check the heatmap and top DE genes. Do you find something
-expected/unexpected in terms of change across all 3 time points?</p>
+<p>ヒートマップと上位のDE遺伝子を確認してください。3時点すべてにおける変化の傾向として、予想通りの結果や予想外の結果は見つかりましたか？</p>
 </div>
 </div>
 </div>
-</section><section><h2 class="section-heading" id="output-results">Output results<a class="anchor" aria-label="anchor" href="#output-results"></a>
+</section><section><h2 class="section-heading" id="結果の出力">結果の出力<a class="anchor" aria-label="anchor" href="#%E7%B5%90%E6%9E%9C%E3%81%AE%E5%87%BA%E5%8A%9B"></a>
 </h2>
 <hr class="half-width">
-<p>We may want to to output our results out of R to have a stand-alone
-file. The format of <code>resTime</code> only has the gene symbols as
-rownames, so let us join the gene annotation information, and then write
-out as .csv file:</p>
+<p>R環境外で独立して使用できる形式の出力ファイルを生成したい場合があります。<code>resTime</code>オブジェクトの形式は行名として遺伝子シンボルのみを含んでいるため、遺伝子アノテーション情報を結合した上で、.csvファイルとして保存します：</p>
 <div class="codewrapper sourceCode" id="cb35">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -3123,11 +3067,8 @@ out as .csv file:</p>
 <div class="callout-inner">
 <div class="callout-content">
 <ul>
-<li>With DESeq2, the main steps of a differential expression analysis
-(size factor estimation, dispersion estimation, calculation of test
-statistics) are wrapped in a single function: DESeq().</li>
-<li>Independent filtering of lowly expressed genes is often
-beneficial.</li>
+<li>DESeq2では、差異的発現解析の主要な手順（サイズ因子推定、分散推定、検定統計量の算出）が単一の関数DESeq()に統合されています。</li>
+<li>発現量の低い遺伝子を独立してフィルタリングすることは、多くの場合有効な手法です。</li>
 </ul>
 </div>
 </div>
@@ -3424,7 +3365,7 @@ mean expression of a gene between male and female mice?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3512,7 +3453,7 @@ Day4, Day8) in the male spinal cord samples, and visualize it using
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
