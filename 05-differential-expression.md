@@ -154,15 +154,15 @@ plotDispEsts(dds)
 
 <img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts." style="display: block; margin: auto;" />
 
-### Testing
+### 検定方法
 
-We can use the `nbinomWaldTest()`function of `DESeq2` to fit a _generalized linear model (GLM)_ and compute _log2 fold changes_ (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the _design matrix_. The _design matrix_ is directly related to the _design formula_ and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
+`DESeq2`パッケージの`nbinomWaldTest()`関数を使用することで、_一般化線形モデル（GLM）_を構築し、_デザイン行列_の各変数に対応する_対数2倍変化量_（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_デザイン式_と直接関連しており、自動的に生成されます。例えば、1つの変数（`~ treatment`：処理群と対照群）を持つデザイン式で、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル$j$における特定遺伝子の平均発現量$\mu_{j}$は以下のようにモデル化されます：
 
-$log(μ_j) = β_0 + x_j β_T$,
+$log(μ_j) = β_0 + x_j β_T$
 
-with $β_T$ corresponding to the log2 fold change of the treatment groups, $x_j$ = 1, if $j$ belongs to the treatment group and $x_j$ = 0, if $j$ belongs to the control group.
+ここで、$β_T$は処理群と対照群間の対数2倍変化量を表し、$x_j$はサンプル$j$が処理群に属する場合に1、対照群に属する場合に0となります。
 
-Finally, the estimated log2 fold changes are scaled by their standard error and tested for being significantly different from 0 using the _Wald test_.
+最終的に、推定された対数2倍変化量は標準誤差でスケーリングされ、_Wald検定_を用いて0と有意に異なるかどうかが検証されます。
 
 
 ``` r
@@ -171,9 +171,10 @@ dds <- nbinomWaldTest(dds)
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### Note
+### 注意
 
-Standard differential expression analysis as performed above is wrapped into a single function, `DESeq()`. Running the first code chunk is equivalent to running the second one:
+上記で説明した標準的な差異発現解析は、単一の関数 `DESeq()` にまとめられています。最初のコードブロックを実行することは、2番目のコードブロックを実行することと等価です：
+
 
 
 ``` r
@@ -189,20 +190,20 @@ dds <- nbinomWaldTest(dds)
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Explore results for specific contrasts
+## 特定の対比に関する結果の探索
 
-The `results()` function can be used to extract gene-wise test statistics, such as log2 fold changes and (adjusted) p-values. The comparison of interest can be defined using contrasts, which are linear combinations of the model coefficients (equivalent to combinations of columns within the _design matrix_) and thus directly related to the design formula. A detailed explanation of design matrices and how to use them to specify different contrasts of interest can be found in the section on the [exploration of design matrices](../episodes/06-extra-design.Rmd). In the `results()` function a contrast can be represented by the variable of interest (reference variable) and the related level to compare using the `contrast` argument. By default the reference variable will be the **last variable** of the design formula, the _reference level_ will be the first factor level and the _last level_ will be used for comparison. You can also explicitly specify a contrast by the `name` argument of the `results()` function. Names of all available contrasts can be accessed using `resultsNames()`.
+`results()` 関数を使用すると、遺伝子ごとの検定統計量（対数2倍変化量や調整済みp値など）を抽出できます。比較対象とする対比は、モデル係数の線形結合として定義します（これは設計行列内の列の組み合わせに相当します）。したがって、この定義は設計式と直接関連しています。設計行列の詳細な解説と、異なる対比を指定するための使用方法については、[設計行列の探索](../episodes/06-extra-design.Rmd) のセクションを参照してください。`results()` 関数では、対比を対象変数（参照変数）と、その比較対象となる水準を用いて `contrast` 引数で指定します。デフォルトでは、参照変数は設計式の**最後の変数**となり、_参照水準_ は最初の因子水準、_最後の水準_ が比較対象として自動的に使用されます。また、`results()` 関数の `name` 引数を使用して明示的に対比を指定することも可能です。利用可能なすべての対比名は、`resultsNames()` 関数で取得できます。
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-What will be the default **contrast**, **reference level** and **"last level"** for comparisons when running `results(dds)` for the example used in this lesson?
+このレッスンで使用されている例に対して `results(dds)` を実行する際、比較のデフォルト値となる **コントラスト**、**基準レベル**、および **「最終レベル」** はそれぞれ何になりますか？
 
-_Hint: Check the design formula used to build the object._
+_ヒント：オブジェクト構築に使用された設計式を確認してください。_
 
 :::::::::::::::::::::::: solution
 
-In the lesson example the last variable of the design formula is `time`.
-The **reference level** (first in alphabetical order) is `Day0` and the **last level** is `Day8`
+このレッスンの例では、設計式の最後の変数は `time` です。
+**基準レベル**（アルファベット順で最初の値）は `Day0` で、**最終レベル**は `Day8` です。
 
 
 ``` r
@@ -213,12 +214,13 @@ levels(dds$time)
 [1] "Day0" "Day4" "Day8"
 ```
 
-No worries, if you had difficulties to identify the default contrast the output of the `results()` function explicitly states the contrast it is referring to (see below)!
+デフォルトの対比を特定するのが難しい場合でも、`results()` 関数の出力には明示的に参照している対比が記載されています（以下参照）！
+
 
 :::::::::::::::::::::::::::::::::
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-To explore the output of the `results()` function we can use the `summary()` function and order results by significance (p-value). Here we assume that we are interested in changes over `time` ("variable of interest"), more specifically genes with differential expression between `Day0` ("reference level") and `Day8` ("level to compare"). The model we used included the `sex` variable (see above). Thus our results will be "corrected" for sex-related differences.
+`results()`関数の出力を詳細に分析するには、`summary()`関数を使用し、有意性（p値）に基づいて結果を並べ替えることができます。ここでは、特に`時間`（「関心のある変数」）における変化に関心があり、具体的には`Day0`（「基準レベル」）と`Day8`（「比較対象レベル」）の間で発現量に差異が見られる遺伝子を対象としています。使用したモデルには`性別`変数が含まれています（上記参照）。したがって、本分析結果は性別に関連する差異を考慮した「補正済み」の値となります。
 
 
 ``` r
@@ -268,8 +270,9 @@ A330076C08Rik 3.01518e-48
 ```
 
 ::::::::::::::::::::::::::::::::::::: instructor
-Both of the below ways of specifying the contrast are essentially equivalent.
-The `name` parameter can be accessed using `resultsNames()`.
+
+以下の2つのコントラスト指定方法は、本質的に同等の結果をもたらします。
+`name` パラメータには `resultsNames()` 関数を使用してアクセスできます。
 
 
 ``` r
@@ -281,9 +284,10 @@ resTime <- results(dds, name = "time_Day8_vs_Day0")
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-Explore the DE genes between males and females independent of time.
+時間の影響を排除して、雄個体と雌個体間における DE 遺伝子を探索してください。
 
-_Hint: You don't need to fit the GLM again. Use `resultsNames()` to get the correct contrast._
+_ヒント: GLM を再度適合させる必要はありません。`resultsNames()` 関数を使用して正しい対比を取得してください。_
+
 
 :::::::::::::::::::::::: solution
 
@@ -338,30 +342,29 @@ LOC105243748  1.11194e-48
 
 ::::::::::::::::::::::::::::::::::::: callout
 
-### Multiple testing correction
+### 多重検定補正
 
-Due to the high number of tests (one per gene) our DE results will contain a substantial number of **false positives**. For example, if we tested 20,000 genes at a threshold of $\alpha = 0.05$ we would expect 1,000 significant DE genes with no differential expression.
+遺伝子ごとに1回ずつ行われる多数の検定を実施するため、DE解析の結果には必然的に**偽陽性**が相当数含まれることになります。例えば、20,000個の遺伝子を$\alpha = 0.05$の有意水準で検定した場合、実際には発現差が認められない遺伝子が1,000個有意に検出されると予想されます。
 
-To account for this expected high number of false positives, we can correct our results for **multiple testing**. By default `DESeq2` uses the [Benjamini-Hochberg procedure](https://link.springer.com/referenceworkentry/10.1007/978-1-4419-9863-7_1215)
-to calculate **adjusted p-values** (padj) for DE results.
+このような高い偽陽性率を考慮するため、我々は結果に対して**多重検定補正**を適用します。`DESeq2`ではデフォルトで、[Benjamini-Hochberg法](https://link.springer.com/referenceworkentry/10.1007/978-1-4419-9863-7_1215)を用いて、DE解析結果に対する**調整済みp値**（padj）を算出します。
 
 :::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Independent Filtering and log-fold shrinkage
+## 独立フィルタリングと対数倍率変化の縮小処理
 
-We can visualize the results in many ways. A good check is to explore the relationship between _log2fold changes_, _significant DE genes_ and the _genes mean count_.
-`DESeq2` provides a useful function to do so, `plotMA()`.
+結果はさまざまな方法で可視化できます。特に有用なのは、_log2倍変化量_、_有意に発現変動した遺伝子_、および_遺伝子の平均カウント数_の関係性を分析することです。
+`DESeq2`にはこの分析を行うための便利な関数`plotMA()`が用意されています。
 
 
 ``` r
 plotMA(resTime)
 ```
 
-<img src="fig/05-differential-expression-rendered-plot-ma-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. The range of log fold changes is larger for low values of the mean normalized counts." style="display: block; margin: auto;" />
+<img src="fig/05-differential-expression-rendered-plot-ma-1.png" alt="MAプロット：x軸に正規化後の平均カウント数、y軸に対数倍率変化量を表示。有意に発現変動した遺伝子は青色で表示されています。平均正規化カウント数が少ない遺伝子ほど、対数倍率変化量の範囲が広くなっています。" style="display: block; margin: auto;" />
 
-We can see that genes with a low mean count tend to have larger log fold changes.
-This is caused by counts from lowly expressed genes tending to be very noisy.
-We can _shrink_ the log fold changes of these genes with low mean and high dispersion, as they contain little information.
+この結果から、平均カウント数が少ない遺伝子ほど対数倍率変化量が大きくなる傾向が確認できます。
+これは、発現量の低い遺伝子のカウントデータが非常にノイズを含む性質によるものです。
+平均カウント数が少なく分散が大きいこれらの遺伝子については、情報量が限られているため、対数倍率変化量を縮小処理することができます。
 
 
 ``` r
@@ -379,13 +382,13 @@ using 'apeglm' for LFC shrinkage. If used in published research, please cite:
 plotMA(resTimeLfc)
 ```
 
-<img src="fig/05-differential-expression-rendered-res-time-lfc-1.png" alt="MA plot showing the mean normalized counts on the x-axis and the shrunken log fold change on the y-axis. Significantly differentially expressed genes are colored in blue. Most log fold changes for low mean normalized counts have been shrunken to be close to zero." style="display: block; margin: auto;" />
+<img src="fig/05-differential-expression-rendered-res-time-lfc-1.png" alt="MAプロット：x軸に正規化後の平均カウント数、y軸に縮小処理された対数倍率変化量を表示。有意に発現変動した遺伝子は青色で表示されています。平均正規化カウント数が少ない遺伝子の対数倍率変化量は、ほとんどがゼロに近い値に縮小されています。" style="display: block; margin: auto;" />
 
-Shrinkage of log fold changes is useful for visualization and ranking of genes, but for result exploration typically the `independentFiltering` argument is used to remove lowly expressed genes.
+対数倍率変化量の縮小処理は、遺伝子の可視化やランキングにおいて有用ですが、結果の詳細な検討を行う場合には、通常`independentFiltering`引数を使用して発現量の低い遺伝子を除去します。
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-By default `independentFiltering` is set to `TRUE`. What happens without filtering lowly expressed genes? Use the `summary()` function to compare the results. Most of the lowly expressed genes are not significantly differential expressed (blue in the above MA plots). What could cause the difference in the results then?
+デフォルトでは `independentFiltering` は `TRUE` に設定されています。低発現遺伝子をフィルタリングしない場合、どのような結果が得られるでしょうか？ `summary()` 関数を使用して結果を比較してみてください。ほとんどの低発現遺伝子は、有意な発現差を示していません（上記の MA プロットでは青色で表示されています）。それでは、結果に差異が生じる原因は何でしょうか？
 
 :::::::::::::::::::::::: solution
 
@@ -427,16 +430,16 @@ low counts [2]     : 0, 0%
 [2] see 'independentFiltering' argument of ?results
 ```
 
-Genes with very low counts are not likely to see significant differences typically due to high dispersion. Filtering of lowly expressed genes thus increased detection power at the same experiment-wide false positive rate.
+発現頻度が極めて低い遺伝子では、分散が大きいため有意差が認められることはほとんどありません。したがって、低発現遺伝子をフィルタリングすることで、実験全体における偽陽性率を一定に保ったまま検出感度を向上させることが可能となります。
 
 :::::::::::::::::::::::::::::::::
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Visualize selected set of genes
+## 選択した遺伝子セットの可視化
 
-The amount of DE genes can be overwhelming and a ranked list of genes can still be hard to interpret with regards to an experimental question. Visualizing gene expression can help to detect expression pattern or group of genes with related functions. We will perform systematic detection of over represented groups of genes in a [later section](../episodes/07-gene-set-analysis.Rmd). Before this visualization can already help us to get a good intuition about what to expect.
+発現変動遺伝子の数は非常に膨大であり、単に発現変動遺伝子をランク付けしたリストだけでは、実験的な疑問に対する解釈が難しい場合があります。遺伝子発現パターンを可視化することで、発現パターンの傾向や、関連する機能を持つ遺伝子群を特定することが可能になります。具体的な遺伝子群の過剰表現については、[後のセクション](../episodes/07-gene-set-analysis.Rmd)で体系的な検出を行います。ただし、この可視化作業を行うだけでも、今後の解析で期待すべき結果のイメージを掴む上で大いに役立ちます。
 
-We will use transformed data (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and the top differentially expressed genes for visualization. A heatmap can reveal expression pattern across sample groups (columns) and automatically orders genes (rows) according to their similarity.
+可視化には、変換処理を施したデータ（[探索的データ解析](../episodes/04-exploratory-qc.Rmd)を参照）と、最も有意に発現変動が認められた遺伝子群を使用します。ヒートマップを作成することで、サンプル群間（列方向）の発現パターンを明らかにできるほか、遺伝子（行方向）をその類似性に基づいて自動的に順序付けすることが可能です。
 
 
 ``` r
@@ -466,13 +469,13 @@ ComplexHeatmap::Heatmap(heatmapData,
 
 ::::::::::::::::::::::::::::::::::::: challenge
 
-Check the heatmap and top DE genes. Do you find something expected/unexpected in terms of change across all 3 time points?
+ヒートマップと上位のDE遺伝子を確認してください。3時点すべてにおける変化の傾向として、予想通りの結果や予想外の結果は見つかりましたか？
 
 ::::::::::::::::::::::::::::::::::::::::::::::::
 
-## Output results
+## 結果の出力
 
-We may want to to output our results out of R to have a stand-alone file. The format of `resTime` only has the gene symbols as rownames, so let us join the gene annotation information, and then write out as .csv file:
+R環境外で独立して使用できる形式の出力ファイルを生成したい場合があります。`resTime`オブジェクトの形式は行名として遺伝子シンボルのみを含んでいるため、遺伝子アノテーション情報を結合した上で、.csvファイルとして保存します：
 
 
 ``` r
@@ -487,8 +490,8 @@ write.csv(temp, file = "output/Day8vsDay0.csv")
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
-- With DESeq2, the main steps of a differential expression analysis (size factor estimation, dispersion estimation, calculation of test statistics) are wrapped in a single function: DESeq().
-- Independent filtering of lowly expressed genes is often beneficial.
+- DESeq2では、差異的発現解析の主要な手順（サイズ因子推定、分散推定、検定統計量の算出）が単一の関数DESeq()に統合されています。
+- 発現量の低い遺伝子を独立してフィルタリングすることは、多くの場合有効な手法です。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
