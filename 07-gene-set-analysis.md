@@ -414,9 +414,9 @@ microbenchmark(
 
 ``` output
 Unit: microseconds
-   expr     min       lq     mean   median       uq     max neval
- fisher 253.284 259.0295 275.2027 266.2070 278.9055 699.627   100
-  hyper   1.573   1.8135   2.9330   3.1505   3.4865  18.916   100
+   expr     min       lq      mean  median       uq      max neval
+ fisher 247.181 252.5560 276.68998 258.587 270.5645 1480.009   100
+  hyper   1.543   1.7985   2.96674   3.051   3.3265   18.765   100
 ```
 
 `phyper()` が `fisher.test()` よりも数百倍高速であることは驚くべき結果です。
@@ -1040,7 +1040,7 @@ resTimeGO = enrichGO(gene = timeDEgenes,
 ```
 
 ``` output
---> Expected input gene ID: 20852,15193,216049,232210,208084,75317
+--> Expected input gene ID: 77782,71777,27395,17258,83408,67968
 ```
 
 ``` output
@@ -1191,23 +1191,18 @@ GO:0071674    32
 
 
 
-### KEGG pathway enrichment
+### KEGG経路エンリッチメント解析
 
-To perform KEGG pathway enrichment analysis, there is also a function
-`enrichKEGG()` for that. Unfortunately, it cannot perform gene ID conversion
-automatically. Thus, if the ID type is not Entrez ID, we have to convert it by
-hand.
+KEGG経路エンリッチメント解析を実行するには、`enrichKEGG()`という専用の関数が用意されています。
+ただし、この関数では遺伝子IDの自動変換は行えません。
+したがって、IDタイプがEntrez IDでない場合は、手動で変換する必要があります。
 
-Note if you have also set `universe`, it should be converted to Entrez IDs as
-well.
+`universe`パラメータを設定している場合も同様に、Entrez IDへの変換が必要です。
 
-We use the `mapIds()` function to convert genes from symbols to Entrez IDs.
-Since the ID mapping is not always one-to-one. We only take the first one if
-there are multiple hits by setting `multiVals = "first"`(but of course you can
-choose other options for `multiVals`, check the documentation). We also remove
-genes with no mapping available (with `NA` after the mapping)^[You can also
-use `select()` function: `select(org.Mm.eg.db, keys = timeDEgenes, keytype =
-"SYMBOL", column = "ENTREZID")`].
+遺伝子シンボルからEntrez IDへの変換には、`mapIds()`関数を使用します。
+IDマッピングは必ずしも1対1対応ではないため、`multiVals = "first"`と設定することで複数のヒットがある場合には最初の値のみを取得します（もちろん`multiVals`には他オプションも選択可能です。
+詳細はドキュメントを参照してください）。
+また、マッピング結果が`NA`となる遺伝子は除外します^[`select()`関数を使用することもできます：`select(org.Mm.eg.db, keys = timeDEgenes, keytype = "SYMBOL", column = "ENTREZID")`]。
 
 
 ``` r
@@ -1229,9 +1224,8 @@ head(EntrezIDs)
 "170755"  "98741" "226866"  "14859" "214895" "109346" 
 ```
 
-We have to set the KEGG organism code if it is not human. Similarly it is suggested
-to set `pvalueCutoff` and `qvalueCutoff` both to 1 and convert the result to a
-data frame.
+ヒト以外の生物種を対象とする場合は、KEGGの生物種コードを設定する必要があります。
+同様に、`pvalueCutoff`と`qvalueCutoff`の両方を1に設定し、結果をデータフレームに変換することをお勧めします。
 
 
 
@@ -1299,23 +1293,22 @@ mmu04061    14
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
-## Perform KEGG pathway enrichment on other organisms
+## 他の生物種に対する KEGG パスウェイエンリッチメント解析の実施
 
-Extending ORA to other organisms is rather simple.
+ORA 手法を他の生物種に適用することは比較的容易です。
 
-1. Make sure the DE genes are Entrez IDs.
-2. Choose the corresponding KEGG organism code.
+1. DE 遺伝子が Entrez ID 形式であることを確認してください。
+2. 対象生物種に対応する KEGG 生物種コードを選択してください。
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-### MSigDB enrichment
+### MSigDB エンリッチメント解析
 
-For MSigDB gene sets, there is no pre-defined enrichment function. We need to
-directly use the low-level enrichment function `enricher()` which accepts
-self-defined gene sets. The gene sets should be in a format of a two-column
-data frame of genes and gene sets (or a class that can be converted to a data
-frame). Let's use the hallmark collection (`hm`) that we generated above. 
+MSigDB の遺伝子セットについては、事前に定義されたエンリッチメント関数は用意されていません。
+代わりに、ユーザーが定義した遺伝子セットを直接使用できる低レベルのエンリッチメント関数 `enricher()` を使用する必要があります。
+遺伝子セットは、遺伝子と遺伝子セットの2列データフレーム形式（またはデータフレームに変換可能なクラス形式）で提供する必要があります。
+ここでは、前述の方法で生成したホールマークコレクション (`hm`) を使用します。
 
 
 ``` r
@@ -1336,8 +1329,9 @@ head(gene_sets)
 6 HALLMARK_ADIPOGENESIS      Abca17
 ```
 
-As mentioned before, it is important the gene ID type in the gene sets should
-be the same as in the DE genes, so here we choose the `"gene_symbol"` column.
+前述の通り、エンリッチメント解析で使用する遺伝子セットのID形式は、DE遺伝子で使用されているID形式と一致している必要があります。
+したがって、ここでは `"gene_symbol"` 列を選択しています。
+
 
 
 ``` r
@@ -1394,13 +1388,12 @@ HALLMARK_INTERFERON_ALPHA_RESPONSE    21
 HALLMARK_IL2_STAT5_SIGNALING          30
 ```
 
-
 :::::::::::::::::::::::::::::::::::::::::  callout
 
-### Further reading
+### さらに詳しく学ぶ
 
-Implementing ORA is rather simple. The following function `ora()` performs ORA
-on a list of gene sets. Try to read and understand the code.
+ORAの実装は非常に簡単です。以下の関数`ora()`は、遺伝子セットのリストに対してORAを実行します。
+コードを読んで理解してみてください。
 
 
 ``` r
@@ -1436,7 +1429,7 @@ ora = function(genes, gene_sets, universe = NULL) {
 }
 ```
 
-Test on the MSigDB hallmark gene sets:
+MSigDBのホールマーク遺伝子セットを用いたテスト結果：
 
 
 ``` r
@@ -1465,67 +1458,48 @@ HALLMARK_APICAL_SURFACE                 84   21198 6.640741e-01 8.973974e-01
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
-### Choose a proper universe
+### 適切なユニバースの選択
 
-Finally, it is time to talk about the "universe" of ORA analysis which is
-normally ignored in many analyses. In current tools, there are mainly
-following different universe settings:
+最後に、多くの解析で無視されがちなORA分析における「ユニバース」の概念について説明します。現在の解析ツールでは主に以下の3種類のユニバース設定が用いられています：
 
-1. Using all genes in the genome, this also includes non-protein coding genes.
-   For human, the size of universe is 60k ~ 70k.
-2. Using all protein-coding genes. For human, the size of universe is ~ 20k.
-3. In the era of microarray, total genes that are measured on the chip is
-   taken as the universe. For RNASeq, since reads are aligned to all genes, we
-   can set a cutoff and only use those "expressed" genes as the universe.
-4. Using all genes in a gene sets collection. Then the size of the universe
-   depends on the size of the gene sets collection. For example GO gene sets
-   collection is much larger than the KEGG pathway gene sets collection.
+1. ゲノム上の全遺伝子を使用する場合。これには当然タンパク質をコードしない遺伝子も含まれます。ヒトの場合、このユニバースのサイズは60,000～70,000遺伝子程度となります。
+2. タンパク質をコードする遺伝子のみを使用する場合。ヒトの場合、このユニバースのサイズはおおよそ20,000遺伝子です。
+3. マイクロアレイ時代には、チップ上で測定された全遺伝子をユニバースとして扱います。RNA-Seqの場合、リードは全ての遺伝子にアライメントされるため、一定の閾値を設定して「発現が確認された」遺伝子のみをユニバースとして選択することも可能です。
+4. 遺伝子セットコレクションに含まれる全遺伝子を使用する場合。この場合、ユニバースのサイズは遺伝子セットコレクションの規模に依存します。例えば、GO遺伝子セットコレクションはKEGG経路遺伝子セットコレクションよりもはるかに大規模です。
 
 
-If the universe is set, DE genes as well as genes in the gene sets are first
-intersected to the universe. However, in general the universe affects three
-values of $n_{22}$, $n_{02}$ and $n_{20}$ more, which correspond to the non-DE
-genes or non-gene-set genes.
+ユニバースが設定されると、まずDE遺伝子と遺伝子セットに含まれる遺伝子がこのユニバースと交差されます。
+ただし、一般的にユニバースは$n_{22}$、$n_{02}$、$n_{20}$という3つの値により大きな影響を及ぼします。
+これらの値は、非DE遺伝子（つまりDEではない遺伝子）または非遺伝子セット遺伝子に対応しています。
 
 <center>
-|            | In the gene set | Not in the gene set | Total
-| ---------- | --------------- | --------------------| -------
-|  **DE**    |     $n_{11}$    |    $n_{12}$         | $n_{1+}$
-| **Not DE** |     $n_{21}$    |    $\color{red}{n_{22}}$         | $\color{red}{n_{2+}}$
-| **Total**  |     $n_{+1}$    |    $\color{red}{n_{+2}}$         | $\color{red}{n}$
+|            | 遺伝子セット内 |  遺伝子セット外   |  合計
+| ---------- | -------------- | ---------------- | -------
+|  **DE**    |     $n_{11}$    |    $n_{12}$       | $n_{1+}$
+| **非DE**   |     $n_{21}$    |    $\color{red}{n_{22}}$       | $\color{red}{n_{2+}}$
+| **合計**   |     $n_{+1}$    |    $\color{red}{n_{+2}}$       | $\color{red}{n}$
 </center>
 
 
-In the contingency table, we are testing the dependency of whether genes being
-DE and whether genes being in the gene set. In the model, each gene has a
-definite attribute of being either DE or non-DE and each gene has a second
-definite attribute of either belonging to the gene set or not. If a larger
-universe is used, such as total genes where there are genes not measured nor
-will never annotated to gene sets (let's call them _non-informative genes_,
-e.g. non-protein coding genes or not-expressed genes), all the
-non-informative genes are implicitly assigned with an attribute of being
-non-DE or not in the gene set. This implicit assignment is not proper because
-these genes provide no information and they should not be included in the
-analysis. Adding them to the analysis increases $n_{22}$, $n_{02}$ or
-$n_{20}$, makes the observation $n_{11}$ getting further away from the null
-distribution, eventually generates a smaller _p_-value. For the similar
-reason, small universes tend to generate large _p_-values.
+分割表において、我々は遺伝子がDEであるかどうかと、遺伝子が特定の遺伝子セットに含まれるかどうかの関連性を検証しています。
+モデルにおいては、各遺伝子はDEか非DEかの明確な属性を持ち、さらに各遺伝子は遺伝子セットに属するか否かの別の明確な属性を持っています。
+より大規模なユニバース（例えば測定されていない遺伝子や、将来的に遺伝子セットにアノテーションされる見込みのない遺伝子――ここでは「非情報的遺伝子」と呼びます。
+具体的にはタンパク質をコードしない遺伝子や発現が確認されていない遺伝子など）を使用する場合、これらの非情報的遺伝子は暗黙的に「非DE」または「遺伝子セット非所属」という属性が割り当てられます。
+この暗黙的な割り当ては適切ではありません。なぜならこれらの遺伝子は情報を提供せず、解析に含めるべきではないからです。
+これらの遺伝子を解析に加えると、$n_{22}$、$n_{02}$、または$n_{20}$の値が増加し、観測値$n_{11}$が帰無分布から乖離するため、最終的により小さなp値が生成されることになります。
+同様の理由から、小規模なユニバースでは大きなp値が生成されやすくなります。
 
 
-In `enrichGO()`/`enrichKEGG()`/`enricher()`, universe genes can be set via the
-`universe` argument. By default the universe is the total genes in the gene
-sets collection. When a self-defined universe is provided, this might be
-different from what you may think, the universe is [_the intersection of
-user-provided universe and total genes in the gene set
-collection_](https://github.com/YuLab-SMU/DOSE/blob/93a4b981c0251e5c6eb1f2413f4a02b8e6d06ff5/R/enricher_internal.R#L65C43-L65C51).
-Thus the universe setting in **clusterProfiler** is very conservative.
+`enrichGO()`/`enrichKEGG()`/`enricher()`関数では、`universe`引数を用いてユニバース遺伝子を設定できます。
+デフォルトではユニバースは遺伝子セットコレクションに含まれる全遺伝子となっています。
+ユーザーが定義したユニバースを使用する場合、これは必ずしも直感的な結果とは一致しません。
+実際には、ユニバースは[「ユーザーが指定したユニバースと遺伝子セットコレクションに含まれる全遺伝子との共通部分」](https://github.com/YuLab-SMU/DOSE/blob/93a4b981c0251e5c6eb1f2413f4a02b8e6d06ff5/R/enricher_internal.R#L65C43-L65C51)として計算されます。このため、**clusterProfiler**におけるユニバース設定は非常に保守的なアプローチを採用しています。
 
-Check the more discusstions at https://twitter.com/mdziemann/status/1626407797939384320.
+詳細な議論については https://twitter.com/mdziemann/status/1626407797939384320 をご覧ください。
 
 
-We can do a simple experiment on the small MSigDB hallmark gene sets. We use
-the `ora()` function which we have implemented in previous "Further reading"
-section and we compare three different universe settings.
+小規模なMSigDBホールマーク遺伝子セットを用いて簡単な実験を行います。
+以前の「関連資料」セクションで実装した`ora()`関数を使用し、3種類の異なるユニバース設定を比較します。
 
 
 ``` r
@@ -1551,29 +1525,26 @@ legend("topleft", legend = c("all protein-coding genes as universe", "all genes 
 
 <img src="fig/07-gene-set-analysis-rendered-compare-universe-1.png" style="display: block; margin: auto;" />
 
-It is very straightforward to see, with a larger universe, there are more
-significant gene sets, which may produce potentially more false positives.
-This is definitely worse when using all genes in the genome as universe.
+非常に明瞭な結果が得られます。ユニバースがより大規模になると、有意な遺伝子セットの数が増加し、潜在的な偽陽性が生じる可能性が高まります。
+これは特にゲノム上の全遺伝子をユニバースとして使用する場合に顕著な問題となります。
 
-Based on the discussion in this section, the recommendation of using universe is:
+本節での議論を踏まえ、ユニバースを使用する際の推奨事項は以下の通りです：
 
-1. using protein-coding genes,
-2. using measured genes,
-3. or using a conservative way with **clusterProfiler**.
+1. タンパク質をコードする遺伝子を使用すること
+2. 測定された遺伝子を使用すること
+3. あるいは**clusterProfiler**の保守的な方法を採用すること
 
-## Visualization
+## 可視化機能
 
-**clusterProfiler** provides a rich set of visualization methods on the GSEA
-results, from simple visualization to complex ones. Complex visualizations are
-normally visually fancy but do not transfer too much useful information, and
-they should only be applied in very specific scenarios under very specific settings;
-while simple graphs normally do better jobs. Recently the visualization code
-in **clusterProfiler** has been moved to a new package **enrichplot**. Let's
-first load the **enrichplot** package. The full sets of visualizations that
-**enrichplot** supports can be found from
-https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html.
+**clusterProfiler**では、GSEAの結果に対してシンプルな可視化から複雑な可視化まで、豊富な可視化手法を提供しています。
+複雑な可視化は視覚的には華やかですが、有用な情報をあまり伝達できず、非常に特殊な条件下でのみ使用すべきものです。
+一方、シンプルなグラフの方が通常優れた結果をもたらします。
+近年、**clusterProfiler**の可視化関連コードは新たに**enrichplot**パッケージに移行されました。
+まずは**enrichplot**パッケージを読み込みましょう。
+**enrichplot**がサポートするすべての可視化機能の詳細については、
+https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html を参照してください。
 
-We first re-generate the enrichment table.
+まず、エンリッチメントテーブルを再生成します。
 
 
 ``` r
@@ -1619,8 +1590,8 @@ GO:0060326    41
 GO:0071674    32
 ```
 
-`barplot()` and `dotplot()` generate plots for a small number of significant gene sets.
-Note the two functions are directly applied on `resTimeGO` returned by `enrichGO()`.
+`barplot()`と`dotplot()`は、有意な遺伝子セット数が少ない場合にプロットを生成します。
+これらの関数は`enrichGO()`関数が返す`resTimeGO`オブジェクトに直接適用されます。
 
 
 ``` r
@@ -1635,41 +1606,33 @@ dotplot(resTimeGO, showCategory = 20)
 
 <img src="fig/07-gene-set-analysis-rendered-more-enrichplots-2.png" style="display: block; margin: auto;" />
 
-Barplots can map two variables to the plot, one to the height of bars and the
-other to the colors of bars; while for dotplot, sizes of dots can be mapped to
-a third variable. The variable names are in the colum names of the result
-table. Both plots include the top 20 most significant terms. On dotplot,
-terms are ordered by the values on x-axis (the `GeneRatio`).
+棒グラフでは2つの変数をプロットにマッピングできます。
+一方は棒の高さに、他方は棒の色に対応します。
+一方、ドットプロットではドットのサイズを第三の変数にマッピングできます。
+変数名は結果テーブルの列名に対応しています。
+どちらのプロットも上位20個の最も有意な用語を表示しています。
+ドットプロットでは、用語はx軸の値（`GeneRatio`）に基づいて順序付けられています。
 
-Now we need to talk about "what is a good visualization?". The essential two
-questions are "_what is the key message a plot transfers to readers?_" and
-"_what is the major graphical element in the plot?_". In the barplot or
-dotplot, the major graphical element which readers may notice the easiest is
-the height of bars or the offset of dots to the origin. The most important
-message of the ORA analysis is of course "the enrichment". The two examples from
-`barplot()` and `dotplot()` actually fail to transfer such information to
-readers. In the first barplot where `"Count"` is used as values on x-axis, the
-numer of DE genes in gene sets is not a good measure of the enrichment because
-it has a positive relation to the size of gene sets. A high value of `"Count"`
-does not mean the gene set is more enriched.
+ここで「優れた可視化とは何か」について考察します。
+本質的に重要な2つの問いは「・プロットは読者にどのような主要なメッセージを伝えようとしているか？」「・プロットの主要な視覚的要素は何か？」です。
+棒グラフやドットプロットにおいて、読者が最も容易に認識する主要な視覚的要素は、棒の高さまたは原点からのドットのオフセットです。
+ORA解析で最も重要なメッセージはもちろん「エンリッチメント」そのものです。
+`barplot()`と`dotplot()`の2つの例では、この情報が読者に十分に伝達されていません。
+`"Count"`をx軸の値として使用した最初の棒グラフでは、遺伝子セット内のDE遺伝子数がエンリッチメントの適切な指標とは言えません。
+これは遺伝子セットのサイズと正の相関があるためです。
+`"Count"`の値が高いからといって、その遺伝子セットがよりエンリッチされているとは限りません。
 
-It is the same reason for dotplot where `"GeneRatio"` is used as values on
-x-axis. Gene ratio is calculated as the fraction of DE genes from a certain
-gene set (GeneRatio = Count/Total_DE_Genes). The dotplot puts multiple gene
-sets in the same plot and the aim is to compare between gene sets, thus gene
-sets should be "scaled" to make them comparable. `"GeneRatio"` is not scaled
-for different gene sets and it still has a positive relation to the gene set
-size, which can be observed in the dotplot where higher the gene ratio, larger
-the dot size. Actually "GeneRatio" has the same effect as "Count" (GeneRatio =
-Count/Total_DE_Genes), so as has been explained in the previous paragraph,
-`"GeneRatio"` is not a good measure for enrichment either.
+ドットプロットで`"GeneRatio"`をx軸の値として使用する場合も同様の問題があります。
+`"GeneRatio"`は特定の遺伝子セットからのDE遺伝子数の割合として計算されます（`GeneRatio = Count/Total_DE_Genes`）。
+ドットプロットでは複数の遺伝子セットを同一プロット上に表示し、それらの比較を目的としているため、遺伝子セット間の比較可能性を確保するために「スケーリング」が必要です。
+`"GeneRatio"`は異なる遺伝子セット間でスケーリングされておらず、依然として遺伝子セットのサイズと正の相関があります。
+ドットプロットで観察できるように、遺伝子比率が高いほどドットのサイズも大きくなります。
+実際、`"GeneRatio"`は`"Count"`（`GeneRatio = Count/Total_DE_Genes`）と同一の効果を持つため、前述の説明と同様に、`"GeneRatio"`もエンリッチメントの適切な指標とは言えません。
 
-Now let's try to make a more reasonable barplot and dotplot to show the
-enrichment of ORA.
+それでは、ORAのエンリッチメントをより適切に示すための合理的な棒グラフとドットプロットを作成してみましょう。
 
-First, let's define some metrics which measure the "enrichment" of DE genes on
-gene sets. Recall the denotations in the 2x2 contingency table (we are too far
-from that!). Let's take these numbers from the enrichment table.
+まず、遺伝子セット内のDE遺伝子の「エンリッチメント」を測定するいくつかの指標を定義します。
+2×2分割表の表記法を思い出してください（ここではその概念から遠く離れていますが！）。エンリッチメントテーブルからこれらの数値を取得します。
 
 
 ``` r
@@ -1679,41 +1642,33 @@ n_01 = as.numeric(gsub("/.*$", "", resTimeGOTable$BgRatio))
 n = 28943  # length(resTimeGO@universe)
 ```
 
-Instead of using `GeneRatio`, we use the fraction of DE genes in the gene sets
-which are kind of like a "scaled" value for all gene sets. Let's calculate it:
+`GeneRatio`の代わりに、遺伝子セット内のDE遺伝子の割合を使用します。
+これはすべての遺伝子セットに対して「スケーリング」された値と言えます。これを計算しましょう：
 
 
 ``` r
 resTimeGOTable$DE_Ratio = n_11/n_01
-resTimeGOTable$GS_size = n_01  # size of gene sets
+resTimeGOTable$GS_size = n_01  # 遺伝子セットのサイズ
 ```
 
-Then intuitively, if a gene set has a higher `DE_Ratio` value, we could say DE
-genes have a higher enrichment^[If here the term "enrichment" does mean
-statistically.] in it.
+直感的に、ある遺伝子セットの`DE_Ratio`値が高い場合、その遺伝子セットではDE遺伝子のエンリッチメントが高いと言えます^[ここで「エンリッチメント」という用語が統計学的な意味を持つ場合に限ります。]。
 
-We can measure the enrichment in two other ways. First, the log2 fold
-enrichment, defined as:
+エンリッチメントを測定する方法は他に2つあります。まず、対数2倍エンリッチメントを以下のように定義します：
 
 $$ \log_2(\mathrm{Fold\_enrichment}) = \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} = \frac{n_{11}n}{n_{10}n_{01}} $$
 
-which is the log2 of the ratio of _DE% in the gene set_ and _DE% in the
-universe_ or the log2 of the ratio of _gene\_set% in the DE genes_ and
-_gene\_set% in the universe_. The two are identical.
+これは、遺伝子セット内の_DE%_とユニバース内の_DE%_の比率の対数2乗、あるいは_遺伝子セット%_のDE遺伝子数とユニバース内の_遺伝子セット%_の比率の対数2乗に相当します。これらは同一の値です。
 
 
 ``` r
 resTimeGOTable$log2_Enrichment = log( (n_11/n_10)/(n_01/n) )
 ```
 
-Second, it is also common to use _z_-score which is
+第二に、ハイパー幾何分布の平均値μと標準偏差σを用いて計算されるzスコアも一般的に使用されます：
 
 $$ z = \frac{n_{11} - \mu}{\sigma} $$
 
-where $\mu$ and $\sigma$ are [the mean and standard deviation of the
-hypergeometric
-distribution](https://en.wikipedia.org/wiki/Hypergeometric_distribution). They
-can be calculated as:
+ここでμとσはそれぞれハイパー幾何分布の平均値と標準偏差を表します。これらは以下の式で計算できます：
 
 
 ``` r
@@ -1726,13 +1681,9 @@ resTimeGOTable$zScore = (n_11 - hyper_mean)/sqrt(hyper_var)
 ```
 
 
-We will use log2 fold change as the primary variable to map to bar heights and
-`DE_Ratio` as the secondary variable to map to colors. This can be done
-directly with the **ggplot2** package. We also add the adjusted _p_-values as
-labels on the bars.
+主な変数として対数2倍変化量を棒グラフの高さに、補助変数としてDE比を色のマッピングに使用します。これは**ggplot2**パッケージを用いて直接実行可能です。また、棒グラフには調整済みp値をラベルとして追加します。
 
-In `resTimeGOTable`, gene sets are already ordered by the significance, so we
-take the first 10 gene sets which are the 10 most significant gene sets.
+`resTimeGOTable`では遺伝子セットが既に有意性順に並べ替えられているため、最も有意性の高い上位10個の遺伝子セットを選択します。
 
 
 ``` r
@@ -1748,8 +1699,7 @@ ggplot(resTimeGOTable[1:10, ],
 
 <img src="fig/07-gene-set-analysis-rendered-plot-enrichment-1.png" style="display: block; margin: auto;" />
 
-In the next example, we use _z_-score as the primary variable to map to the
-offset to origin, `DE_Ratio` and `Count` to map to dot colors and sizes.
+次の例では、zスコアを原点からのオフセットに、DE比とカウント値をドットの色とサイズにそれぞれマッピングしています。
 
 
 ``` r
@@ -1762,19 +1712,11 @@ ggplot(resTimeGOTable[1:10, ],
 
 <img src="fig/07-gene-set-analysis-rendered-plot-z-1.png" style="display: block; margin: auto;" />
 
-Both plots can highlight the gene set "leukocyte migration involved in
-inflammatory response" is relatively small but highly enriched.
+どちらのプロットでも、「炎症反応に関与する白血球遊走」という遺伝子セットは比較的小規模ながら高度に濃縮されていることが明らかになります。
 
-Another useful visualization is the volcano plot. You may be aware of in
-differential expression analysis, in the volcano plot, x-axis corresponds to
-log2 fold changes of the differential expression, and y-axis corresponds to
-the adjusted _p_-values. It is actually similar here where we use log2 fold
-enrichment on x-axis.
+もう一つの有用な可視化手法として火山プロットがあります。差異発現解析における火山プロットでは、x軸が差異発現の対数2倍変化量、y軸が調整済みp値に対応します。本ケースでも同様のアプローチを採用しており、x軸には対数2倍濃縮度を使用しています。
 
-Since we only look at the over-representation, the volcano plot is one-sided.
-We can set two cutoffs on the log2 fold enrichment and adjusted _p_-values,
-then the gene sets on the top right region can be thought as being both
-statistically significant and also biologically sensible.
+本分析では過剰表現のみを対象としているため、火山プロットは片側検定となります。対数2倍濃縮度と調整済みp値に対して2つの閾値を設定することで、右上領域に位置する遺伝子セットを、統計的に有意であると同時に生物学的にも意味のある結果と解釈できます。
 
 
 ``` r
@@ -1788,20 +1730,10 @@ ggplot(resTimeGOTable,
 
 <img src="fig/07-gene-set-analysis-rendered-plot-enrichment-padj-1.png" style="display: block; margin: auto;" />
 
-In the "volcano plot", we can observe the plot is composed by a list of
-curves. The trends are especially clear in the right bottom of the plot.
-Actually each "curve" corresponds to a same `"Count"` value (number of DE
-genes in a gene set). The volcano plot shows very clearly that the enrichment
-has a positive relation to the gene set size where a large gene set can easily
-reach a small _p_-value with a small DE_ratio and a small log2 fold
-enrichment, while a small gene set needs to have a large DE ratio to be
-significant.
+「火山プロット」では、複数の曲線から構成されるグラフが観察されます。特にプロット右下の領域でその傾向が明確に現れます。各「曲線」は同一の`"Count"`値（遺伝子セット内のDE遺伝子数）に対応しています。火山プロットは、濃縮度と遺伝子セットサイズの間に正の相関があることを非常に明確に示しています。すなわち、大規模な遺伝子セットは小さなDE比と小さな対数2倍濃縮度でも容易に小さなp値を達成できるのに対し、小規模な遺伝子セットでは有意な結果を得るためにより大きなDE比が必要となることを示しています。
 
+また、一般的にアップレギュレーションされた遺伝子とダウンレギュレーションされた遺伝子に対してORA解析を個別に実施し、これら2つのORA解析から得られた有意な遺伝子セットを1つのプロットに統合したい場合があります。以下のコードでは、まずアップレギュレーション遺伝子とダウンレギュレーション遺伝子に対してそれぞれ独立した濃縮度テーブルを生成します。
 
-It is also common that we perform ORA analysis on up-regulated genes and
-down-regulated separately. And we want to combine the significant gene sets from
-the two ORA analysis in one plot. In the following code, we first generate
-two enrichment tables for up-regulated genes and down-regulated separately.
 
 
 ``` r
@@ -1842,13 +1774,11 @@ n = length(resTimeGOdown@universe)
 resTimeGOdownTable$log2_Enrichment = log( (n_11/n_10)/(n_01/n) )
 ```
 
-As an example, let's simply take the first 5 most significant terms for
-up-regulated genes and the first 5 most significant terms for down-regulated
-genes. The following **ggplot2** code should be easy to read.
+具体例として、発現量が上昇した遺伝子については上位5つの最も有意な用語を、発現量が低下した遺伝子については上位5つの最も有意な用語を取り上げます。以下の**ggplot2**コードは容易に理解できる内容となっています。
 
 
 ``` r
-# The name of the 3rd term is too long, we wrap it into two lines.
+# 3番目の用語名が長すぎるため、2行に分けて表示します
 resTimeGOupTable[3, "Description"] = paste(strwrap(resTimeGOupTable[3, "Description"]), collapse = "\n")
 
 direction = c(rep("up", 5), rep("down", 5))
@@ -1859,23 +1789,16 @@ ggplot(rbind(resTimeGOupTable[1:5, ],
     geom_bar(stat = "identity") +
     scale_fill_manual(values = c("up" = "red", "down" = "darkgreen")) +
     geom_text(aes(x = log2_Enrichment, 
-        label = sprintf("%.2e", p.adjust)), hjust = 1, col = "white") +
+                  label = sprintf("%.2e", p.adjust)), hjust = 1, col = "white") +
     ylab("")
 ```
 
 <img src="fig/07-gene-set-analysis-rendered-plot-up-down-1.png" style="display: block; margin: auto;" />
 
 
-Specifically for GO enrichment, it is often that GO enrichment returns a long
-list of significant GO terms (e.g. several hundreds). This makes it difficult
-to summarize the common functions from the long list. The last package we will
-introduce is the **simplifyEnrichment** package which partitions GO terms into
-clusters based on their semantic similarity^[The semantic similarity between
-GO terms considers the topological relations in the GO hierarchy.] and
-summarizes their common functions via word clouds.
+GOエンリッチメント分析においては、GOエンリッチメント解析から数百もの有意なGO用語が出力されることがよくあります。このような長いリストから共通する機能を要約するのは困難です。ここで紹介する最後のパッケージは**simplifyEnrichment**パッケージです。このパッケージでは、GO用語を意味的類似性に基づいてクラスタリング^[GO用語間の意味的類似性は、GO階層構造におけるトポロジカルな関係を考慮して算出されます]し、ワードクラウドを用いてそれらの共通機能を要約します。
 
-The input of the `simplifyGO()` function is a vector of GO IDs. It is recommended
-to have at least 100 GO IDs for summarization and visualization.
+`simplifyGO()`関数の入力はGO IDのベクトルです。要約と可視化を行うには、少なくとも100個のGO IDを用意することをお勧めします。
 
 
 ``` r
@@ -1892,17 +1815,10 @@ simplifyGO(GO_ID)
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
-### Further reading
+### 関連文献
 
-ORA analysis actually applies a binary conversion on genes where genes pass
-the cutoff are set as 1 (DE gene) and others are set as 0 (non-DE gene). This
-binary transformation over-simplifies the problem and a lot of information are
-lost. There is second class of gene set enrichment analysis methods which
-takes the continuous gene-level score as input and weights the importance of a
-gene in the gene set. Please refer to [Subramanian et. al. Gene set enrichment
-analysis: A knowledge-based approach for interpreting genome-wide expression
-profiles, PNAS 2005](https://www.pnas.org/doi/10.1073/pnas.0506580102) for
-more information.
+ORA解析では、実際に遺伝子に対して二値化処理を行います。カットオフ値を超えた遺伝子は1（発現変動遺伝子）として設定され、それ以外の遺伝子は0（非発現変動遺伝子）として処理されます。この二値化処理は問題を過度に単純化するため、多くの情報が失われることになります。これに対し、連続値の遺伝子レベルスコアを入力として扱い、遺伝子セット内における各遺伝子の重要度を重み付けする第二のクラスの遺伝子セットエンリッチメント解析手法が存在します。詳細については、[Subramanianらによる『遺伝子セットエンリッチメント解析：ゲノムワイド発現プロファイルを解釈するための知識ベースアプローチ』PNAS 2005](https://www.pnas.org/doi/10.1073/pnas.0506580102)を参照してください。
+
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1910,9 +1826,9 @@ more information.
 
 :::::::::::::::::::::::::::::::::::::::: keypoints
 
-- ORA analysis is based on the gene counts and it is based on Fisher's exact
-  test or the hypergeometric distribution.
-- In R, it is easy to obtain gene sets from a large number of sources.
+- ORA解析は遺伝子カウントデータに基づいており、Fisherの正確確率検定または超幾何分布を用いて統計的有意性を評価します。
+- R環境では、多様なソースから容易に遺伝子セットを取得することが可能です。
+
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::
 
