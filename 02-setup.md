@@ -141,13 +141,13 @@ GEOからデータをダウンロードすることは簡単ではなく（こ�
 `destfile`パラメータは、ダウンロードしたファイルをどこに保存するか、そしてダウンロードしたファイルにどのように名前を付けるかを示します。
 
 このレッスンの残りの部分で必要な4つのデータファイルのうちの1つをダウンロードしてみましょう。
-データファイルはhttps://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_counts_cerebellum.csvにあります。
+データファイルは https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_counts_cerebellum.csv にあります。
 ダウンロードしたファイルを作業ディレクトリの`data`フォルダに`GSE96870_counts_cerebellum.csv`という名前で保存します。
 
 
 ``` r
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_counts_cerebellum.csv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_counts_cerebellum.csv", 
     destfile = "data/GSE96870_counts_cerebellum.csv"
 )
 ```
@@ -167,9 +167,9 @@ download.file(
 
 | URL                                                                                                                                                                                                   | ファイル名                                                                                     |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_cerebellum.csv | GSE96870_coldata_cerebellum.csv |
-| https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_all.csv        | GSE96870_coldata_all.csv        |
-| https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_rowranges.tsv                               | GSE96870_rowranges.tsv                               |
+| https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_cerebellum.csv | GSE96870_coldata_cerebellum.csv |
+| https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_all.csv        | GSE96870_coldata_all.csv        |
+| https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_rowranges.tsv                               | GSE96870_rowranges.tsv                               |
 
 `download.file`関数を使用して、作業ディレクトリの`data`フォルダにファイルをダウンロードします。
 
@@ -178,17 +178,17 @@ download.file(
 
 ``` r
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_cerebellum.csv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_cerebellum.csv", 
     destfile = "data/GSE96870_coldata_cerebellum.csv"
 )
 
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_all.csv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_all.csv", 
     destfile = "data/GSE96870_coldata_all.csv"
 )
 
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_rowranges.tsv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_rowranges.tsv", 
     destfile = "data/GSE96870_rowranges.tsv"
 )
 ```
