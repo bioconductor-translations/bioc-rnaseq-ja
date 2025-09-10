@@ -268,33 +268,20 @@
       <hr></nav><main id="main-content" class="main-content"><h1 class="schedule-heading">Summary and Schedule</h1>
       
 
-<p>RNA sequencing (RNA-seq) has revolutionized the field of genomics,
-enabling researchers to gain insights into gene expression,
-transcriptome dynamics, and molecular pathways. <a href="https://bioconductor.org/" class="external-link">Bioconductor</a> is an open-source
-software project that provides a rich set of tools for analyzing
-high-throughput genomic data, including RNA-seq data. This <a href="https://carpentries.org/" class="external-link">Carpentries</a>-style workshop is
-designed to equip participants with the essential skills and knowledge
-needed to analyze RNA-seq data using the Bioconductor ecosystem.
-Throughout this workshop, you will delve into key concepts, including
-data preprocessing, quality control, differential gene expression
-analysis, visualization of results, and gene set analysis.</p>
+<p>RNAシーケンシング（RNA-seq）技術はゲノミクス分野に革命をもたらし、研究者が遺伝子発現レベル、トランスクリプトームの動態、分子経路のメカニズムを詳細に解析することを可能にしました。<a href="https://bioconductor.org/" class="external-link">Bioconductor</a>は、RNA-seqデータを含むハイスループットゲノムデータの解析に特化したオープンソースソフトウェアプロジェクトです。この<a href="https://carpentries.org/" class="external-link">Carpentries</a>スタイルのワークショップは、Bioconductorエコシステムを活用してRNA-seqデータを解析するために必要な基本スキルと知識を参加者に習得させることを目的としています。本ワークショップでは、データ前処理、品質管理、遺伝子発現差異解析、結果の可視化、遺伝子セット解析といった重要な概念について深く掘り下げていきます。</p>
 <!-- this is an html comment -->
-<div id="prerequisites" class="callout prereq">
+<div id="前提知識" class="callout prereq">
 <div class="callout-square">
 <i class="callout-icon" data-feather="check"></i>
 </div>
 <span class="callout-header">Prerequisite</span>
-<div id="prerequisites" class="callout-inner">
-<h3 class="callout-title">Prerequisites</h3>
+<div id="前提知識" class="callout-inner">
+<h3 class="callout-title">前提知識</h3>
 <div class="callout-content">
-<ul><li>Familiarity with R/Bioconductor, such as the <a href="https://carpentries-incubator.github.io/bioc-intro/" class="external-link">Introduction
-to data analysis with R and Bioconductor</a> lesson.</li>
-<li>Familiarity with statistical hypothesis testing, such as <a href="https://web.stanford.edu/class/bios221/book/06-chap.html" class="external-link">Chapter
-6</a> of Modern Statistics for Modern Biology book by Holmes and
-Huber.</li>
-<li>Familiarity with the biology of gene expression and RNA-seq, such as
-<a href="https://pubmed.gov/31341269" class="external-link">RNA sequencing: the teenage
-years</a> manuscript by Hadfield et.al.</li>
+<ul><li>RおよびBioconductorに関する基礎知識（例：<a href="https://carpentries-incubator.github.io/bioc-intro/" class="external-link">RとBioconductorによるデータ分析入門</a>）</li>
+<li>統計的仮説検定に関する基礎知識（例：HolmesとHuber著『Modern
+Statistics for Modern Biology』第6章[<a href="https://web.stanford.edu/class/bios221/book/06-chap.html" class="external-link uri">https://web.stanford.edu/class/bios221/book/06-chap.html</a>]）</li>
+<li>遺伝子発現とRNA-seqに関する生物学的知識（例：Hadfieldらによる論文<a href="https://pubmed.gov/31341269" class="external-link">RNAシーケンシング：思春期期の研究</a>）</li>
 </ul></div>
 </div>
 </div>
@@ -392,14 +379,11 @@ Finish
 </tr></tbody></table><p>
       The actual schedule may vary slightly depending on the topics and exercises chosen by the instructor.
       </p>
-      </section><section id="setup"><p>Ensure that you have the most recent versions of R and RStudio
-installed on your computer. For detailed instructions on how to do this,
-you can refer to the section “If you already have R and RStudio
-installed” in the <a href="https://carpentries-incubator.github.io/bioc-intro/#r-and-rstudio" class="external-link">Introduction
-to R</a> episode of the <a href="https://carpentries-incubator.github.io/bioc-intro" class="external-link">Introduction
-to data analysis with R and Bioconductor</a> lesson.</p>
-<p>Additionally, you will also need to install the following packages
-that will be used throughout the lesson.</p>
+      </section><section id="setup"><p>RとRStudioを最新バージョンでコンピュータにインストールしていることを確認してください。
+インストール手順の詳細については、<a href="https://carpentries-incubator.github.io/bioc-intro/#r-and-rstudio" class="external-link">R入門</a>
+コースの<a href="https://carpentries-incubator.github.io/bioc-intro/#r-and-rstudio" class="external-link">「すでにRとRStudioをインストール済みの場合」</a>
+セクションを参照してください。</p>
+<p>さらに、本レッスンで使用する以下のパッケージもインストールする必要があります。</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -415,9 +399,7 @@ that will be used throughout the lesson.</p>
 <span>                       <span class="st">"apeglm"</span>, <span class="st">"microbenchmark"</span>, <span class="st">"Biostrings"</span>,</span>
 <span>                       <span class="st">"SingleCellExperiment"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<p><em>If you are attending a workshop, please complete all of the above
-before the workshop. Should you need help, an instructor will be
-available 30 minutes before the workshop commences to assist.</em></p>
+<p><em>ワークショップに参加される方は、開始前までに上記の項目をすべて完了してください。ご不明な点がございましたら、ワークショップ開始30分前から講師が対応いたします。</em></p>
 
 
       </section></main><nav class="bottom-pagination mx-md-4" aria-label="Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
