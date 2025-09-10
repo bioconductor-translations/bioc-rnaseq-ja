@@ -175,12 +175,12 @@ The `destfile` parameter indicates where to save the downloaded file and what
 the downloaded file should be named.
 
 Let's download one of the four data files needed for the remainder of this lesson.
-The data file is located at https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_counts_cerebellum.csv.
+The data file is located at https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_counts_cerebellum.csv.
 We shall save the downloaded file in the `data` folder of our working directory with the name `GSE96870_counts_cerebellum.csv`.
 
 ```{r download-data}
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_counts_cerebellum.csv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_counts_cerebellum.csv", 
     destfile = "data/GSE96870_counts_cerebellum.csv"
 )
 ```
@@ -200,9 +200,9 @@ There are three more data set files we need to download for the remainder of thi
 
 | URL                                                                                                                                                                                                   | Filename                                                                                  |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_cerebellum.csv | GSE96870_coldata_cerebellum.csv |
-| https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_all.csv        | GSE96870_coldata_all.csv        |
-| https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_rowranges.tsv                               | GSE96870_rowranges.tsv                               |
+| https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_cerebellum.csv | GSE96870_coldata_cerebellum.csv |
+| https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_all.csv        | GSE96870_coldata_all.csv        |
+| https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_rowranges.tsv                               | GSE96870_rowranges.tsv                               |
 
 Use the `download.file` function to download the files into the `data` folder in your
 working directory.
@@ -211,17 +211,17 @@ working directory.
 
 ```{r download-data-solution}
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_cerebellum.csv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_cerebellum.csv", 
     destfile = "data/GSE96870_coldata_cerebellum.csv"
 )
 
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_coldata_all.csv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_coldata_all.csv", 
     destfile = "data/GSE96870_coldata_all.csv"
 )
 
 download.file(
-    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/main/episodes/data/GSE96870_rowranges.tsv", 
+    url = "https://github.com/carpentries-incubator/bioc-rnaseq/raw/refs/heads/main/episodes/data/GSE96870_rowranges.tsv", 
     destfile = "data/GSE96870_rowranges.tsv"
 )
 ```
