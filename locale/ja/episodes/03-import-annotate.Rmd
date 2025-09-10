@@ -116,7 +116,7 @@ table(rowranges$gbkey)
 
 :::::::::::::::::::::::::::::::::::
 
-関連情報を別のオブジェクトに保持することで、カウント、遺伝子のアノテーション、サンプルのアノテーションの間で不一致が発生する可能性があります。 これが、Bioconductorが`SummarizedExperiment`という特殊なS4クラスを作成した理由です。 `SummarizedExperiment`の詳細は、[RNA解析とBioconductorの導入](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps)ワークショップの最後で詳しく説明されています。
+関連情報を別のオブジェクトに保持することで、カウント、遺伝子のアノテーション、サンプルのアノテーションの間で不一致が発生する可能性があります。 これが、Bioconductorが`SummarizedExperiment`という特殊なS4クラスを作成した理由です。 `SummarizedExperiment`の詳細は、[bioc-intro](https://bioconductor-translations.github.io/bioc-intro-ja/60-next-steps.html)ワークショップの最後で詳しく説明されています。
 リマインダーとして、`SummarizedExperiment`クラスの構造を表す図を見てみましょう：
 
 ```{r SE, echo=FALSE, out.width="80%", fig.alt="Schematic showing the composition of a SummarizedExperiment object, with three assay matrices of equal dimension, rowData with feature annotations, colData with sample annotations, and a metadata list."}
@@ -319,7 +319,7 @@ dim(se_mRNA)
 
 Bioconductorでの詳細情報は、[Annotation Workshop](https://jmacdon.github.io/Bioc2022Anno/articles/AnnotationWorkshop.html)の資料で見つけることができます。
 
-Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セットエンリッチメント解析](https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
+Bioconductorには、遺伝子の追加アノテーション情報を取得するための多くのパッケージや関数があります。 利用可能なリソースについては、[エピソード7 遺伝子セットエンリッチメント解析](https://bioconductor-translations.github.io/bioc-rnaseq-ja/07-gene-set-analysis.html#gene-set-resources)で詳しく説明されています。
 
 ここでは、遺伝子IDマッピング関数の1つである`mapIds`を紹介します：
 
@@ -327,12 +327,12 @@ Bioconductorには、遺伝子の追加アノテーション情報を取得す�
 mapIds(annopkg, keys, column, keytype, ..., multiVals)
 ```
 
-どこで
+ここで
 
-- _annopkg_は、アノテーションパッケージです
-- _keys_は、私たちが**知っている**IDです
-- _column_は、私たちが**望む**値です
-- _keytype_は、使用するキーのタイプです
+- _annopkg_ は、アノテーションパッケージです
+- _keys_ は、私たちが**知っている**IDです
+- _column_ は、私たちが**望む**値です
+- _keytype_ は、使用するキーのタイプです
 
 ```{r add-symbol, purl=TRUE}
 mapIds(org.Mm.eg.db, keys = "497097", column = "SYMBOL", keytype = "ENTREZID")
