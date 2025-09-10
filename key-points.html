@@ -327,16 +327,13 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         
         
-<section id="01-intro-to-rnaseq"><h2 class="section-heading"><a href="01-intro-to-rnaseq.html">RNA-seq入門RNA-seq実験では何を測定するのか？<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9F%E9%A8%93%E3%81%A7%E3%81%AF%E4%BD%95%E3%82%92%E6%B8%AC%E5%AE%9A%E3%81%99%E3%82%8B%E3%81%AE%E3%81%8B"></a>実験デザインの考察<a class="anchor" aria-label="anchor" href="#%E5%AE%9F%E9%A8%93%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%81%AE%E8%80%83%E5%AF%9F"></a>RNA-seq定量化：リードからカウントマトリックスまで<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9A%E9%87%8F%E5%8C%96%E3%83%AA%E3%83%BC%E3%83%89%E3%81%8B%E3%82%89%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88%E3%83%9E%E3%83%88%E3%83%AA%E3%83%83%E3%82%AF%E3%82%B9%E3%81%BE%E3%81%A7"></a>参照配列の検索<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E7%85%A7%E9%85%8D%E5%88%97%E3%81%AE%E6%A4%9C%E7%B4%A2"></a>このワークショップで我々はどこに向かっているのか？<a class="anchor" aria-label="anchor" href="#%E3%81%93%E3%81%AE%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97%E3%81%A7%E6%88%91%E3%80%85%E3%81%AF%E3%81%A9%E3%81%93%E3%81%AB%E5%90%91%E3%81%8B%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E3%81%AE%E3%81%8B"></a></a></h2>
+<section id="01-intro-to-rnaseq"><h2 class="section-heading"><a href="01-intro-to-rnaseq.html">RNA-seq入門RNA-seq実験では何を測定しているのか？<a class="anchor" aria-label="anchor" href="#rna-seq%E5%AE%9F%E9%A8%93%E3%81%A7%E3%81%AF%E4%BD%95%E3%82%92%E6%B8%AC%E5%AE%9A%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E3%81%AE%E3%81%8B"></a>実験設計における重要な考慮事項<a class="anchor" aria-label="anchor" href="#%E5%AE%9F%E9%A8%93%E8%A8%AD%E8%A8%88%E3%81%AB%E3%81%8A%E3%81%91%E3%82%8B%E9%87%8D%E8%A6%81%E3%81%AA%E8%80%83%E6%85%AE%E4%BA%8B%E9%A0%85"></a>RNA-seqデータの定量化：リードからカウント行列への変換プロセス<a class="anchor" aria-label="anchor" href="#rna-seq%E3%83%87%E3%83%BC%E3%82%BF%E3%81%AE%E5%AE%9A%E9%87%8F%E5%8C%96%E3%83%AA%E3%83%BC%E3%83%89%E3%81%8B%E3%82%89%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88%E8%A1%8C%E5%88%97%E3%81%B8%E3%81%AE%E5%A4%89%E6%8F%9B%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9"></a>参照配列を見つけるには<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E7%85%A7%E9%85%8D%E5%88%97%E3%82%92%E8%A6%8B%E3%81%A4%E3%81%91%E3%82%8B%E3%81%AB%E3%81%AF"></a>本ワークショップではどのような方向性を目指していくのでしょうか？<a class="anchor" aria-label="anchor" href="#%E6%9C%AC%E3%83%AF%E3%83%BC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%83%E3%83%97%E3%81%A7%E3%81%AF%E3%81%A9%E3%81%AE%E3%82%88%E3%81%86%E3%81%AA%E6%96%B9%E5%90%91%E6%80%A7%E3%82%92%E7%9B%AE%E6%8C%87%E3%81%97%E3%81%A6%E3%81%84%E3%81%8F%E3%81%AE%E3%81%A7%E3%81%97%E3%82%87%E3%81%86%E3%81%8B"></a></a></h2>
 <hr class="half-width">
 <ul>
-<li>RNA-seqは、ある細胞／組織内で発現しているRNAの量と、ある時点での状態を測定する技術である。</li>
-<li>RNA-seq実験を計画する際には、ポリA選択とリボソーム除去のどちらを行うか、ストランドプロトコルとアンストランドプロトコルのどちらを適用するか、シングルエンドとペアエンドのどちらでリードをシーケンスするかなど、多くの選択をしなければならない。
-それぞれの選択は、データの処理と解釈に結果をもたらす。</li>
-<li>RNA-seqデータの定量化には多くのアプローチが存在する。
-リードをゲノムにアライメントし、遺伝子座にオーバーラップするリードの数をカウントする方法もある。
-他の方法は、リードをトランスクリプトームにマッピングし、確率的アプローチを使って各遺伝子や転写産物の存在量を推定する。</li>
-<li>アノテーション付き遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどいくつかの情報源からアクセスできる。</li>
+<li>RNA-seqは、特定の時点における細胞または組織内で発現しているRNA分子の量を測定する技術です。</li>
+<li>RNA-seq実験を計画する際には、多くの重要な選択事項があります。例えば、ポリA選択法を採用するかリボソーム除去法を適用するか、ストランド特異的プロトコルを使用するか非ストランド特異的プロトコルを採用するか、リードをシングルエンドで配列決定するかペアエンドで配列決定するかなどです。これらの選択はいずれも、データ処理および解釈に重大な影響を及ぼします。</li>
+<li>RNA-seqデータの定量化には複数の手法が存在します。代表的な方法としては、リードをゲノム配列にアラインメントし、遺伝子領域にオーバーラップするリード数をカウントする手法があります。また、別の手法ではリードをトランスクリプトームにマッピングし、確率的アプローチを用いて各遺伝子または転写産物の存在量を推定します。</li>
+<li>アノテーション済み遺伝子に関する情報は、Ensembl、UCSC、GENCODEなどの複数の情報源から取得可能です。</li>
 </ul></section><section id="02-setup"><h2 class="section-heading"><a href="02-setup.html">RStudioプロジェクトと実験データ</a></h2>
 <hr class="half-width">
 <ul>
@@ -427,8 +424,8 @@ quantified.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/key-points.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/key-points.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-09-09",
-  "datePublished": "2025-09-09"
+  "dateModified": "2025-09-10",
+  "datePublished": "2025-09-10"
 }
 
   </script><script>
