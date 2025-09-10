@@ -1,6 +1,6 @@
 ---
 source: Rmd
-title: Differential expression analysis
+title: Differential expression 解析
 teaching: 60
 exercises: 45
 ---
