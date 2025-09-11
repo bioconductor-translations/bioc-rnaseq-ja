@@ -31,8 +31,8 @@ RNA-seqデータ解析における主要な目的の一つは、実験群間ま�
 ## DESeqDataSetオブジェクト
 
 `DESeq2`を実行するには、カウントデータを`DESeqDataSet`クラスのオブジェクトとして表現する必要があります。
-`DESeqDataSet`は`SummarizedExperiment`クラス（[定量データのインポートとアノテーション](../episodes/03-import-annotate.Rmd)セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_デザイン式_を保持します。
-_デザイン式_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_デザイン式_および関連する_デザイン行列_に関する詳細な説明は、[デザイン行列の詳細な探索](../episodes/06-extra-design.Rmd)セクションで行います。`DESeqDataSet`クラスのオブジェクトは、[カウント行列](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat)、[SummarizedExperimentオブジェクト](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se)、[トランスクリプト存在量ファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport)、または[htseqカウントファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq)から構築可能です。
+`DESeqDataSet`は`SummarizedExperiment`クラス（[定量データのインポートとアノテーション](../episodes/03-import-annotate.Rmd)セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_design formula_を保持します。
+_design formula_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_design formula_および関連する_デザイン行列_に関する詳細な説明は、[デザイン行列の詳細な探索](../episodes/06-extra-design.Rmd)セクションで行います。`DESeqDataSet`クラスのオブジェクトは、[カウント行列](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat)、[SummarizedExperimentオブジェクト](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se)、[トランスクリプト存在量ファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport)、または[htseqカウントファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq)から構築可能です。
 
 ### パッケージの読み込み
 
@@ -156,7 +156,7 @@ plotDispEsts(dds)
 
 ### 検定方法
 
-`DESeq2`パッケージの`nbinomWaldTest()`関数を使用することで、_一般化線形モデル（GLM）_を構築し、_デザイン行列_の各変数に対応する_対数2倍変化量_（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_デザイン式_と直接関連しており、自動的に生成されます。例えば、1つの変数（`~ treatment`：処理群と対照群）を持つデザイン式で、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル$j$における特定遺伝子の平均発現量$\mu_{j}$は以下のようにモデル化されます：
+`DESeq2`パッケージの`nbinomWaldTest()`関数を使用することで、_一般化線形モデル（GLM）_を構築し、_デザイン行列_の各変数に対応する_対数2倍変化量_（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_design formula_と直接関連しており、自動的に生成されます。例えば、1つの変数（`~ treatment`：処理群と対照群）を持つdesign formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル$j$における特定遺伝子の平均発現量$\mu_{j}$は以下のようにモデル化されます：
 
 $log(μ_j) = β_0 + x_j β_T$
 
