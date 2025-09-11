@@ -333,8 +333,8 @@ and Delorenzi, 2013</a>参照）。 以下では、<a href="https://bioconductor
 <code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、
 <em>design formula</em> を保持します。 <em>design formula</em>
 は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。
-<em>design formula</em> および関連する_design
-matrices_に関する詳細な説明は、<a href="06-extra-design.html">design
+<em>design formula</em> および関連する <em>design matrices</em>
+に関する詳細な説明は、<a href="06-extra-design.html">design
 matricesの詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
 <div class="section level3">
 <h3 id="パッケージの読み込み">パッケージの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a></h3>
@@ -453,9 +453,10 @@ design formula are characters, converting to factors</code></pre>
 <figure><img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></div>
 <div class="section level3">
 <h3 id="検定方法">検定方法<a class="anchor" aria-label="anchor" href="#%E6%A4%9C%E5%AE%9A%E6%96%B9%E6%B3%95"></a></h3>
-<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>design
-matrices_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_design
-matrices_は <em>design formula</em>
+<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）<em>を構築し、
+<em>design matrices</em>
+の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。
+<em>design matrices</em> は <em>design formula</em>
 と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つdesign
 formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル<span class="math inline">\(j\)</span>における特定遺伝子の平均発現量<span class="math inline">\(\mu_{j}\)</span>は以下のようにモデル化されます：</p>
 <p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span></p>

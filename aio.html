@@ -1939,7 +1939,7 @@ IDなどの安定した遺伝子識別子は、RNA-seq分析全体で主要な�
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>
 </li></ol>
@@ -2179,7 +2179,7 @@ RNA-seqのようなリードカウントデータの場合、この前提は成�
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li><p>このデータにおける主要なシグナル（分散の37%）は性別と関連しています。私たちは時間経過に伴う性特異的な変化には関心がないため、下流解析ではこの影響を調整する必要があります（<a href="05-differential-expression.html">次のエピソード</a>参照）。また、今後の探索的下流解析においてもこの要因を考慮に入れておく必要があります。この影響を補正する方法として、性染色体上に位置する遺伝子を除去することが考えられます。</p></li>
@@ -2219,7 +2219,7 @@ RNA-seqのようなリードカウントデータの場合、この前提は成�
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb26">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2455,8 +2455,8 @@ and Delorenzi, 2013</a>参照）。 以下では、<a href="https://bioconductor
 <code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、
 <em>design formula</em> を保持します。 <em>design formula</em>
 は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。
-<em>design formula</em> および関連する_design
-matrices_に関する詳細な説明は、<a href="06-extra-design.html">design
+<em>design formula</em> および関連する <em>design matrices</em>
+に関する詳細な説明は、<a href="06-extra-design.html">design
 matricesの詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
 <div class="section level3">
 <h3 id="パッケージの読み込み">パッケージの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a>
@@ -2587,9 +2587,10 @@ design formula are characters, converting to factors</code></pre>
 <div class="section level3">
 <h3 id="検定方法">検定方法<a class="anchor" aria-label="anchor" href="#%E6%A4%9C%E5%AE%9A%E6%96%B9%E6%B3%95"></a>
 </h3>
-<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>design
-matrices_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_design
-matrices_は <em>design formula</em>
+<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）<em>を構築し、
+<em>design matrices</em>
+の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。
+<em>design matrices</em> は <em>design formula</em>
 と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つdesign
 formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル<span class="math inline">\(j\)</span>における特定遺伝子の平均発現量<span class="math inline">\(\mu_{j}\)</span>は以下のようにモデル化されます：</p>
 <p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span></p>
@@ -3285,7 +3286,7 @@ attr(,"contrasts")$sex
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> 解答 </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3372,7 +3373,7 @@ formulaを設定し、<code>ExploreModelMatrix</code>を使用してその結果
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5203,7 +5204,7 @@ $gene_set_3
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
