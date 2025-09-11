@@ -208,7 +208,7 @@
 <div class="accordion accordion-flush" id="accordionFlush7">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading7">
-        <a href="06-extra-design.html">6. デザイン行列の詳細な解析</a>
+        <a href="06-extra-design.html">6. design matricesの詳細な解析</a>
     </div><!--/div.accordion-header-->
 
   </div><!--/div.accordion-item-->
@@ -279,7 +279,7 @@
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
         <a class="chapter-link" href="04-exploratory-qc.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: 探索的解析と品質管理</a>
-        <a class="chapter-link float-end" href="06-extra-design.html" rel="next">Next: デザイン行列の詳細な解析... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="06-extra-design.html" rel="next">Next: design... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Differential expression 解析</h1>
@@ -321,16 +321,21 @@
 </div>
 </div>
 <section><h2 class="section-heading" id="differential-expression-の推定">Differential expression の推定<a class="anchor" aria-label="anchor" href="#differential-expression-%E3%81%AE%E6%8E%A8%E5%AE%9A"></a></h2>
-<hr class="half-width"><p>RNA-seqデータ解析における主要な目的の一つは、実験群間または条件間（例：処理群と対照群、時間点、組織など）における系統的な変化を定量化し、統計的に推論することです。これは通常、条件間変動と条件内変動を用いて発現変動パターンを示す遺伝子を同定することで行われ、生物学的複製サンプル（同一条件下での複数サンプル）が必要となります。
-発現変動解析を実施するためのソフトウェアパッケージは複数存在します。比較研究によれば、発現変動遺伝子（DE遺伝子）に関してはある程度の一致が見られるものの、ツール間にはばらつきがあり、どのツールも他のすべてのツールを一貫して上回る性能を示すことはないことが報告されています（<a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91" class="external-link">Soneson
+<hr class="half-width"><p>RNA-seqデータ解析における主要な目的の一つは、実験群間または条件間（例：処理群と対照群、時間点、組織など）における系統的な変化を定量化し、統計的に推論することです。
+これは通常、条件間変動と条件内変動を用いて発現変動パターンを示す遺伝子を同定することで行われ、生物学的複製サンプル（同一条件下での複数サンプル）が必要となります。
+発現変動解析を実施するためのソフトウェアパッケージは複数存在します。
+比較研究によれば、発現変動遺伝子（DEG）に関してはある程度の一致が見られるものの、ツール間にはばらつきがあり、どのツールも他のすべてのツールを一貫して上回る性能を示すことはないことが報告されています（<a href="https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91" class="external-link">Soneson
 and Delorenzi, 2013</a>参照）。 以下では、<a href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html" class="external-link">DESeq2</a>
-ソフトウェアパッケージを使用した発現変動解析の実施方法を説明し、実際に解析を行います。<a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" class="external-link">edgeR</a>パッケージも同様の手法を実装しており、カウントデータに関する主要な仮定を共有しています。両パッケージとも一般的に良好な安定性を示し、同等の結果が得られます。</p>
+ソフトウェアパッケージを使用した発現変動解析の実施方法を説明し、実際に解析を行います。<a href="https://bioconductor.org/packages/release/bioc/html/edgeR.html" class="external-link">edgeR</a>パッケージも同様の手法を実装しており、カウントデータに関する主要な仮定を共有しています。
+両パッケージとも一般的に良好な安定性を示し、同等の結果が得られます。</p>
 </section><section><h2 class="section-heading" id="deseqdatasetオブジェクト">DESeqDataSetオブジェクト<a class="anchor" aria-label="anchor" href="#deseqdataset%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88"></a></h2>
 <hr class="half-width"><p><code>DESeq2</code>を実行するには、カウントデータを<code>DESeqDataSet</code>クラスのオブジェクトとして表現する必要があります。
-<code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_design
-formula_を保持します。 _design
-formula_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_design
-formula_および関連する_デザイン行列_に関する詳細な説明は、<a href="06-extra-design.html">デザイン行列の詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
+<code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、
+<em>design formula</em> を保持します。 <em>design formula</em>
+は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。
+<em>design formula</em> および関連する_design
+matrices_に関する詳細な説明は、<a href="06-extra-design.html">design
+matricesの詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
 <div class="section level3">
 <h3 id="パッケージの読み込み">パッケージの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a></h3>
 <div class="codewrapper sourceCode" id="cb1">
@@ -364,11 +369,12 @@ formula_および関連する_デザイン行列_に関する詳細な説明は�
 </div>
 <div class="section level3">
 <h3 id="deseqdatasetの作成">DESeqDataSetの作成<a class="anchor" aria-label="anchor" href="#deseqdataset%E3%81%AE%E4%BD%9C%E6%88%90"></a></h3>
-<p>本例で使用するデザイン行列は <code>~ sex + time</code>
+<p>本例で使用するdesign matricesは <code>~ sex + time</code>
 とします。これにより、以下の比較が可能になります： -
 雄と雌の平均値の差（時間ポイントを平均化） - day
 0、4、8の平均値の差（雄と雌を平均化）
-他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるデザイン行列を使用することで、これらのペアワイズ比較をより容易に抽出できます。</p>
+他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるdesign
+matricesを使用することで、これらのペアワイズ比較をより容易に抽出できます。</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -447,8 +453,10 @@ design formula are characters, converting to factors</code></pre>
 <figure><img src="fig/05-differential-expression-rendered-estimate-dispersions-1.png" alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts." style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></div>
 <div class="section level3">
 <h3 id="検定方法">検定方法<a class="anchor" aria-label="anchor" href="#%E6%A4%9C%E5%AE%9A%E6%96%B9%E6%B3%95"></a></h3>
-<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>デザイン行列_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_design
-formula_と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つdesign
+<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>design
+matrices_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_design
+matrices_は <em>design formula</em>
+と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つdesign
 formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル<span class="math inline">\(j\)</span>における特定遺伝子の平均発現量<span class="math inline">\(\mu_{j}\)</span>は以下のようにモデル化されます：</p>
 <p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span></p>
 <p>ここで、<span class="math inline">\(β_T\)</span>は処理群と対照群間の対数2倍変化量を表し、<span class="math inline">\(x_j\)</span>はサンプル<span class="math inline">\(j\)</span>が処理群に属する場合に1、対照群に属する場合に0となります。</p>
@@ -868,7 +876,7 @@ low counts [2]     : 0, 0%
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
         <a class="chapter-link" href="04-exploratory-qc.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: 探索的解析と品質管理</a>
-        <a class="chapter-link float-end" href="06-extra-design.html" rel="next">Next: デザイン行列の詳細な解析... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="06-extra-design.html" rel="next">Next: design... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
     </nav></div> <!-- / div.primary-content.col-xs-12 -->
 <!-- END:   inst/pkgdown/templates/content-instructor.html-->
