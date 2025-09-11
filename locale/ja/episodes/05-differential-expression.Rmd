@@ -25,16 +25,19 @@ source("download_data.R")
 
 ## Differential expression の推定
 
-RNA-seqデータ解析における主要な目的の一つは、実験群間または条件間（例：処理群と対照群、時間点、組織など）における系統的な変化を定量化し、統計的に推論することです。これは通常、条件間変動と条件内変動を用いて発現変動パターンを示す遺伝子を同定することで行われ、生物学的複製サンプル（同一条件下での複数サンプル）が必要となります。
-発現変動解析を実施するためのソフトウェアパッケージは複数存在します。比較研究によれば、発現変動遺伝子（DE遺伝子）に関してはある程度の一致が見られるものの、ツール間にはばらつきがあり、どのツールも他のすべてのツールを一貫して上回る性能を示すことはないことが報告されています（[Soneson and Delorenzi, 2013](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91)参照）。
+RNA-seqデータ解析における主要な目的の一つは、実験群間または条件間（例：処理群と対照群、時間点、組織など）における系統的な変化を定量化し、統計的に推論することです。
+これは通常、条件間変動と条件内変動を用いて発現変動パターンを示す遺伝子を同定することで行われ、生物学的複製サンプル（同一条件下での複数サンプル）が必要となります。
+発現変動解析を実施するためのソフトウェアパッケージは複数存在します。
+比較研究によれば、発現変動遺伝子（DEG）に関してはある程度の一致が見られるものの、ツール間にはばらつきがあり、どのツールも他のすべてのツールを一貫して上回る性能を示すことはないことが報告されています（[Soneson and Delorenzi, 2013](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-14-91)参照）。
 以下では、[DESeq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
-ソフトウェアパッケージを使用した発現変動解析の実施方法を説明し、実際に解析を行います。[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)パッケージも同様の手法を実装しており、カウントデータに関する主要な仮定を共有しています。両パッケージとも一般的に良好な安定性を示し、同等の結果が得られます。
+ソフトウェアパッケージを使用した発現変動解析の実施方法を説明し、実際に解析を行います。[edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)パッケージも同様の手法を実装しており、カウントデータに関する主要な仮定を共有しています。
+両パッケージとも一般的に良好な安定性を示し、同等の結果が得られます。
 
 ## DESeqDataSetオブジェクト
 
 `DESeq2`を実行するには、カウントデータを`DESeqDataSet`クラスのオブジェクトとして表現する必要があります。
-`DESeqDataSet`は`SummarizedExperiment`クラス（[定量データのインポートとアノテーション](../episodes/03-import-annotate.Rmd)セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_design formula_を保持します。
-_design formula_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_design formula_および関連する_デザイン行列_に関する詳細な説明は、[デザイン行列の詳細な探索](../episodes/06-extra-design.Rmd)セクションで行います。`DESeqDataSet`クラスのオブジェクトは、[カウント行列](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat)、[SummarizedExperimentオブジェクト](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se)、[トランスクリプト存在量ファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport)、または[htseqカウントファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq)から構築可能です。
+`DESeqDataSet`は`SummarizedExperiment`クラス（[定量データのインポートとアノテーション](../episodes/03-import-annotate.Rmd)セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、 _design formula_ を保持します。
+ _design formula_ は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。 _design formula_ および関連する_design matrices_に関する詳細な説明は、[design matricesの詳細な探索](../episodes/06-extra-design.Rmd)セクションで行います。`DESeqDataSet`クラスのオブジェクトは、[カウント行列](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat)、[SummarizedExperimentオブジェクト](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se)、[トランスクリプト存在量ファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport)、または[htseqカウントファイル](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq)から構築可能です。
 
 ### パッケージの読み込み
 
@@ -62,10 +65,10 @@ se <- se[rowSums(assay(se, "counts")) > 5, ]
 
 ### DESeqDataSetの作成
 
-本例で使用するデザイン行列は `~ sex + time` とします。これにより、以下の比較が可能になります：
+本例で使用するdesign matricesは `~ sex + time` とします。これにより、以下の比較が可能になります：
 - 雄と雌の平均値の差（時間ポイントを平均化）
 - day 0、4、8の平均値の差（雄と雌を平均化）
-他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるデザイン行列を使用することで、これらのペアワイズ比較をより容易に抽出できます。
+他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるdesign matricesを使用することで、これらのペアワイズ比較をより容易に抽出できます。
 
 ```{r make-deseqdataset}
 dds <- DESeq2::DESeqDataSet(se,
@@ -130,7 +133,7 @@ plotDispEsts(dds)
 
 ### 検定方法
 
-`DESeq2`パッケージの`nbinomWaldTest()`関数を使用することで、_一般化線形モデル（GLM）_を構築し、_デザイン行列_の各変数に対応する_対数2倍変化量_（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_design formula_と直接関連しており、自動的に生成されます。例えば、1つの変数（`~ treatment`：処理群と対照群）を持つdesign formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル$j$における特定遺伝子の平均発現量$\mu_{j}$は以下のようにモデル化されます：
+`DESeq2`パッケージの`nbinomWaldTest()`関数を使用することで、_一般化線形モデル（GLM）_を構築し、_design matrices_の各変数に対応する_対数2倍変化量_（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_design matrices_は _design formula_ と直接関連しており、自動的に生成されます。例えば、1つの変数（`~ treatment`：処理群と対照群）を持つdesign formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル$j$における特定遺伝子の平均発現量$\mu_{j}$は以下のようにモデル化されます：
 
 $log(μ_j) = β_0 + x_j β_T$
 
