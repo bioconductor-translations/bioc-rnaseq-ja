@@ -98,8 +98,9 @@ dds <- DESeqDataSetFromMatrix(countData = assays(se)$counts,
 - ほとんどの遺伝子は発現量に有意な差がない
 - 特定の遺伝子にリードがマッピングされる確率は、同一グループ内のすべてのサンプルにおいて同一である
 
-[前節](../episodes/04-exploratory-qc.Rmd) の探索的データ分析で示したように、サンプルの総リード数（同一条件下で取得されたものであっても）はライブラリサイズ（シーケンシングされた総リード数）に依存します。グループ間およびグループ内で特定の遺伝子のカウント変動を比較するためには、まずライブラリサイズと組成効果を考慮する必要があります。
-前節で説明した `estimateSizeFactors()` 関数を思い出してください：
+前のセクションで示したように、サンプルの総カウント数は（たとえ同じ条件であっても）ライブラリサイズ（シーケンスされたリードの総数）に依存します。
+特定の遺伝子のカウント数の変動をグループ間およびグループ内で比較するには、まずライブラリサイズと構成効果を考慮する必要があります。
+前のセクションで説明したestimateSizeFactors()関数を思い出してください。
 
 ```{r estimate-sizefactors}
 dds <- estimateSizeFactors(dds)
@@ -115,15 +116,15 @@ _edgeR_の**正規化係数**と_DESeq2_の**サイズ因子**は類似した結
 
 ## 統計モデリング
 
-`DESeq2` と `edgeR` は、RNA-seqデータのカウント値を **負の二項分布** としてモデル化します。これは、グループあたりのサンプル数が少ない場合、平均値と分散の相関関係（[探索的データ解析](../episodes/04-exploratory-qc.Rmd)参照）、およびカウント分布の偏りを考慮するためです。
+DESeq2 と edgeR は、グループあたりのレプリケートが少ないこと、平均分散依存性 (探索的データ分析を参照)、および歪んだカウント分布を考慮して、RNA-seq カウントを **負の二項分布** としてモデル化します。
 
-### 分散パラメータ
+### 分散パラメータ (Dispersion)
 
 負の二項分布に従う遺伝子のカウント値におけるグループ内分散は、平均 $\mu$ に対して以下のようにモデル化できます：
 
 $var = \mu + \theta \mu^2$
 
-ここで $\theta$ は遺伝子固有の **分散パラメータ** を表し、データのばらつき度合いを示す指標です。第二段階として、各遺伝子の分散パラメータを推定することで、グループ内の期待分散値を算出し、グループ間の差異を検定します。サンプル数が限られている場合、適切な分散推定値は得にくいため、類似した発現パターンを示す遺伝子間の情報が活用されます。各遺伝子の分散推定値は、観測された分散分布の中央値方向に「縮小」（shrinked）されます。`DESeq2` では、`estimateDispersions()` 関数を使用して分散推定値を取得できます。
+ここで $\theta$ は遺伝子固有の **分散パラメータ (dispersion)** を表し、データのばらつき度合いを示す指標です。第二段階として、各遺伝子の分散パラメータを推定することで、グループ内の期待分散値を算出し、グループ間の差異を検定します。サンプル数が限られている場合、適切な分散推定値は得にくいため、類似した発現パターンを示す遺伝子間の情報が活用されます。各遺伝子の分散推定値は、観測された分散分布の中央値方向に「縮小」（shrinked）されます。`DESeq2` では、`estimateDispersions()` 関数を使用して分散推定値を取得できます。
 `plotDispEsts()` 関数を用いることで、この **縮小効果** の影響を視覚的に確認することが可能です：
 
 ```{r estimate-dispersions, fig.alt="Scatterplot with the mean of normalized counts on the x-axis and the dispersion on the y-axis. The plot shows black dots corresponding to gene-wise estimates of the dispersion, a red line corresponding to the fitted trend, and blue dots corresponding to the final dispersion estimates. There is a general trend of decreasing dispersion with increasing mean normalized counts."}
@@ -133,13 +134,13 @@ plotDispEsts(dds)
 
 ### 検定方法
 
-`DESeq2`パッケージの`nbinomWaldTest()`関数を使用することで、_一般化線形モデル（GLM）_を構築し、 _design matrices_ の各変数に対応する_対数2倍変化量_（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。 _design matrices_ は _design formula_ と直接関連しており、自動的に生成されます。例えば、1つの変数（`~ treatment`：処理群と対照群）を持つdesign formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル$j$における特定遺伝子の平均発現量$\mu_{j}$は以下のようにモデル化されます：
+We can use the `nbinomWaldTest()`function of `DESeq2` to fit a *generalized linear model (GLM)* and compute *log2 fold changes* (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the *design matrix*. The *design matrix* is directly related to the *design formula* and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
 
-$log(μ_j) = β_0 + x_j β_T$
+$log(μ_j) = β_0 + x_j β_T$,
 
-ここで、$β_T$は処理群と対照群間の対数2倍変化量を表し、$x_j$はサンプル$j$が処理群に属する場合に1、対照群に属する場合に0となります。
+ with $β_T$ corresponding to the log2 fold change of the treatment groups, $x_j$ = 1, if $j$ belongs to the treatment group and $x_j$ = 0, if $j$ belongs to the control group. 
 
-最終的に、推定された対数2倍変化量は標準誤差でスケーリングされ、_Wald検定_を用いて0と有意に異なるかどうかが検証されます。
+Finally, the estimated log2 fold changes are scaled by their standard error and tested for being significantly different from 0 using the *Wald test*. 
 
 ```{r wald-test}
 dds <- nbinomWaldTest(dds)
