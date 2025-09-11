@@ -2409,7 +2409,7 @@ loaded via a namespace (and not attached):
 </div>
 </section></section><section id="aio-05-differential-expression"><p>Content from <a href="05-differential-expression.html">Differential expression 解析</a></p>
 <hr>
-<p> Last updated on 2025-09-10 |
+<p> Last updated on 2025-09-11 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/05-differential-expression.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time <i aria-hidden="true" data-feather="clock"></i> 105 minutes </p>
@@ -2456,8 +2456,10 @@ and Delorenzi, 2013</a>参照）。 以下では、<a href="https://bioconductor
 </h2>
 <hr class="half-width">
 <p><code>DESeq2</code>を実行するには、カウントデータを<code>DESeqDataSet</code>クラスのオブジェクトとして表現する必要があります。
-<code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_デザイン式_を保持します。
-_デザイン式_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_デザイン式_および関連する_デザイン行列_に関する詳細な説明は、<a href="06-extra-design.html">デザイン行列の詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
+<code>DESeqDataSet</code>は<code>SummarizedExperiment</code>クラス（<a href="03-import-annotate.html">定量データのインポートとアノテーション</a>セクション参照）の拡張版であり、カウントアッセイデータ、特徴量（ここでは遺伝子）、およびサンプルメタデータに加えて、_design
+formula_を保持します。 _design
+formula_は、モデリング時に用いる変数を表現するものです。通常は解析対象の変数（群変数）や、考慮したいその他の変数（例：バッチ効果変数）などが含まれます。_design
+formula_および関連する_デザイン行列_に関する詳細な説明は、<a href="06-extra-design.html">デザイン行列の詳細な探索</a>セクションで行います。<code>DESeqDataSet</code>クラスのオブジェクトは、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#countmat" class="external-link">カウント行列</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#se" class="external-link">SummarizedExperimentオブジェクト</a>、<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#tximport" class="external-link">トランスクリプト存在量ファイル</a>、または<a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#htseq" class="external-link">htseqカウントファイル</a>から構築可能です。</p>
 <div class="section level3">
 <h3 id="パッケージの読み込み">パッケージの読み込み<a class="anchor" aria-label="anchor" href="#%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%AE%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF"></a>
 </h3>
@@ -2517,7 +2519,7 @@ design formula are characters, converting to factors</code></pre>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor1" aria-expanded="false" aria-controls="collapseInstructor1">
   <h3 class="accordion-header" id="headingInstructor1">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor1" class="accordion-collapse collapse" aria-labelledby="headingInstructor1" data-bs-parent="#accordionInstructor1">
+<div id="collapseInstructor1" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor1" aria-labelledby="headingInstructor1">
 <div class="accordion-body">
 <p><code>DESeqDataSet</code>を生成する関数は、入力データの種類に応じて適切に調整する必要があります。例えば：</p>
 <div class="codewrapper sourceCode" id="cb5">
@@ -2561,7 +2563,7 @@ design formula are characters, converting to factors</code></pre>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor2" aria-expanded="false" aria-controls="collapseInstructor2">
   <h3 class="accordion-header" id="headingInstructor2">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor2" class="accordion-collapse collapse" aria-labelledby="headingInstructor2" data-bs-parent="#accordionInstructor2">
+<div id="collapseInstructor2" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor2" aria-labelledby="headingInstructor2">
 <div class="accordion-body">
 <p><em>DESeq2</em> では、<strong>「相対対数発現量」（RLE：Relative Log
 Expression）</strong>法を用いて、リード深度とライブラリ構成を考慮したサンプルごとの<strong>サイズ因子</strong>を算出します。
@@ -2625,7 +2627,9 @@ _edgeR_の<strong>正規化係数</strong>と_DESeq2_の<strong>サイズ因子<
 <div class="section level3">
 <h3 id="検定方法">検定方法<a class="anchor" aria-label="anchor" href="#%E6%A4%9C%E5%AE%9A%E6%96%B9%E6%B3%95"></a>
 </h3>
-<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>デザイン行列_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_デザイン式_と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つデザイン式で、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル<span class="math inline">\(j\)</span>における特定遺伝子の平均発現量<span class="math inline">\(\mu_{j}\)</span>は以下のようにモデル化されます：</p>
+<p><code>DESeq2</code>パッケージの<code>nbinomWaldTest()</code>関数を使用することで、_一般化線形モデル（GLM）_を構築し、<em>デザイン行列_の各変数に対応する_対数2倍変化量</em>（「GLM係数」「ベータ係数」または「効果量」と同義）を算出できます。_デザイン行列_は_design
+formula_と直接関連しており、自動的に生成されます。例えば、1つの変数（<code>~ treatment</code>：処理群と対照群）を持つdesign
+formulaで、2つの因子水準（処理群と対照群）がある場合を考えます。この場合、サンプル<span class="math inline">\(j\)</span>における特定遺伝子の平均発現量<span class="math inline">\(\mu_{j}\)</span>は以下のようにモデル化されます：</p>
 <p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span></p>
 <p>ここで、<span class="math inline">\(β_T\)</span>は処理群と対照群間の対数2倍変化量を表し、<span class="math inline">\(x_j\)</span>はサンプル<span class="math inline">\(j\)</span>が処理群に属する場合に1、対照群に属する場合に0となります。</p>
 <p>最終的に、推定された対数2倍変化量は標準誤差でスケーリングされ、_Wald検定_を用いて0と有意に異なるかどうかが検証されます。</p>
@@ -2698,7 +2702,7 @@ _edgeR_の<strong>正規化係数</strong>と_DESeq2_の<strong>サイズ因子<
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <p>このレッスンの例では、設計式の最後の変数は <code>time</code> です。
 <strong>基準レベル</strong>（アルファベット順で最初の値）は
@@ -2779,7 +2783,7 @@ A330076C08Rik 3.01518e-48</code></pre>
 <button class="accordion-button instructor-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInstructor3" aria-expanded="false" aria-controls="collapseInstructor3">
   <h3 class="accordion-header" id="headingInstructor3">  <div class="note-square"><i aria-hidden="true" class="callout-icon" data-feather="edit-2"></i></div> Instructor Note </h3>
 </button>
-<div id="collapseInstructor3" class="accordion-collapse collapse" aria-labelledby="headingInstructor3" data-bs-parent="#accordionInstructor3">
+<div id="collapseInstructor3" class="accordion-collapse collapse" data-bs-parent="#accordionInstructor3" aria-labelledby="headingInstructor3">
 <div class="accordion-body">
 <p>以下の2つのコントラスト指定方法は、本質的に同等の結果をもたらします。
 <code>name</code> パラメータには <code>resultsNames()</code>
@@ -2816,7 +2820,7 @@ A330076C08Rik 3.01518e-48</code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb22">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2944,7 +2948,7 @@ MA
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb30">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3068,7 +3072,7 @@ low counts [2]     : 0, 0%
 </div>
 </section></section><section id="aio-06-extra-design"><p>Content from <a href="06-extra-design.html">デザイン行列の詳細な解析</a></p>
 <hr>
-<p> Last updated on 2025-09-09 |
+<p> Last updated on 2025-09-11 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/06-extra-design.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <p>Estimated time <i aria-hidden="true" data-feather="clock"></i> 60 minutes </p>
@@ -3214,7 +3218,7 @@ $`tissue = Spinalcord`</code></pre>
 <p>次に、最初のデザイン行列を設定します。
 ここでは、非感染状態（Day0）の脊髄サンプルに焦点を当て、雄マウスと雌マウスを比較することを目的とします。
 そこで、まずメタデータを対象サンプルのみに絞り込み、次に単一の予測変数（性別）を用いてデザイン行列を設定し可視化します。
-デザイン式を <code>~ sex</code>
+design formulaを <code>~ sex</code>
 と定義することで、Rに対してデザイン行列に切片項を含めるよう指示します。
 この切片項は、予測変数の「基準レベル」を表し、この場合は「雌マウス」が基準として選択されます。
 特に指定がない場合、Rは予測変数の値をアルファベット順に並べ替え、最初の値を参照レベルまたは基準レベルとして自動的に選択します。</p>
@@ -3338,7 +3342,7 @@ attr(,"contrasts")$sex
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> 解答 </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3415,7 +3419,8 @@ GSM2545367         0       1</code></pre>
 <div id="課題-3" class="callout-inner">
 <h3 class="callout-title">課題</h3>
 <div class="callout-content">
-<p>男性脊髄組織サンプルにおける3時点（Day0、Day4、Day8）を比較するためのデザイン式を設定し、<code>ExploreModelMatrix</code>を使用してその結果を可視化してください。</p>
+<p>男性脊髄組織サンプルにおける3時点（Day0、Day4、Day8）を比較するためのdesign
+formulaを設定し、<code>ExploreModelMatrix</code>を使用してその結果を可視化してください。</p>
 </div>
 </div>
 </div>
@@ -3424,7 +3429,7 @@ GSM2545367         0       1</code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5255,7 +5260,7 @@ $gene_set_3
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -6844,8 +6849,8 @@ quantified.</li>
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/aio.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/aio.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-09-10",
-  "datePublished": "2025-09-10"
+  "dateModified": "2025-09-11",
+  "datePublished": "2025-09-11"
 }
 
   </script><script>

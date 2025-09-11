@@ -285,7 +285,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>デザイン行列の詳細な解析</h1>
-        <p> Last updated on 2025-09-09 |
+        <p> Last updated on 2025-09-11 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/06-extra-design.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -430,7 +430,7 @@ $`tissue = Spinalcord`</code></pre>
 <hr class="half-width"><p>次に、最初のデザイン行列を設定します。
 ここでは、非感染状態（Day0）の脊髄サンプルに焦点を当て、雄マウスと雌マウスを比較することを目的とします。
 そこで、まずメタデータを対象サンプルのみに絞り込み、次に単一の予測変数（性別）を用いてデザイン行列を設定し可視化します。
-デザイン式を <code>~ sex</code>
+design formulaを <code>~ sex</code>
 と定義することで、Rに対してデザイン行列に切片項を含めるよう指示します。
 この切片項は、予測変数の「基準レベル」を表し、この場合は「雌マウス」が基準として選択されます。
 特に指定がない場合、Rは予測変数の値をアルファベット順に並べ替え、最初の値を参照レベルまたは基準レベルとして自動的に選択します。</p>
@@ -554,7 +554,7 @@ attr(,"contrasts")$sex
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> 解答 </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -630,7 +630,8 @@ GSM2545367         0       1</code></pre>
 <div id="課題-3" class="callout-inner">
 <h3 class="callout-title">課題</h3>
 <div class="callout-content">
-<p>男性脊髄組織サンプルにおける3時点（Day0、Day4、Day8）を比較するためのデザイン式を設定し、<code>ExploreModelMatrix</code>を使用してその結果を可視化してください。</p>
+<p>男性脊髄組織サンプルにおける3時点（Day0、Day4、Day8）を比較するためのdesign
+formulaを設定し、<code>ExploreModelMatrix</code>を使用してその結果を可視化してください。</p>
 </div>
 </div>
 </div>
@@ -639,7 +640,7 @@ GSM2545367         0       1</code></pre>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1859,8 +1860,8 @@ low counts [2]     : 0, 0%
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/06-extra-design.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/06-extra-design.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-09-09",
-  "datePublished": "2025-09-10"
+  "dateModified": "2025-09-11",
+  "datePublished": "2025-09-11"
 }
 
   </script><script>
