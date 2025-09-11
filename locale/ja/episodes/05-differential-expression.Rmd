@@ -65,10 +65,10 @@ se <- se[rowSums(assay(se, "counts")) > 5, ]
 
 ### DESeqDataSetの作成
 
-本例で使用するdesign matricesは `~ sex + time` とします。これにより、以下の比較が可能になります：
-- 雄と雌の平均値の差（時間ポイントを平均化）
-- day 0、4、8の平均値の差（雄と雌を平均化）
-他の比較（例：「雌・day8」対「雌・day0」、「雄・day8」対「雄・day0」）を行いたい場合は、異なるdesign matricesを使用することで、これらのペアワイズ比較をより容易に抽出できます。
+本例で使用する design matrix は `~ sex + time` とします。
+
+This will allow us test the difference between males and females (averaged over time point) and the difference between day 0, 4 and 8 (averaged over males and females).
+If we wanted to test other comparisons (e.g., Female.Day8 vs. Female.Day0 and also Male.Day8 vs. Male.Day0) we could use a different design matrix to more easily extract those pairwise comparisons.
 
 ```{r make-deseqdataset}
 dds <- DESeq2::DESeqDataSet(se,
