@@ -279,7 +279,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>遺伝子セットエンリッチメント解析</h1>
-        <p> Last updated on 2025-11-11 |
+        <p> Last updated on 2026-04-14 |
 
         <a href="https://github.com/carpentries-incubator/bioc-rnaseq/edit/main/episodes/07-gene-set-analysis.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -742,9 +742,9 @@ Fisherの正確検定では、超幾何分布がその統計量の厳密な分�
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>Unit: microseconds
-   expr     min       lq      mean   median       uq     max neval
- fisher 250.437 256.7345 271.49283 263.0565 275.4095 712.611   100
-  hyper   1.583   1.7480   2.58526   2.8905   3.2310   7.404   100</code></pre>
+   expr     min       lq      mean   median      uq     max neval
+ fisher 219.846 226.6515 239.95372 232.0195 241.683 580.351   100
+  hyper   1.532   1.7320   2.39113   2.1130   2.459  17.266   100</code></pre>
 </div>
 <p><code>phyper()</code> が <code>fisher.test()</code>
 よりも数百倍高速であることは驚くべき結果です。
@@ -879,7 +879,7 @@ $gene_set_3
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1407,7 +1407,7 @@ Analysis）を実行する<code>enrichGO()</code>関数が用意されていま�
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 21427,74143,16882,17258,16785,66991</code></pre>
+<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 12628,58230,19891,54127,72962,14958</code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1649,19 +1649,19 @@ mmu00592                               alpha-Linolenic acid metabolism
 mmu04913                                       Ovarian steroidogenesis
 mmu04061 Viral protein interaction with cytokine and cytokine receptor
          GeneRatio  BgRatio RichFactor FoldEnrichment   zScore       pvalue
-mmu00590    16/457 89/10623  0.1797753       4.178890 6.384988 1.029723e-06
-mmu00591    12/457 55/10623  0.2181818       5.071653 6.418624 2.825416e-06
-mmu00565    11/457 49/10623  0.2244898       5.218282 6.274805 5.477871e-06
-mmu00592     8/457 25/10623  0.3200000       7.438425 6.833196 6.249183e-06
-mmu04913    12/457 65/10623  0.1846154       4.291399 5.643292 1.754012e-05
-mmu04061    14/457 95/10623  0.1473684       3.425590 5.034919 5.088522e-05
+mmu00590    16/461 89/11156  0.1797753       4.350484 6.588437 6.084088e-07
+mmu00591    12/461 55/11156  0.2181818       5.279905 6.605859 1.866714e-06
+mmu00565    11/461 49/11156  0.2244898       5.432556 6.455780 3.736525e-06
+mmu00592     8/461 25/11156  0.3200000       7.743861 7.008198 4.649931e-06
+mmu04913    12/461 64/11156  0.1875000       4.537419 5.892049 9.963826e-06
+mmu04061    14/461 95/11156  0.1473684       3.566252 5.215053 3.295101e-05
              p.adjust       qvalue
-mmu00590 0.0003253926 0.0002655603
-mmu00591 0.0004464157 0.0003643300
-mmu00565 0.0004936855 0.0004029078
-mmu00592 0.0004936855 0.0004029078
-mmu04913 0.0011085357 0.0009047010
-mmu04061 0.0026799549 0.0021871717
+mmu00590 0.0001934740 0.0001517820
+mmu00591 0.0002968076 0.0002328481
+mmu00565 0.0003696695 0.0002900088
+mmu00592 0.0003696695 0.0002900088
+mmu04913 0.0006336993 0.0004971425
+mmu04061 0.0017464036 0.0013700684
                                                                                                        geneID
 mmu00590 18783/19215/211429/329502/78390/19223/67103/242546/13118/18781/18784/11689/232889/15446/237625/11687
 mmu00591                        18783/211429/329502/78390/242546/18781/18784/13113/622127/232889/237625/11687
@@ -2278,7 +2278,7 @@ $(function() {
 
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
         <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.20.0" class="external-link">sandpaper (0.20.0)</a>,
-        <a href="https://github.com/carpentries/pegboard/tree/main" class="external-link">pegboard (0.7.9)</a>,
+        <a href="https://github.com/carpentries/pegboard/tree/0.7.9" class="external-link">pegboard (0.7.9)</a>,
       and <a href="https://github.com/mblue9/varnish/tree/3403ad0dd37f7641c6442330fcc182937e7964c5" class="external-link">varnish (0.2.16)</a>.</p>
 			</div>
 		</footer></div> <!-- / div.container -->
@@ -2301,8 +2301,8 @@ $(function() {
   "url": "https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html",
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/07-gene-set-analysis.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2025-11-11",
-  "datePublished": "2026-03-24"
+  "dateModified": "2026-04-14",
+  "datePublished": "2026-04-14"
 }
 
   </script><script>
