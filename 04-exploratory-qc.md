@@ -456,14 +456,14 @@ loaded via a namespace (and not attached):
 [25] later_1.4.2             DelayedArray_0.34.1     BiocParallel_1.42.1    
 [28] parallel_4.5.3          cluster_2.1.8.1         R6_2.6.1               
 [31] bslib_0.9.0             limma_3.64.1            jquerylib_0.1.4        
-[34] Rcpp_1.0.14             iterators_1.0.14        knitr_1.50             
+[34] Rcpp_1.1.1-1.1          iterators_1.0.14        knitr_1.50             
 [37] httpuv_1.6.16           Matrix_1.7-3            splines_4.5.3          
 [40] igraph_2.1.4            tidyselect_1.2.1        abind_1.4-8            
 [43] yaml_2.3.10             doParallel_1.0.17       codetools_0.2-20       
 [46] affy_1.86.0             miniUI_0.1.2            lattice_0.22-7         
 [49] tibble_3.3.0            shiny_1.11.0            withr_3.0.2            
 [52] evaluate_1.0.4          circlize_0.4.16         pillar_1.10.2          
-[55] affyio_1.78.0           BiocManager_1.30.26     renv_1.2.1             
+[55] affyio_1.78.0           BiocManager_1.30.26     renv_1.2.2             
 [58] DT_0.33                 foreach_1.5.2           shinyjs_2.1.0          
 [61] scales_1.4.0            xtable_1.8-4            glue_1.8.0             
 [64] tools_4.5.3             colourpicker_1.3.0      locfit_1.5-9.12        
