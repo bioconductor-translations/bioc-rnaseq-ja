@@ -459,19 +459,19 @@ Analysis）の結果を可視化するためのいくつかの手法を習得し
 <h3 id="fishers-正確確率検定">Fisher’s 正確確率検定<a class="anchor" aria-label="anchor" href="#fishers-%E6%AD%A3%E7%A2%BA%E7%A2%BA%E7%8E%87%E6%A4%9C%E5%AE%9A"></a></h3>
 <p>エンリッチメント効果を統計的に評価するため、発現変動遺伝子群と遺伝子セットの関連性は、通常以下の2×2分割表に整理されます。この表では、各カテゴリーに属する遺伝子数が示されます。<span class="math inline">\(n_{+1}\)</span>は対象遺伝子セット（XY遺伝子セット）のサイズ（すなわち構成遺伝子数）を、<span class="math inline">\(n_{1+}\)</span>は発現変動遺伝子の数を、<span class="math inline">\(n\)</span>は全遺伝子数をそれぞれ表します。</p>
 <center>
-<table class="table"><thead><tr class="header"><th></th>
+<table class="table"><thead><tr><th></th>
 <th>In the gene set</th>
 <th>Not in the gene set</th>
 <th>Total</th>
-</tr></thead><tbody><tr class="odd"><td><strong>DE</strong></td>
+</tr></thead><tbody><tr><td><strong>DE</strong></td>
 <td><span class="math inline">\(n_{11}\)</span></td>
 <td><span class="math inline">\(n_{12}\)</span></td>
 <td><span class="math inline">\(n_{1+}\)</span></td>
-</tr><tr class="even"><td><strong>Not DE</strong></td>
+</tr><tr><td><strong>Not DE</strong></td>
 <td><span class="math inline">\(n_{21}\)</span></td>
 <td><span class="math inline">\(n_{22}\)</span></td>
 <td><span class="math inline">\(n_{2+}\)</span></td>
-</tr><tr class="odd"><td><strong>Total</strong></td>
+</tr><tr><td><strong>Total</strong></td>
 <td><span class="math inline">\(n_{+1}\)</span></td>
 <td><span class="math inline">\(n_{+2}\)</span></td>
 <td><span class="math inline">\(n\)</span></td>
@@ -515,19 +515,19 @@ Analysis）の結果を可視化するためのいくつかの手法を習得し
 </div>
 <p>これらの数値を2×2分割表に入力します：</p>
 <center>
-<table class="table"><thead><tr class="header"><th></th>
+<table class="table"><thead><tr><th></th>
 <th>In the gene set</th>
 <th>Not in the gene set</th>
 <th>Total</th>
-</tr></thead><tbody><tr class="odd"><td><strong>DE</strong></td>
+</tr></thead><tbody><tr><td><strong>DE</strong></td>
 <td>13</td>
 <td>41</td>
 <td>54</td>
-</tr><tr class="even"><td><strong>Not DE</strong></td>
+</tr><tr><td><strong>Not DE</strong></td>
 <td>1121</td>
 <td>20023</td>
 <td>21144</td>
-</tr><tr class="odd"><td><strong>Total</strong></td>
+</tr><tr><td><strong>Total</strong></td>
 <td>1134</td>
 <td>20064</td>
 <td>21198</td>
@@ -587,19 +587,19 @@ n_{21}}
 <div class="callout-content">
 <p>2×2分割表は転置可能であり、この操作はフィッシャーの正確確率検定の結果に影響を与えません。例えば、遺伝子が特定の遺伝子セットに含まれるかどうかを行に、遺伝子が発現変動しているかどうかを列に配置するといった方法が考えられます。</p>
 <center>
-<table class="table"><thead><tr class="header"><th></th>
+<table class="table"><thead><tr><th></th>
 <th>DE</th>
 <th>Not DE</th>
 <th>Total</th>
-</tr></thead><tbody><tr class="odd"><td><strong>In the gene set</strong></td>
+</tr></thead><tbody><tr><td><strong>In the gene set</strong></td>
 <td>13</td>
 <td>1121</td>
 <td>1134</td>
-</tr><tr class="even"><td><strong>Not in the gene set</strong></td>
+</tr><tr><td><strong>Not in the gene set</strong></td>
 <td>41</td>
 <td>20023</td>
 <td>20064</td>
-</tr><tr class="odd"><td><strong>Total</strong></td>
+</tr><tr><td><strong>Total</strong></td>
 <td>54</td>
 <td>21144</td>
 <td>21198</td>
@@ -881,7 +881,7 @@ $gene_set_3
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -948,43 +948,43 @@ GOには、生物学的プロセス（BP）、細胞構成要素（CC）、分�
 これらのGO用語と遺伝子との関連性は、Bioconductor標準パッケージである「生物種アノテーションパッケージ」に統合されています。
 現在のBioconductorリリースでは以下の生物種パッケージが利用可能です：</p>
 <center>
-<table class="table"><colgroup><col width="27%"><col width="25%"><col width="36%"><col width="10%"></colgroup><thead><tr class="header"><th>Package</th>
+<table class="table"><colgroup><col width="27%"><col width="25%"><col width="36%"><col width="10%"></colgroup><thead><tr><th>Package</th>
 <th>Organism</th>
 <th>Package</th>
 <th>Organism</th>
-</tr></thead><tbody><tr class="odd"><td>org.Hs.eg.db</td>
+</tr></thead><tbody><tr><td>org.Hs.eg.db</td>
 <td>Human</td>
 <td>org.Mm.eg.db</td>
 <td>Mouse</td>
-</tr><tr class="even"><td>org.Rn.eg.db</td>
+</tr><tr><td>org.Rn.eg.db</td>
 <td>Rat</td>
 <td>org.Dm.eg.db</td>
 <td>Fly</td>
-</tr><tr class="odd"><td>org.At.tair.db</td>
+</tr><tr><td>org.At.tair.db</td>
 <td>Arabidopsis</td>
 <td>org.Dr.eg.db</td>
 <td>Zebrafish</td>
-</tr><tr class="even"><td>org.Sc.sgd.db</td>
+</tr><tr><td>org.Sc.sgd.db</td>
 <td>Yeast</td>
 <td>org.Ce.eg.db</td>
 <td>Worm</td>
-</tr><tr class="odd"><td>org.Bt.eg.db</td>
+</tr><tr><td>org.Bt.eg.db</td>
 <td>Bovine</td>
 <td>org.Gg.eg.db</td>
 <td>Chicken</td>
-</tr><tr class="even"><td>org.Ss.eg.db</td>
+</tr><tr><td>org.Ss.eg.db</td>
 <td>Pig</td>
 <td>org.Mmu.eg.db</td>
 <td>Rhesus</td>
-</tr><tr class="odd"><td>org.Cf.eg.db</td>
+</tr><tr><td>org.Cf.eg.db</td>
 <td>Canine</td>
 <td>org.EcK12.eg.db</td>
 <td>E coli strain K12</td>
-</tr><tr class="even"><td>org.Xl.eg.db</td>
+</tr><tr><td>org.Xl.eg.db</td>
 <td>Xenopus</td>
 <td>org.Pt.eg.db</td>
 <td>Chimp</td>
-</tr><tr class="odd"><td>org.Ag.eg.db</td>
+</tr><tr><td>org.Ag.eg.db</td>
 <td>Anopheles</td>
 <td>org.EcSakai.eg.db</td>
 <td>E coli strain Sakai</td>
@@ -1871,19 +1871,19 @@ HALLMARK_APICAL_SURFACE                 84   21198 6.640741e-01 8.973974e-01</co
 ただし、一般的にユニバースは<span class="math inline">\(n_{22}\)</span>、<span class="math inline">\(n_{02}\)</span>、<span class="math inline">\(n_{20}\)</span>という3つの値により大きな影響を及ぼします。
 これらの値は、非DE遺伝子（つまりDEではない遺伝子）または非遺伝子セット遺伝子に対応しています。</p>
 <center>
-<table style="width:100%;" class="table"><colgroup><col width="21%"><col width="29%"><col width="34%"><col width="14%"></colgroup><thead><tr class="header"><th></th>
+<table style="width:100%;" class="table"><colgroup><col width="21%"><col width="29%"><col width="34%"><col width="14%"></colgroup><thead><tr><th></th>
 <th>遺伝子セット内</th>
 <th>遺伝子セット外</th>
 <th>合計</th>
-</tr></thead><tbody><tr class="odd"><td><strong>DE</strong></td>
+</tr></thead><tbody><tr><td><strong>DE</strong></td>
 <td><span class="math inline">\(n_{11}\)</span></td>
 <td><span class="math inline">\(n_{12}\)</span></td>
 <td><span class="math inline">\(n_{1+}\)</span></td>
-</tr><tr class="even"><td><strong>非DE</strong></td>
+</tr><tr><td><strong>非DE</strong></td>
 <td><span class="math inline">\(n_{21}\)</span></td>
 <td><span class="math inline">\(\color{red}{n_{22}}\)</span></td>
 <td><span class="math inline">\(\color{red}{n_{2+}}\)</span></td>
-</tr><tr class="odd"><td><strong>合計</strong></td>
+</tr><tr><td><strong>合計</strong></td>
 <td><span class="math inline">\(n_{+1}\)</span></td>
 <td><span class="math inline">\(\color{red}{n_{+2}}\)</span></td>
 <td><span class="math inline">\(\color{red}{n}\)</span></td>
@@ -2304,7 +2304,7 @@ $(function() {
   "identifier": "https://carpentries-incubator.github.io/bioc-rnaseq/instructor/07-gene-set-analysis.html",
   "dateCreated": "2020-09-15",
   "dateModified": "2026-04-28",
-  "datePublished": "2026-04-28"
+  "datePublished": "2026-05-05"
 }
 
   </script><script>
